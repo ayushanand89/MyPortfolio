@@ -3,24 +3,45 @@ import { ArrowRight, ExternalLink, GithubIcon } from "lucide-react";
 const projects = [
   {
     id: 1,
-    title: "BareThreads E-Commerce",
-    description: "A beautiful landing page app using React and Tailwind.",
+   title: "BareThreads",
+description: "A complete full-stack e-commerce platform with user authentication, product management, and secure checkout, built using React, Node.js, and Tailwind CSS.",
+
     image: "/projects/BareThreads.png",
-    tags: ["React", "TailwindCSS", "Supabase"],
-    demoUrl: "#",
+    tags: [
+      "React",
+      "TailwindCSS",
+      "Redux Toolkit",
+      "JWT Auth",
+      "MongoDB",
+      "Express",
+      "Axios",
+      "Payment Gateway",
+      "Cloudinary",
+    ],
+    demoUrl: "https://bare-threads-kfs1.vercel.app/",
     githubUrl: "https://github.com/ayushanand89/BareThreads",
   },
   {
     id: 2,
-    title: "TalkSphere Chat Application",
-    description:
-      "Interactive analytics dashboard with data visualization and filtering capabilities.",
+   title: "TalkSphere",
+description: "A real-time chat and video calling application with seamless messaging, group chats, and secure peer-to-peer video communication.",
+
     image: "/projects/TalkSphere.png",
-    tags: ["TypeScript", "D3.js", "Next.js"],
+    tags: [
+      "React",
+      "TailwindCSS",
+      "TanStack Query",
+      "Zustand",
+      "JWT Auth",
+      "MongoDB",
+      "Express",
+      "Socket.IO",
+      "WebRTC",
+      "DaisyUI",
+    ],
     demoUrl: "https://talksphere-lck2.onrender.com/",
     githubUrl: "https://github.com/ayushanand89/TalkSphere",
   },
-  
 ];
 
 export const ProjectsSection = () => {
@@ -61,27 +82,30 @@ export const ProjectsSection = () => {
                   ))}
                 </div>
 
-                <h3 className="text-xl font-semibold mb-1"> {project.title}</h3>
+                <h3 className="text-3xl font-bold mb-2"> {project.title}</h3>
                 <p className="text-muted-foreground text-sm mb-4">
                   {project.description}
                 </p>
                 <div className="flex justify-between items-center">
-                  <div className="flex space-x-3">
-                    <a
-                      href={project.demoUrl}
-                      target="_blank"
-                      className="text-foreground/80 hover:text-primary transition-colors duration-300"
-                    >
-                      <ExternalLink size={20} />
-                    </a>
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      className="text-foreground/80 hover:text-primary transition-colors duration-300"
-                    >
-                      <GithubIcon size={20} />
-                    </a>
-                  </div>
+                  {/* Left Link */}
+                  <a
+                    href={project.demoUrl}
+                    target="_blank"
+                    className="flex items-center space-x-2 text-foreground/80 hover:text-primary transition-colors duration-300"
+                  >
+                    <ExternalLink size={20} />
+                    <span>Live Here</span>
+                  </a>
+
+                  {/* Right Link */}
+                  <a
+                    href={project.githubUrl}
+                    target="_blank"
+                    className="flex items-center space-x-2 text-foreground/80 hover:text-primary transition-colors duration-300"
+                  >
+                    <GithubIcon size={20} />
+                    <span>GitHub Repo</span>
+                  </a>
                 </div>
               </div>
             </div>

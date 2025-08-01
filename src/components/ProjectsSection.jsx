@@ -3,8 +3,19 @@ import { ArrowRight, ExternalLink, GithubIcon } from "lucide-react";
 const projects = [
   {
     id: 1,
-   title: "BareThreads",
-description: "A complete full-stack e-commerce platform with user authentication, product management, and secure checkout, built using React, Node.js, and Tailwind CSS.",
+    title: "Clanflare Landing Page",
+    description:
+      "A modern and responsive landing page built with cutting-edge web technologies, featuring smooth animations, optimized performance, and seamless user experience across all devices.",
+    image: "/projects/Clanflare.png",
+    tags: ["React", "TypeScript", "SSG", "SEO", "TailwindCSS", "Shadcn"],
+    demoUrl: "https://clanflare.dev/",
+    githubUrl: null,
+  },
+  {
+    id: 2,
+    title: "BareThreads",
+    description:
+      "A complete full-stack e-commerce platform with user authentication, product management, and secure checkout, built using React, Node.js, and Tailwind CSS.",
 
     image: "/projects/BareThreads.png",
     tags: [
@@ -22,9 +33,10 @@ description: "A complete full-stack e-commerce platform with user authentication
     githubUrl: "https://github.com/ayushanand89/BareThreads",
   },
   {
-    id: 2,
-   title: "TalkSphere",
-description: "A real-time chat and video calling application with seamless messaging, group chats, and secure peer-to-peer video communication.",
+    id: 3,
+    title: "TalkSphere",
+    description:
+      "A real-time chat and video calling application with seamless messaging, group chats, and secure peer-to-peer video communication.",
 
     image: "/projects/TalkSphere.png",
     tags: [
@@ -47,7 +59,7 @@ description: "A real-time chat and video calling application with seamless messa
 export const ProjectsSection = () => {
   return (
     <section id="projects" className="py-24 px-4 relative">
-      <div className="container mx-auto max-w-5xl">
+      <div className="container mx-auto max-w-6xl">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-center">
           {" "}
           <span className="text-primary"> Some </span>Featured{" "}
@@ -63,7 +75,11 @@ export const ProjectsSection = () => {
           {projects.map((project, key) => (
             <div
               key={key}
-              className="group bg-card rounded-lg overflow-hidden shadow-xs card-hover"
+              className={`group bg-card rounded-lg overflow-hidden shadow-xs card-hover ${
+                projects.length % 2 !== 0 && key === projects.length - 1
+                  ? "md:col-span-2 md:max-w-md md:mx-auto"
+                  : ""
+              }`}
             >
               <div className="h-48 overflow-hidden">
                 <img
@@ -98,14 +114,16 @@ export const ProjectsSection = () => {
                   </a>
 
                   {/* Right Link */}
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    className="flex items-center space-x-2 text-foreground/80 hover:text-primary transition-colors duration-300"
-                  >
-                    <GithubIcon size={20} />
-                    <span>GitHub Repo</span>
-                  </a>
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      className="flex items-center space-x-2 text-foreground/80 hover:text-primary transition-colors duration-300"
+                    >
+                      <GithubIcon size={20} />
+                      <span>GitHub Repo</span>
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

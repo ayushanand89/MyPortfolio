@@ -1,0 +1,365 @@
+/* ---------------------------------------------------------------------------
+   Project + case-study content model.
+   Flagship projects carry a `blocks` array that the case-study page renders.
+   Screenshots are referenced by path under /public/work/<slug>/ — drop the real
+   exported images there; until then ImageBlock renders a labelled placeholder.
+--------------------------------------------------------------------------- */
+
+export type Stat = { value: string; label: string };
+
+export type CaseStudyBlock =
+  | { type: "section"; eyebrow?: string; title: string; body?: string }
+  | { type: "text"; body: string }
+  | { type: "image"; src?: string; alt: string; caption?: string }
+  | { type: "stats"; items: Stat[] }
+  | {
+      type: "features";
+      eyebrow?: string;
+      title?: string;
+      items: { title: string; body: string }[];
+    }
+  | { type: "stack"; items: { name: string; why: string }[] }
+  | { type: "quote"; text: string };
+
+export type ProjectLinks = {
+  demo?: string;
+  github?: string;
+};
+
+export type Project = {
+  slug: string;
+  title: string;
+  tagline: string;
+  summary: string;
+  year: string;
+  role?: string;
+  association?: string;
+  category: "flagship" | "secondary";
+  tags: string[];
+  image?: string;
+  links: ProjectLinks;
+  hasCaseStudy: boolean;
+  // case-study-only fields
+  cover?: { eyebrow: string; title: string; subtitle: string };
+  stats?: Stat[];
+  blocks?: CaseStudyBlock[];
+};
+
+export const projects: Project[] = [
+  {
+    slug: "sukh-sadam",
+    title: "Sukh Sadam",
+    tagline: "A full-stack recovery platform for gambling addiction.",
+    summary:
+      "A two-sided product — a patient app for recovery and a counselor workspace for care — sharing one security-first data model. Bookings, payments, recovery tools, and an anonymous community, designed and built end to end.",
+    year: "2026",
+    role: "Designed & built end to end",
+    category: "flagship",
+    tags: ["Next.js 16", "React 19", "TypeScript", "Supabase", "Razorpay", "Tailwind"],
+    image: "/work/sukh-sadam/cover.png",
+    links: {},
+    hasCaseStudy: true,
+    cover: {
+      eyebrow: "Case study — designed & built end to end",
+      title: "Sukh Sadam",
+      subtitle:
+        "A full-stack recovery platform for gambling addiction. Bookings · payments · recovery tools · an anonymous community.",
+    },
+    stats: [
+      { value: "30+", label: "App routes" },
+      { value: "17", label: "PostgreSQL tables" },
+      { value: "2 sides", label: "Patient + counselor" },
+      { value: "RLS", label: "On every table" },
+    ],
+    blocks: [
+      {
+        type: "section",
+        eyebrow: "The problem",
+        title: "Recovery is hard. Doing it alone is harder.",
+        body: "Gambling addiction is isolating and stigmatised — people need a private way to find help, track progress, and reach someone at 2am. So I built one, end to end.",
+      },
+      {
+        type: "section",
+        eyebrow: "The product",
+        title: "One platform, two sides.",
+        body: "A patient app for recovery, and a counselor workspace for care — sharing one secure data model.",
+      },
+      {
+        type: "image",
+        src: "/work/sukh-sadam/landing.png",
+        alt: "Sukh Sadam landing page",
+        caption: "Landing — verified counselors, private recovery tools, a community that's been there.",
+      },
+      {
+        type: "features",
+        eyebrow: "Patient app",
+        title: "Recovery, one day at a time.",
+        items: [
+          {
+            title: "A daily home base",
+            body: "Current streak, an honest \"did you slip?\" check-in, mood, and your next session.",
+          },
+          {
+            title: "Progress you can see",
+            body: "Sobriety streaks, mood trends over time, and milestone badges that make the work visible.",
+          },
+          {
+            title: "Find the right counselor",
+            body: "Verified specialists, filterable by city, language and specialty, with live ratings computed from real reviews.",
+          },
+          {
+            title: "Book in two taps",
+            body: "Real-time availability paid from a prepaid session wallet — credits deducted atomically, so a slot can never be oversold.",
+          },
+          {
+            title: "A community that's been there",
+            body: "Post openly or fully anonymous — author identity is stripped at the database, not just hidden in the UI.",
+          },
+          {
+            title: "A journal that's just yours",
+            body: "Private and visible only to you — a safe place to write through the hard days. Plus an SOS mode for the hardest moments.",
+          },
+        ],
+      },
+      {
+        type: "image",
+        src: "/work/sukh-sadam/dashboard.png",
+        alt: "Patient recovery dashboard",
+        caption: "Patient home — streak, daily check-in, mood, and next session at a glance.",
+      },
+      {
+        type: "features",
+        eyebrow: "Counselor side",
+        title: "A workspace for counselors.",
+        items: [
+          {
+            title: "Everything at a glance",
+            body: "Today's schedule, weekly load, total sessions, live rating and recent reviews.",
+          },
+          {
+            title: "Scoped to their clients",
+            body: "A patient's intake, streaks and moods — and only for clients who booked them. Scoping is enforced by the database itself.",
+          },
+        ],
+      },
+      {
+        type: "features",
+        eyebrow: "Under the hood",
+        title: "Correctness lives in the database.",
+        items: [
+          {
+            title: "Authorization → Row-Level Security",
+            body: "Every query is constrained to the caller's own data in Postgres. Identity comes from the verified session, never the client.",
+          },
+          {
+            title: "Payments → atomic + signed",
+            body: "Razorpay signatures verified server-side; session credits deducted in one atomic statement, so concurrency can't oversell.",
+          },
+          {
+            title: "Privacy → enforced at serialization",
+            body: "Anonymous posts have their author nulled in a database view — the real name never crosses the wire.",
+          },
+          {
+            title: "Consistency → one source of truth",
+            body: "Streaks and ratings are computed once and reused, so no two screens disagree.",
+          },
+        ],
+      },
+      {
+        type: "stack",
+        items: [
+          {
+            name: "Next.js 16 · React 19",
+            why: "App Router + Server Components keep data access and secrets on the server.",
+          },
+          {
+            name: "Supabase · PostgreSQL",
+            why: "Authorization (RLS), auth, and money (transactions) in one trustworthy place.",
+          },
+          {
+            name: "Razorpay",
+            why: "India-first UPI payments with server-verifiable signatures.",
+          },
+          {
+            name: "TypeScript · Tailwind · Resend",
+            why: "Explicit contracts end-to-end, a consistent design system, and transactional email.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "enterprise-ai-chatbot",
+    title: "Enterprise AI Persona Chatbot",
+    tagline: "A production RAG agent that talks like a real creator.",
+    summary:
+      "A persona AI with a versioned personality, a knowledge base built from a creator's entire video library, and live alerts that can overrule the model. Built for a client — names, branding and screenshots anonymized; the engineering is real.",
+    year: "2026",
+    role: "Designed & built end to end",
+    association: "Associated with ClanFlare",
+    category: "flagship",
+    tags: ["Next.js", "n8n", "RAG", "Pinecone", "Cohere", "Upstash", "Redis"],
+    image: "/work/enterprise-ai-chatbot/cover.png",
+    links: {},
+    hasCaseStudy: true,
+    cover: {
+      eyebrow: "Case study — built for a client · anonymized",
+      title: "An AI that talks like a real creator.",
+      subtitle:
+        "A production RAG agent with a versioned personality, a knowledge base from his whole video library, and live alerts that can overrule the model.",
+    },
+    stats: [
+      { value: "95%+", label: "Persona adherence" },
+      { value: "~20%", label: "Lower latency" },
+      { value: "2,000+", label: "Users" },
+      { value: "50+ hrs", label: "Media indexed" },
+    ],
+    blocks: [
+      {
+        type: "section",
+        eyebrow: "The goal",
+        title: "Not a FAQ bot with his face on it.",
+        body: "His audience should talk to it like it's him — and not be able to tell the difference.",
+      },
+      {
+        type: "features",
+        eyebrow: "The shape of it",
+        title: "One product, two minds.",
+        items: [
+          {
+            title: "A thin interface",
+            body: "A Next.js chat UI — render the answer, embed the source clip, stay out of the way.",
+          },
+          {
+            title: "A separate brain",
+            body: "An n8n agent that retrieves, wears the persona, calls the model, and enforces alerts — the whole agent lives behind one webhook.",
+          },
+          {
+            title: "Purpose-built memory",
+            body: "Two vector stores + Redis, each chosen for a specific access pattern, not by reflex.",
+          },
+        ],
+      },
+      {
+        type: "image",
+        src: "/work/enterprise-ai-chatbot/chat.png",
+        alt: "Chat interface answering in the creator's voice",
+        caption: "Answers in his voice — short, blunt, Hinglish — and it cites the exact clip it's drawing from.",
+      },
+      {
+        type: "section",
+        eyebrow: "Live alerts",
+        title: "Where a human sets the truth.",
+        body: "An admin posts a market alert; the agent treats it as reality and overrules its own take. Stale-but-confident is the enemy — a fresh, human-posted alert beats the model's own opinion.",
+      },
+      {
+        type: "image",
+        src: "/work/enterprise-ai-chatbot/architecture.png",
+        alt: "System architecture diagram",
+        caption: "Interface separated from intelligence: Next.js → n8n agent → OpenRouter, with a two-tier retrieval layer.",
+      },
+      {
+        type: "features",
+        eyebrow: "Persona engineering",
+        title: "A system prompt, eleven times over.",
+        items: [
+          {
+            title: "Brevity over essays",
+            body: "2–4 sentences, no lists. Real traders are blunt.",
+          },
+          {
+            title: "A noise filter",
+            body: "Off-topic questions get an in-character brush-off, not a tutorial.",
+          },
+          {
+            title: "Tone modulation",
+            body: "Patient teacher for learners; firm only with shortcut-seekers — tuned to 95% adherence.",
+          },
+        ],
+      },
+      {
+        type: "features",
+        eyebrow: "Decisions, not defaults",
+        title: "Why it's built this way.",
+        items: [
+          {
+            title: "Two-tier retrieval",
+            body: "Upstash Vector for the knowledge base; Pinecone + Cohere for time-sensitive alerts. HyDE query rewriting cut latency ~20%.",
+          },
+          {
+            title: "Alert override",
+            body: "A fresh, human-posted alert beats the model's own opinion, with an expiry so it can't go stale.",
+          },
+          {
+            title: "Redis sessions",
+            body: "Per-user state, isolated — 2,000+ conversations that never cross wires, with sub-millisecond reads.",
+          },
+        ],
+      },
+      {
+        type: "stack",
+        items: [
+          {
+            name: "Next.js 16 · React 19",
+            why: "Server components keep secrets and data access on the server.",
+          },
+          {
+            name: "n8n · OpenRouter",
+            why: "Visual orchestration; model-agnostic LLM access you can swap without a deploy.",
+          },
+          {
+            name: "Upstash Vector · Pinecone · Cohere",
+            why: "Two-tier RAG, each path tuned for its job.",
+          },
+          {
+            name: "Upstash Redis",
+            why: "Hot, ephemeral, per-user state.",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "barethreads",
+    title: "BareThreads",
+    tagline: "A complete full-stack e-commerce platform.",
+    summary:
+      "User authentication, product management, a secure checkout flow and a payment gateway — built with the MERN stack, Redux Toolkit and Cloudinary.",
+    year: "2024",
+    category: "secondary",
+    tags: ["React", "Redux Toolkit", "Express", "MongoDB", "Cloudinary"],
+    image: "/projects/BareThreads.png",
+    links: {
+      demo: "https://bare-threads-kfs1.vercel.app/",
+      github: "https://github.com/ayushanand89/BareThreads",
+    },
+    hasCaseStudy: false,
+  },
+  {
+    slug: "talksphere",
+    title: "TalkSphere",
+    tagline: "Real-time chat and peer-to-peer video calling.",
+    summary:
+      "Seamless messaging, group chats and secure peer-to-peer video built with Socket.IO and WebRTC, with TanStack Query and Zustand on the client.",
+    year: "2024",
+    category: "secondary",
+    tags: ["React", "Socket.IO", "WebRTC", "Express", "MongoDB"],
+    image: "/projects/TalkSphere.png",
+    links: {
+      demo: "https://talksphere-lck2.onrender.com/",
+      github: "https://github.com/ayushanand89/TalkSphere",
+    },
+    hasCaseStudy: false,
+  },
+];
+
+export const flagshipProjects = projects.filter((p) => p.category === "flagship");
+export const secondaryProjects = projects.filter((p) => p.category === "secondary");
+
+export function getProject(slug: string): Project | undefined {
+  return projects.find((p) => p.slug === slug);
+}
+
+export const caseStudySlugs = projects
+  .filter((p) => p.hasCaseStudy)
+  .map((p) => p.slug);

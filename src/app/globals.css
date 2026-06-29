@@ -1,0 +1,234 @@
+@import "tailwindcss";
+
+/* Class-based dark mode (driven by next-themes) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Editorial palette — light "paper" and dark editorial.
+   One signature accent (forest green), tuned per theme.
+   Change --accent in both blocks to re-skin the whole site.
+--------------------------------------------------------------------------- */
+:root {
+  --background: #faf8f3; /* warm paper */
+  --foreground: #16140f; /* ink */
+  --muted: #6f6a5d; /* secondary text */
+  --faint: #918b7d; /* tertiary / metadata */
+  --card: #ffffff;
+  --card-foreground: #16140f;
+  --border: #e6e0d3; /* hairline */
+  --border-strong: #d6cfbe;
+  --accent: #1c6b45; /* deep forest */
+  --accent-foreground: #faf8f3;
+  --selection: #1c6b4522;
+}
+
+.dark {
+  --background: #0e0f0d; /* near-black */
+  --foreground: #ecebe4; /* off-white */
+  --muted: #a39e92;
+  --faint: #6e6a60;
+  --card: #161613;
+  --card-foreground: #ecebe4;
+  --border: #26271f;
+  --border-strong: #353629;
+  --accent: #7cc8a2; /* soft sage, reads on dark */
+  --accent-foreground: #0e0f0d;
+  --selection: #7cc8a233;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-sans), sans-serif;
+  --font-mono: var(--font-mono), ui-monospace, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-feature-settings: "ss01", "cv01", "calt";
+  }
+
+  ::selection {
+    background-color: var(--selection);
+  }
+
+  /* Account for the fixed header when jumping to in-page anchors */
+  section[id] {
+    scroll-margin-top: 6rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display), var(--font-sans), sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@layer utilities {
+  /* Small uppercase mono label — "01 — SELECTED WORK" motif */
+  .eyebrow {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  /* Big editorial display sizing helper */
+  .display {
+    font-family: var(--font-display), var(--font-sans), sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 0.98;
+  }
+
+  /* Animated underline for editorial links */
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .link-underline:hover {
+    background-size: 100% 1px;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* ----- Entrance reveals (pure CSS, progressive enhancement) -----
+     Default state is VISIBLE, so content renders with no JS and ships in the
+     SSR HTML. Animation is layered on only where supported and when the user
+     hasn't asked for reduced motion. */
+  .reveal,
+  .reveal-now {
+    opacity: 1;
+  }
+
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Above-the-fold: play once on load. */
+    .reveal-now {
+      opacity: 0;
+      animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: var(--reveal-delay, 0ms);
+    }
+  }
+
+  /* Scroll-linked reveal where the browser supports it; elsewhere the
+     content simply stays visible (the default above). */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        opacity: 0;
+        animation: reveal-up linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 30%;
+      }
+    }
+  }
+
+  /* Masked line reveal — each line slides up from behind a clip edge.
+     Default (no JS / reduced motion) is fully visible. */
+  .line-mask {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.12em;
+  }
+  .line-mask > * {
+    display: block;
+  }
+  @keyframes mask-rise {
+    from {
+      transform: translateY(115%);
+      opacity: 0;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .line-mask > * {
+      animation: mask-rise 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-delay: var(--reveal-delay, 0ms);
+    }
+  }
+
+  /* Infinite tech marquee. */
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 34s linear infinite;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track {
+      animation: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,28 +1,10 @@
 @import "tailwindcss";
 
-/* Class-based dark mode (driven by next-themes) */
-@custom-variant dark (&:where(.dark, .dark *));
-
 /* ---------------------------------------------------------------------------
-   Editorial palette — light "paper" and dark editorial.
-   One signature accent (forest green), tuned per theme.
-   Change --accent in both blocks to re-skin the whole site.
+   Editorial palette — dark only.
+   One signature accent (soft sage). Change --accent to re-skin the whole site.
 --------------------------------------------------------------------------- */
 :root {
-  --background: #faf8f3; /* warm paper */
-  --foreground: #16140f; /* ink */
-  --muted: #6f6a5d; /* secondary text */
-  --faint: #918b7d; /* tertiary / metadata */
-  --card: #ffffff;
-  --card-foreground: #16140f;
-  --border: #e6e0d3; /* hairline */
-  --border-strong: #d6cfbe;
-  --accent: #1c6b45; /* deep forest */
-  --accent-foreground: #faf8f3;
-  --selection: #1c6b4522;
-}
-
-.dark {
   --background: #0e0f0d; /* near-black */
   --foreground: #ecebe4; /* off-white */
   --muted: #a39e92;
@@ -31,7 +13,7 @@
   --card-foreground: #ecebe4;
   --border: #26271f;
   --border-strong: #353629;
-  --accent: #7cc8a2; /* soft sage, reads on dark */
+  --accent: #7cc8a2; /* soft sage */
   --accent-foreground: #0e0f0d;
   --selection: #7cc8a233;
 }

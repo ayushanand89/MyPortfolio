@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useLenis } from "lenis/react";
 import { Menu, X } from "lucide-react";
-import { ThemeToggle } from "./theme-toggle";
 import { profile } from "@/content/profile";
 import { cn } from "@/lib/utils";
+import { smoothScrollToHash } from "@/lib/scroll";
 
 const links = [
   { label: "Services", href: "/#services" },
@@ -55,10 +55,13 @@ export function Nav() {
 
   const handleAnchor = (e: React.MouseEvent, href: string) => {
     setOpen(false);
-    // Smooth in-page scroll when Lenis is active and we're already on home.
-    if (href.startsWith("/#") && pathname === "/" && lenis) {
-      e.preventDefault();
-      lenis.scrollTo(href.slice(1), { offset: -72 });
+    // Smooth in-page scroll when we're already on home (works with or without Lenis).
+    if (href.startsWith("/#") && pathname === "/") {
+      const hash = href.slice(1);
+      if (document.querySelector(hash)) {
+        e.preventDefault();
+        smoothScrollToHash(hash, lenis);
+      }
     }
   };
 
@@ -115,12 +118,10 @@ export function Nav() {
           >
             Work with me
           </Link>
-          <ThemeToggle />
         </div>
 
         {/* Mobile */}
         <div className="flex items-center gap-2 md:hidden">
-          <ThemeToggle />
           <button
             type="button"
             aria-label={open ? "Close menu" : "Open menu"}

@@ -6,14 +6,15 @@ import { useLenis } from "lenis/react";
 import { profile } from "@/content/profile";
 import { Container, Reveal, ButtonLink } from "@/components/primitives";
 import { Magnetic } from "@/components/motion-fx";
+import { smoothScrollToHash } from "@/lib/scroll";
 
 export function Hero() {
   const lenis = useLenis();
 
   const scrollTo = (hash: string) => (e: React.MouseEvent) => {
-    if (lenis) {
+    if (document.querySelector(hash)) {
       e.preventDefault();
-      lenis.scrollTo(hash, { offset: -72 });
+      smoothScrollToHash(hash, lenis);
     }
   };
 

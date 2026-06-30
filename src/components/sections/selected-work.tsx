@@ -10,7 +10,7 @@ export function SelectedWork() {
           <SectionHeader
             index="01"
             eyebrow="Selected work"
-            title="Two products, built end to end."
+            title="Three products, built end to end."
           />
         </Reveal>
 

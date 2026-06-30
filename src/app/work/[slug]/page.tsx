@@ -47,8 +47,12 @@ export default async function CaseStudyPage({
     notFound();
   }
 
+  // Sequential next flagship, wrapping around.
+  const currentIndex = flagshipProjects.findIndex((p) => p.slug === slug);
   const next =
-    flagshipProjects.find((p) => p.slug !== slug) ?? flagshipProjects[0];
+    currentIndex >= 0
+      ? flagshipProjects[(currentIndex + 1) % flagshipProjects.length]
+      : flagshipProjects[0];
 
   return (
     <main>

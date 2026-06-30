@@ -322,18 +322,148 @@ export const projects: Project[] = [
   {
     slug: "barethreads",
     title: "BareThreads",
-    tagline: "A complete full-stack e-commerce platform.",
+    tagline: "A full-stack fashion e-commerce platform — built end to end.",
     summary:
-      "User authentication, product management, a secure checkout flow and a payment gateway — built with the MERN stack, Redux Toolkit and Cloudinary.",
+      "A polished storefront for shoppers and an admin suite for the team, sharing one secure serverless REST API. Filterable catalog, guest→user carts, PayPal checkout, Google sign-in, and an admin dashboard — designed and engineered end to end.",
     year: "2024",
-    category: "secondary",
-    tags: ["React", "Redux Toolkit", "Express", "MongoDB", "Cloudinary"],
-    image: "/projects/BareThreads.png",
+    role: "Designed & built end to end",
+    category: "flagship",
+    tags: ["React 19", "Redux Toolkit", "Express", "MongoDB", "PayPal", "Vercel"],
+    image: "/work/barethreads/cover.png",
     links: {
-      demo: "https://bare-threads-kfs1.vercel.app/",
+      demo: "https://barethreads.vercel.app",
       github: "https://github.com/ayushanand89/BareThreads",
     },
-    hasCaseStudy: false,
+    hasCaseStudy: true,
+    cover: {
+      eyebrow: "Case study — designed & built end to end",
+      title: "BareThreads",
+      subtitle:
+        "A full-stack fashion e-commerce platform — a React storefront and admin suite on a secure, serverless Express/MongoDB API.",
+    },
+    stats: [
+      { value: "2 sides", label: "Storefront + admin" },
+      { value: "40+", label: "Products" },
+      { value: "9", label: "Redux slices" },
+      { value: "REST", label: "API · two origins" },
+    ],
+    blocks: [
+      {
+        type: "section",
+        eyebrow: "The problem",
+        title: "Anyone can list products. Few feel like a brand.",
+        body: "I set out to build a real online store — premium on the surface, secure and correct underneath. So I designed and engineered the whole thing, end to end.",
+      },
+      {
+        type: "section",
+        eyebrow: "The product",
+        title: "One platform, two sides.",
+        body: "A polished storefront for shoppers and an admin suite for the team — sharing one secure REST API.",
+      },
+      {
+        type: "image",
+        src: "/work/barethreads/storefront.png",
+        alt: "BareThreads storefront collection page",
+        caption:
+          "Shop the edit — a filterable catalog by category, gender, size, colour, brand and price, with live sort and removable filter chips.",
+      },
+      {
+        type: "features",
+        eyebrow: "Storefront",
+        title: "Built to convert.",
+        items: [
+          {
+            title: "Product pages that sell",
+            body: "Cursor-following magnifier zoom, a thumbnail gallery, size & colour pickers, discount pricing and “complete the look”.",
+          },
+          {
+            title: "Cart to checkout",
+            body: "Build a cart as a guest, then merge it on sign-in. Stock-validated quantities and PayPal checkout through to order confirmation.",
+          },
+          {
+            title: "Ratings & reviews",
+            body: "Customers rate and review; product averages are computed server-side with an aggregation, so every screen agrees.",
+          },
+          {
+            title: "Sign in, your way",
+            body: "Email & password or Continue with Google — both verified server-side, issuing the same secure session.",
+          },
+        ],
+      },
+      {
+        type: "image",
+        src: "/work/barethreads/product.png",
+        alt: "BareThreads product detail page",
+        caption:
+          "A product page with magnifier zoom, gallery, size/colour pickers and a server-computed rating.",
+      },
+      {
+        type: "features",
+        eyebrow: "Admin suite",
+        title: "Run the store.",
+        items: [
+          {
+            title: "Full CRUD, role-gated",
+            body: "Manage products, orders and users behind admin-only routes — every write field-whitelisted on the server.",
+          },
+          {
+            title: "At a glance",
+            body: "Revenue, total orders and product counts, with recent-order status from Processing through to Delivered.",
+          },
+        ],
+      },
+      {
+        type: "image",
+        src: "/work/barethreads/admin.png",
+        alt: "BareThreads admin dashboard",
+        caption:
+          "The admin dashboard — products, orders and users, all behind role-gated, admin-only routes.",
+      },
+      {
+        type: "features",
+        eyebrow: "Under the hood",
+        title: "Secure & serverless.",
+        items: [
+          {
+            title: "Serverless-safe data layer",
+            body: "A cached Mongoose connection is awaited inside each request, so the API connects reliably on Vercel's serverless runtime — fixing the cold-start failures that kill fire-and-forget connects.",
+          },
+          {
+            title: "Auth, two ways",
+            body: "JWT in cross-site httpOnly cookies, plus Google sign-in verified server-side from an ID token — both issue the same session.",
+          },
+          {
+            title: "Authorization at the controller",
+            body: "Ownership checks scope every order and checkout to its owner; admin routes are gated. IDOR holes closed, writes field-whitelisted.",
+          },
+          {
+            title: "Correct commerce",
+            body: "Guest→user cart merge, server-computed ratings, discount pricing and stock validation — behind a consistent JSON error contract.",
+          },
+        ],
+      },
+      {
+        type: "stack",
+        items: [
+          {
+            name: "React 19 · Vite · Redux Toolkit",
+            why: "A fast SPA with predictable state across 9 slices and clean async data flows.",
+          },
+          {
+            name: "Tailwind v4 · Framer Motion",
+            why: "A token-based design system with parallax, scroll-reveal motion and 3D product cards.",
+          },
+          {
+            name: "Express 5 · MongoDB (Mongoose)",
+            why: "A REST API with a resilient, serverless-safe data layer and a global error handler.",
+          },
+          {
+            name: "JWT · Google OAuth · PayPal · Cloudinary · Vercel",
+            why: "Secure auth, payments, media and serverless hosting across two deployments.",
+          },
+        ],
+      },
+    ],
   },
   {
     slug: "talksphere",

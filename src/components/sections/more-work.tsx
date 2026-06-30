@@ -8,7 +8,6 @@ export function MoreWork() {
       <Container>
         <Reveal>
           <SectionHeader
-            index="03"
             eyebrow="More work"
             title="Other things I've shipped."
           />

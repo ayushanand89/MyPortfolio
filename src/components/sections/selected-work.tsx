@@ -8,9 +8,9 @@ export function SelectedWork() {
       <Container>
         <Reveal>
           <SectionHeader
-            index="01"
+            index="02"
             eyebrow="Selected work"
-            title="Three products, built end to end."
+            title="Products, built end to end."
           />
         </Reveal>
 

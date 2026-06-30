@@ -10,9 +10,9 @@ import { profile } from "@/content/profile";
 import { cn } from "@/lib/utils";
 
 const links = [
+  { label: "Services", href: "/#services" },
   { label: "Work", href: "/#work" },
-  { label: "Experience", href: "/#experience" },
-  { label: "Skills", href: "/#skills" },
+  { label: "Process", href: "/#process" },
   { label: "Contact", href: "/#contact" },
 ];
 
@@ -108,6 +108,13 @@ export function Nav() {
               );
             })}
           </ul>
+          <Link
+            href="/#contact"
+            onClick={(e) => handleAnchor(e, "/#contact")}
+            className="rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-all duration-300 hover:opacity-90 active:scale-[0.98]"
+          >
+            Work with me
+          </Link>
           <ThemeToggle />
         </div>
 
@@ -141,6 +148,15 @@ export function Nav() {
                 </Link>
               </li>
             ))}
+            <li className="pt-3">
+              <Link
+                href="/#contact"
+                onClick={(e) => handleAnchor(e, "/#contact")}
+                className="inline-flex rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background"
+              >
+                Work with me
+              </Link>
+            </li>
           </ul>
         </div>
       )}

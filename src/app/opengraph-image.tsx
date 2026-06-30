@@ -28,7 +28,7 @@ export default function OpengraphImage() {
             color: "#7cc8a2",
           }}
         >
-          Software Developer
+          Full-Stack · Freelance Developer
         </div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ display: "flex", fontSize: 96, fontWeight: 700, lineHeight: 1 }}>
@@ -42,7 +42,7 @@ export default function OpengraphImage() {
               color: "#a39e92",
             }}
           >
-            I build products, end to end.
+            Premium websites &amp; full-stack products.
           </div>
         </div>
       </div>

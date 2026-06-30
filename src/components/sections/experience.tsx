@@ -8,7 +8,7 @@ export function Experience() {
       <Container>
         <Reveal>
           <SectionHeader
-            index="02"
+            index="05"
             eyebrow="Experience"
             title="Where I've been working."
           />

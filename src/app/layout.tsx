@@ -31,35 +31,41 @@ const mono = JetBrains_Mono({
 });
 
 const description =
-  "Ayush Anand is a full-stack software developer building products end to end — security-first data layers, race-proof payments, and production AI agents. Currently at ClanFlare.";
+  "Ayush Anand — full-stack & freelance web developer. I design and build premium websites, web apps, dashboards and full-stack products for startups, creators and businesses. Available for freelance projects.";
+
+const title = "Ayush Anand — Full-Stack & Freelance Web Developer";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://ayushanand.dev"),
+  metadataBase: new URL("https://ayush.clanflare.dev"),
   title: {
-    default: "Ayush Anand — Software Developer",
+    default: title,
     template: "%s — Ayush Anand",
   },
   description,
   keywords: [
     "Ayush Anand",
-    "Software Developer",
-    "Full-stack Developer",
-    "Next.js",
-    "TypeScript",
-    "RAG",
-    "PostgreSQL",
+    "Full-Stack Developer",
+    "Freelance Web Developer",
+    "Portfolio Website Developer",
+    "React Developer",
+    "Next.js Developer",
+    "Website Designer and Developer",
+    "Full-Stack Web Apps",
+    "Hire web developer",
   ],
   authors: [{ name: profile.name }],
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
-    title: "Ayush Anand — Software Developer",
+    url: "https://ayush.clanflare.dev",
+    title,
     description,
     siteName: profile.name,
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ayush Anand — Software Developer",
+    title,
     description,
   },
 };

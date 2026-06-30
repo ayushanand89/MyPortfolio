@@ -8,7 +8,7 @@ export function Recognition() {
       <Container>
         <Reveal>
           <SectionHeader
-            index="05"
+            index="06"
             eyebrow="Recognition"
             title="Selected highlights."
           />

@@ -258,6 +258,93 @@
     }
   }
 
+  /* Scroll-unfurl: title rises out of a clip edge as it enters the viewport.
+     Base state visible; the scroll-driven animation layers on where supported. */
+  .mask-reveal {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.12em;
+  }
+  .mask-reveal > * {
+    display: block;
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .mask-reveal > * {
+        animation: mask-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 26%;
+      }
+    }
+  }
+
+  /* Page-load curtain — a cinematic intro that fills a bar then lifts to reveal
+     the page. Pure CSS so it works with no JS and removes itself; hidden under
+     reduced motion. */
+  .intro-curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    background-color: var(--background);
+    animation: intro-lift 1.7s var(--ease-drawer) forwards;
+  }
+  .intro-inner {
+    display: grid;
+    justify-items: center;
+    gap: 1.1rem;
+    animation: intro-fade 1.7s ease forwards;
+  }
+  .intro-bar {
+    position: relative;
+    display: block;
+    height: 2px;
+    width: 150px;
+    overflow: hidden;
+    background-color: var(--border);
+  }
+  .intro-bar::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform-origin: left;
+    background-color: var(--accent);
+    animation: intro-fill 1.15s var(--ease-out-strong) forwards;
+  }
+  @keyframes intro-fill {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @keyframes intro-lift {
+    0%,
+    58% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+  @keyframes intro-fade {
+    0%,
+    45% {
+      opacity: 1;
+    }
+    72%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .intro-curtain {
+      display: none;
+    }
+  }
+
   /* Infinite tech marquee. */
   .marquee-track {
     display: flex;

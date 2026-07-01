@@ -1,6 +1,7 @@
 import { flagshipProjects } from "@/content/projects";
 import { Container, Reveal, SectionHeader } from "@/components/primitives";
 import { FlagshipCard } from "@/components/project-card";
+import { ShowcaseCard } from "@/components/showcase-card";
 
 export function SelectedWork() {
   return (
@@ -13,10 +14,12 @@ export function SelectedWork() {
           />
         </Reveal>
 
-        <div className="border-b border-border">
+        <div className="space-y-6 sm:space-y-8">
           {flagshipProjects.map((project, i) => (
             <Reveal key={project.slug} delay={i * 0.05}>
-              <FlagshipCard project={project} index={i} />
+              <ShowcaseCard className="p-6 sm:p-9" tilt={3} lift={0} glow={520}>
+                <FlagshipCard project={project} index={i} />
+              </ShowcaseCard>
             </Reveal>
           ))}
         </div>

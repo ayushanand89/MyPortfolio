@@ -6,6 +6,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { Backdrop } from "@/components/backdrop";
+import { Intro } from "@/components/intro";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { Grain } from "@/components/grain";
 import { Nav } from "@/components/nav";
@@ -89,6 +90,7 @@ export default function RootLayout({
       className={`${sans.variable} ${display.variable} ${mono.variable}`}
     >
       <body className="min-h-screen antialiased">
+        <Intro />
         <ThemeProvider
           attribute="class"
           forcedTheme="dark"

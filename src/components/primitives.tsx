@@ -72,7 +72,9 @@ export function SectionHeader({
           eyebrow && "mt-4",
         )}
       >
-        {title}
+        <span className="mask-reveal">
+          <span>{title}</span>
+        </span>
       </h2>
     </div>
   );

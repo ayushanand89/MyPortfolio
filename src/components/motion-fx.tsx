@@ -111,15 +111,20 @@ export function Tilt({
   );
 }
 
-/** Drifts its child vertically as it scrolls through the viewport. */
+/**
+ * Drifts its child vertically as it scrolls through the viewport, with an
+ * optional cinematic zoom that eases back to 1 as the element centers.
+ */
 export function Parallax({
   children,
   className,
   amount = 24,
+  zoom = 0,
 }: {
   children: ReactNode;
   className?: string;
   amount?: number;
+  zoom?: number;
 }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
@@ -128,6 +133,11 @@ export function Parallax({
     offset: ["start end", "end start"],
   });
   const y = useTransform(scrollYProgress, [0, 1], [amount, -amount]);
+  const scale = useTransform(
+    scrollYProgress,
+    [0, 0.5, 1],
+    [1 + zoom, 1 + zoom * 0.35, 1],
+  );
 
   if (reduce) {
     return <div className={className}>{children}</div>;
@@ -135,7 +145,7 @@ export function Parallax({
 
   return (
     <div ref={ref} className={className}>
-      <motion.div style={{ y }}>{children}</motion.div>
+      <motion.div style={zoom ? { y, scale } : { y }}>{children}</motion.div>
     </div>
   );
 }

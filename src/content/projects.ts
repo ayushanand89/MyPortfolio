@@ -490,6 +490,19 @@ export function getProject(slug: string): Project | undefined {
   return projects.find((p) => p.slug === slug);
 }
 
+/**
+ * All images associated with a project — the cover first, then every image
+ * used in its case study. Powers the hover carousel on project cards.
+ */
+export function projectImages(p: Project): string[] {
+  const fromBlocks = (p.blocks ?? [])
+    .filter(
+      (b): b is Extract<CaseStudyBlock, { type: "image" }> => b.type === "image",
+    )
+    .map((b) => b.src);
+  return [p.image, ...fromBlocks].filter((s): s is string => Boolean(s));
+}
+
 export const caseStudySlugs = projects
   .filter((p) => p.hasCaseStudy)
   .map((p) => p.slug);

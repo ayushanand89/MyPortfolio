@@ -11,7 +11,7 @@ import { ArrowDown, Check } from "lucide-react";
 import { useLenis } from "lenis/react";
 import { profile } from "@/content/profile";
 import { Container, Reveal, ButtonLink } from "@/components/primitives";
-import { Magnetic } from "@/components/motion-fx";
+import { Magnetic, Spotlight } from "@/components/motion-fx";
 import { smoothScrollToHash } from "@/lib/scroll";
 
 export function Hero() {
@@ -41,8 +41,9 @@ export function Hero() {
     <section
       ref={ref}
       id="top"
-      className="relative pt-36 pb-20 sm:pt-44 sm:pb-24"
+      className="relative isolate pt-36 pb-20 sm:pt-44 sm:pb-24"
     >
+      <Spotlight size={560} />
       <motion.div style={parallax}>
       <Container>
         <Reveal immediate>
@@ -64,7 +65,7 @@ export function Hero() {
             style={{ "--reveal-delay": "0.2s" } as CSSProperties}
           >
             <span>
-              &amp; <span className="text-accent">full-stack products.</span>
+              &amp; <span className="text-sweep">full-stack products.</span>
             </span>
           </span>
         </h1>

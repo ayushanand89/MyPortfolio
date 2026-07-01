@@ -4,7 +4,7 @@ import { useState } from "react";
 import { ArrowUpRight, Github, Linkedin, Mail } from "lucide-react";
 import { profile } from "@/content/profile";
 import { Container, Reveal } from "@/components/primitives";
-import { ParallaxWatermark } from "@/components/motion-fx";
+import { Magnetic, ParallaxWatermark, Spotlight } from "@/components/motion-fx";
 
 export function Contact() {
   const [name, setName] = useState("");
@@ -28,6 +28,7 @@ export function Contact() {
       className="relative isolate border-t border-border py-20 sm:py-28"
     >
       <ParallaxWatermark text="Say hello" align="left" />
+      <Spotlight size={620} />
       <Container>
         <Reveal>
           <span className="eyebrow">Contact</span>
@@ -85,13 +86,15 @@ export function Contact() {
                   placeholder="What are you building, timeline, budget range…"
                 />
               </div>
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-[transform,opacity] duration-150 ease-out-strong hover:opacity-90 active:scale-[0.98]"
-              >
-                Send message
-                <ArrowUpRight className="h-4 w-4" />
-              </button>
+              <Magnetic strength={0.4}>
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-[transform,opacity] duration-150 ease-out-strong hover:opacity-90 active:scale-[0.98]"
+                >
+                  Send message
+                  <ArrowUpRight className="h-4 w-4" />
+                </button>
+              </Magnetic>
             </form>
           </Reveal>
 

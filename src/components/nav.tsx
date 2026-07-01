@@ -8,6 +8,7 @@ import { Menu, X } from "lucide-react";
 import { profile } from "@/content/profile";
 import { cn } from "@/lib/utils";
 import { smoothScrollToHash } from "@/lib/scroll";
+import { Magnetic } from "@/components/motion-fx";
 
 const links = [
   { label: "Services", href: "/#services" },
@@ -111,13 +112,15 @@ export function Nav() {
               );
             })}
           </ul>
-          <Link
-            href="/#contact"
-            onClick={(e) => handleAnchor(e, "/#contact")}
-            className="rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-[transform,opacity] duration-150 ease-out-strong hover:opacity-90 active:scale-[0.98]"
-          >
-            Work with me
-          </Link>
+          <Magnetic strength={0.4}>
+            <Link
+              href="/#contact"
+              onClick={(e) => handleAnchor(e, "/#contact")}
+              className="inline-flex rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-[transform,opacity] duration-150 ease-out-strong hover:opacity-90 active:scale-[0.98]"
+            >
+              Work with me
+            </Link>
+          </Magnetic>
         </div>
 
         {/* Mobile */}

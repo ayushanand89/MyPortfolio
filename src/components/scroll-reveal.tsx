@@ -26,7 +26,7 @@ export function ScrollReveal() {
     if (!("IntersectionObserver" in window)) return;
 
     const targets = document.querySelectorAll<HTMLElement>(
-      ".reveal, .media-reveal, .mask-reveal > *",
+      ".reveal, .media-reveal, .mask-reveal > *, .rule-draw",
     );
     if (targets.length === 0) return;
 

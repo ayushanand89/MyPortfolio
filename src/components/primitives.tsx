@@ -69,11 +69,14 @@ export function SectionHeader({
   eyebrow,
   title,
   className,
+  rule = true,
 }: {
   index?: string;
   eyebrow?: string;
   title: ReactNode;
   className?: string;
+  /** Scroll-draw accent underline beneath the title. */
+  rule?: boolean;
 }) {
   return (
     <div className={cn("mb-12 sm:mb-16", className)}>
@@ -93,6 +96,12 @@ export function SectionHeader({
           <span>{title}</span>
         </span>
       </h2>
+      {rule && (
+        <span
+          aria-hidden
+          className="rule-draw mt-6 block h-0.5 w-12 rounded-full bg-accent/70"
+        />
+      )}
     </div>
   );
 }

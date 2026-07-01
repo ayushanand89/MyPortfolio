@@ -1,10 +1,15 @@
 import { ArrowUpRight } from "lucide-react";
 import { experience } from "@/content/experience";
 import { Container, Reveal, SectionHeader } from "@/components/primitives";
+import { ParallaxWatermark } from "@/components/motion-fx";
 
 export function Experience() {
   return (
-    <section id="experience" className="border-t border-border py-20 sm:py-28">
+    <section
+      id="experience"
+      className="relative isolate border-t border-border py-20 sm:py-28"
+    >
+      <ParallaxWatermark text="Career" align="right" />
       <Container>
         <Reveal>
           <SectionHeader title="Where I've been working." />

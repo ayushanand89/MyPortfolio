@@ -221,3 +221,73 @@ export function ParallaxWatermark({
     </div>
   );
 }
+
+/**
+ * Cursor-follow accent glow. Listens on its parent element, so drop it as the
+ * first child of any `relative isolate` container and it lights up where the
+ * pointer is. Hover-capable pointers only (attaches no listeners on touch) and
+ * null under reduced motion. Spring-smoothed, GPU-composited.
+ */
+export function Spotlight({
+  size = 520,
+  className,
+}: {
+  size?: number;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(-9999);
+  const y = useMotionValue(-9999);
+  const o = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 140, damping: 26, mass: 0.6 });
+  const sy = useSpring(y, { stiffness: 140, damping: 26, mass: 0.6 });
+  const so = useSpring(o, { stiffness: 180, damping: 30 });
+  const transform = useMotionTemplate`translate3d(${sx}px, ${sy}px, 0)`;
+
+  useEffect(() => {
+    const host = ref.current?.parentElement;
+    if (!host) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    const move = (e: PointerEvent) => {
+      const r = host.getBoundingClientRect();
+      x.set(e.clientX - r.left - size / 2);
+      y.set(e.clientY - r.top - size / 2);
+      o.set(1);
+    };
+    const leave = () => o.set(0);
+
+    host.addEventListener("pointermove", move, { passive: true });
+    host.addEventListener("pointerleave", leave);
+    return () => {
+      host.removeEventListener("pointermove", move);
+      host.removeEventListener("pointerleave", leave);
+    };
+  }, [size, x, y, o]);
+
+  if (reduce) return null;
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden
+      className={cn(
+        "pointer-events-none absolute inset-0 -z-10 overflow-hidden",
+        className,
+      )}
+    >
+      <motion.span
+        style={{
+          width: size,
+          height: size,
+          transform,
+          opacity: so,
+          background:
+            "radial-gradient(circle, color-mix(in srgb, var(--accent) 20%, transparent), transparent 62%)",
+        }}
+        className="absolute left-0 top-0 rounded-full blur-3xl"
+      />
+    </div>
+  );
+}

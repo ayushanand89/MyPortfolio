@@ -283,6 +283,78 @@
     }
   }
 
+  /* Scroll-draw accent rule — the short line under section headers grows from
+     left to right as the header enters. Visible by default (no-JS / reduced
+     motion); native scroll-timeline where supported, `.reveal-js` fallback
+     elsewhere (observed by scroll-reveal.tsx alongside the reveals). */
+  .rule-draw {
+    transform-origin: left center;
+    transform: scaleX(1);
+  }
+  @keyframes rule-draw {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .rule-draw {
+        transform: scaleX(0);
+        animation: rule-draw linear both;
+        animation-timeline: view();
+        animation-range: entry 8% cover 24%;
+      }
+    }
+  }
+  @supports not (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      html.reveal-js .rule-draw {
+        transform: scaleX(0);
+        transition: transform 0.8s var(--ease-out-strong);
+      }
+      html.reveal-js .rule-draw.is-inview {
+        transform: scaleX(1);
+      }
+    }
+  }
+
+  /* One-shot light sweep across a gradient-clipped headline accent. Plays once
+     on load; rests as a near-solid accent. Falls back to a flat accent fill
+     under reduced motion. */
+  @keyframes text-sweep {
+    from {
+      background-position: 220% center;
+    }
+    to {
+      background-position: 0% center;
+    }
+  }
+  .text-sweep {
+    background: linear-gradient(
+      100deg,
+      var(--accent) 44%,
+      color-mix(in srgb, var(--accent) 35%, #ffffff) 50%,
+      var(--accent) 56%
+    );
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: text-sweep 1.5s var(--ease-out-strong) 0.6s both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .text-sweep {
+      animation: none;
+      background: none;
+      color: var(--accent);
+      -webkit-text-fill-color: var(--accent);
+    }
+  }
+
   /* Frosted-glass surface — semi-transparent card tint, hairline highlight, and
      an inner top edge. Solid-fills under prefers-reduced-transparency. */
   .glass {

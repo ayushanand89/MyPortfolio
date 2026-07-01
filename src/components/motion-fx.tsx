@@ -9,7 +9,8 @@ import {
   useTransform,
   useReducedMotion,
 } from "framer-motion";
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 /** Pulls its child toward the cursor on hover. */
 export function Magnetic({
@@ -132,7 +133,22 @@ export function Parallax({
     target: ref,
     offset: ["start end", "end start"],
   });
-  const y = useTransform(scrollYProgress, [0, 1], [amount, -amount]);
+  // On phones the drift is scaled down (read live from a ref each frame) so a
+  // stacked, full-width image never rides over its neighbours' spacing.
+  const factor = useRef(1);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const apply = () => {
+      factor.current = mq.matches ? 0.45 : 1;
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+  const y = useTransform(
+    scrollYProgress,
+    (v) => amount * (1 - 2 * v) * factor.current,
+  );
   const scale = useTransform(
     scrollYProgress,
     [0, 0.5, 1],
@@ -146,6 +162,62 @@ export function Parallax({
   return (
     <div ref={ref} className={className}>
       <motion.div style={zoom ? { y, scale } : { y }}>{children}</motion.div>
+    </div>
+  );
+}
+
+/**
+ * Layered-depth parallax: an oversized, very faint ghost word pinned behind a
+ * section that drifts opposite the scroll, so it slides past the foreground at a
+ * different speed — the depth cue that defines "parallax scrolling". Purely
+ * decorative (aria-hidden, non-interactive) and removed entirely under reduced
+ * motion. Full transform string keeps it GPU-composited.
+ *
+ * Drop in as the first child of a `relative isolate` section.
+ */
+export function ParallaxWatermark({
+  text,
+  align = "left",
+  speed = 130,
+  className,
+}: {
+  text: string;
+  align?: "left" | "right" | "center";
+  speed?: number;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [speed, -speed]);
+  // Compose x-centering (for `center`) and the parallax drift into one string so
+  // it doesn't fight a Tailwind transform utility.
+  const tx = align === "center" ? "-50%" : "0px";
+  const transform = useMotionTemplate`translate3d(${tx}, calc(-50% + ${y}px), 0)`;
+
+  if (reduce) return null;
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden
+      className="pointer-events-none absolute inset-0 -z-10 select-none overflow-hidden"
+    >
+      <motion.span
+        style={{ transform }}
+        className={cn(
+          "display absolute top-1/2 whitespace-nowrap font-extrabold uppercase leading-none tracking-tighter text-white/[0.035] text-[22vw] sm:text-[16vw]",
+          align === "left" && "left-[-0.06em]",
+          align === "right" && "right-[-0.06em]",
+          align === "center" && "left-1/2",
+          className,
+        )}
+      >
+        {text}
+      </motion.span>
     </div>
   );
 }

@@ -2,10 +2,12 @@ import { flagshipProjects } from "@/content/projects";
 import { Container, Reveal, SectionHeader } from "@/components/primitives";
 import { FlagshipCard } from "@/components/project-card";
 import { ShowcaseCard } from "@/components/showcase-card";
+import { ParallaxWatermark } from "@/components/motion-fx";
 
 export function SelectedWork() {
   return (
-    <section id="work" className="py-20 sm:py-28">
+    <section id="work" className="relative isolate py-20 sm:py-28">
+      <ParallaxWatermark text="Work" align="right" />
       <Container>
         <Reveal>
           <SectionHeader

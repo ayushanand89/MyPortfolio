@@ -58,6 +58,11 @@
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Guard against horizontal scroll from oversized decorative layers
+       (parallax watermarks, marquee skew, slide-in reveals). `clip` — not
+       `hidden` — so it never turns into a scroll container or breaks
+       position: sticky / Lenis. */
+    overflow-x: clip;
   }
 
   body {
@@ -141,7 +146,40 @@
   @keyframes reveal-up {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(28px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Directional / scale reveal variants (opt in via `<Reveal variant="…">`).
+     Slides start off to one side; scale gives a subtle pop. */
+  @keyframes reveal-left {
+    from {
+      opacity: 0;
+      transform: translateX(-44px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes reveal-right {
+    from {
+      opacity: 0;
+      transform: translateX(44px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes reveal-scale {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
     }
     to {
       opacity: 1;
@@ -167,6 +205,80 @@
         animation: reveal-up linear both;
         animation-timeline: view();
         animation-range: entry 0% cover 30%;
+      }
+      /* Scale pop is safe at any width. */
+      .reveal.reveal--scale {
+        animation-name: reveal-scale;
+      }
+      /* Horizontal slides only on wider screens — on phones every reveal rises
+         (translateX off a narrow viewport reads as jitter). */
+      @media (min-width: 640px) {
+        .reveal.reveal--left {
+          animation-name: reveal-left;
+        }
+        .reveal.reveal--right {
+          animation-name: reveal-right;
+        }
+      }
+    }
+  }
+
+  /* JS-driven fallback for browsers WITHOUT scroll-driven CSS animations
+     (Safari, Firefox). `html.reveal-js` is set before first paint by the inline
+     script in `layout.tsx` — only when the native feature is unsupported and the
+     user hasn't asked for reduced motion — and `scroll-reveal.tsx` adds
+     `.is-inview` as each element enters the viewport. Chromium never matches
+     this block (its `@supports` above wins) and no-JS/reduced-motion users never
+     get `html.reveal-js`, so the visible-by-default content stays intact. */
+  @supports not (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      html.reveal-js .reveal {
+        opacity: 0;
+        transform: translateY(28px) scale(0.985);
+        transition:
+          opacity 0.7s var(--ease-out-strong),
+          transform 0.7s var(--ease-out-strong);
+        /* Cluster cascade: rows/cards that share a viewport entry stagger in
+           (native gets this for free from each element's own view timeline). */
+        transition-delay: calc(var(--reveal-order, 0) * 70ms);
+      }
+      /* Variant start states (must precede `.is-inview` so it can reset them). */
+      html.reveal-js .reveal.reveal--scale {
+        transform: scale(0.9);
+      }
+      @media (min-width: 640px) {
+        html.reveal-js .reveal.reveal--left {
+          transform: translateX(-44px);
+        }
+        html.reveal-js .reveal.reveal--right {
+          transform: translateX(44px);
+        }
+      }
+      html.reveal-js .reveal.is-inview {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* Clip-wipe only — no transform here, so it never fights MediaFrame's
+         hover scale. */
+      html.reveal-js .media-reveal {
+        clip-path: inset(0 0 100% 0);
+        transition: clip-path 0.9s var(--ease-out-strong);
+      }
+      html.reveal-js .media-reveal.is-inview {
+        clip-path: inset(0 0 0 0);
+      }
+
+      html.reveal-js .mask-reveal > * {
+        opacity: 0;
+        transform: translateY(115%);
+        transition:
+          opacity 0.95s var(--ease-out-strong),
+          transform 0.95s var(--ease-out-strong);
+      }
+      html.reveal-js .mask-reveal > *.is-inview {
+        opacity: 1;
+        transform: none;
       }
     }
   }

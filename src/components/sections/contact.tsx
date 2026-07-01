@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ArrowUpRight, Github, Linkedin, Mail } from "lucide-react";
 import { profile } from "@/content/profile";
 import { Container, Reveal } from "@/components/primitives";
+import { ParallaxWatermark } from "@/components/motion-fx";
 
 export function Contact() {
   const [name, setName] = useState("");
@@ -22,7 +23,11 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="border-t border-border py-20 sm:py-28">
+    <section
+      id="contact"
+      className="relative isolate border-t border-border py-20 sm:py-28"
+    >
+      <ParallaxWatermark text="Say hello" align="left" />
       <Container>
         <Reveal>
           <span className="eyebrow">Contact</span>

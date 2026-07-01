@@ -12,7 +12,7 @@ export function Recognition() {
 
         <div className="border-t border-border">
           {recognition.map((item) => (
-            <Reveal key={item.title}>
+            <Reveal key={item.title} variant="right">
               <div className="grid gap-2 border-b border-border py-6 md:grid-cols-12 md:gap-6">
                 <div className="eyebrow pt-1 md:col-span-3">{item.meta}</div>
                 <div className="md:col-span-9">

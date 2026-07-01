@@ -9,6 +9,7 @@ import {
 import { services } from "@/content/services";
 import { Container, Reveal, SectionHeader } from "@/components/primitives";
 import { ShowcaseCard } from "@/components/showcase-card";
+import { ParallaxWatermark } from "@/components/motion-fx";
 import { cn } from "@/lib/utils";
 
 const icons = {
@@ -33,7 +34,11 @@ const spans = [
 
 export function Services() {
   return (
-    <section id="services" className="border-t border-border py-20 sm:py-28">
+    <section
+      id="services"
+      className="relative isolate border-t border-border py-20 sm:py-28"
+    >
+      <ParallaxWatermark text="Services" align="left" />
       <Container>
         <Reveal>
           <SectionHeader title="What I can build for you." />
@@ -45,6 +50,8 @@ export function Services() {
             return (
               <Reveal
                 key={service.title}
+                variant="scale"
+                stagger={i % 3}
                 className={cn("h-full", spans[i % spans.length])}
               >
                 <ShowcaseCard className="group h-full p-7">

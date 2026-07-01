@@ -29,19 +29,36 @@ export function Reveal({
   delay = 0,
   className,
   immediate = false,
+  stagger,
+  variant = "up",
 }: {
   children: ReactNode;
   delay?: number;
   className?: string;
   immediate?: boolean;
+  /** Cascade index — same-viewport siblings reveal in sequence (used by the
+   *  cross-browser JS fallback; native reveals stagger by entry on their own). */
+  stagger?: number;
+  /** Entrance direction. `up` (default) rises; `left`/`right` slide in from the
+   *  side (≥640px only — they collapse to `up` on phones); `scale` pops. Ignored
+   *  when `immediate`. */
+  variant?: "up" | "left" | "right" | "scale";
 }) {
-  const style: CSSProperties | undefined =
-    immediate && delay
-      ? ({ "--reveal-delay": `${delay * 1000}ms` } as CSSProperties)
-      : undefined;
+  const vars: Record<string, string | number> = {};
+  if (immediate && delay) vars["--reveal-delay"] = `${delay * 1000}ms`;
+  if (stagger) vars["--reveal-order"] = stagger;
+  const style =
+    Object.keys(vars).length > 0 ? (vars as CSSProperties) : undefined;
 
   return (
-    <div className={cn(immediate ? "reveal-now" : "reveal", className)} style={style}>
+    <div
+      className={cn(
+        immediate ? "reveal-now" : "reveal",
+        !immediate && variant !== "up" && `reveal--${variant}`,
+        className,
+      )}
+      style={style}
+    >
       {children}
     </div>
   );

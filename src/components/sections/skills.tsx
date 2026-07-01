@@ -11,7 +11,7 @@ export function Skills() {
 
         <dl className="border-t border-border">
           {skillGroups.map((group) => (
-            <Reveal key={group.label}>
+            <Reveal key={group.label} variant="left">
               <div className="grid gap-3 border-b border-border py-6 md:grid-cols-12 md:gap-6">
                 <dt className="eyebrow pt-1 md:col-span-3">{group.label}</dt>
                 <dd className="flex flex-wrap gap-2 md:col-span-9">

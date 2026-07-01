@@ -15,7 +15,7 @@ export function MoreWork() {
 
         <div className="grid gap-10 sm:grid-cols-2 sm:gap-8">
           {secondaryProjects.map((project, i) => (
-            <Reveal key={project.slug} delay={i * 0.05}>
+            <Reveal key={project.slug} stagger={i % 2}>
               <SecondaryCard project={project} />
             </Reveal>
           ))}

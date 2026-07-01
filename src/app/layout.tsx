@@ -8,6 +8,7 @@ import { SmoothScroll } from "@/components/smooth-scroll";
 import { Backdrop } from "@/components/backdrop";
 import { Intro } from "@/components/intro";
 import { ScrollProgress } from "@/components/scroll-progress";
+import { ScrollReveal } from "@/components/scroll-reveal";
 import { Grain } from "@/components/grain";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
@@ -90,6 +91,18 @@ export default function RootLayout({
       className={`${sans.variable} ${display.variable} ${mono.variable}`}
     >
       <body className="min-h-screen antialiased">
+        {/* Before first paint: opt browsers WITHOUT native scroll-driven CSS
+            animations (Safari, Firefox) into the JS reveal fallback. Runs only
+            when the feature is unsupported, IntersectionObserver exists, and the
+            user hasn't asked for reduced motion — so no-JS, reduced-motion, and
+            Chromium users keep the visible-by-default content untouched, with no
+            flash. `ScrollReveal` reads this class and drives the reveals. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){try{var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches;var s=window.CSS&&CSS.supports&&CSS.supports("animation-timeline: view()");if(!r&&!s&&"IntersectionObserver" in window){document.documentElement.classList.add("reveal-js")}}catch(e){}})();',
+          }}
+        />
         <Intro />
         <ThemeProvider
           attribute="class"
@@ -99,6 +112,7 @@ export default function RootLayout({
           <Backdrop />
           <Grain />
           <ScrollProgress />
+          <ScrollReveal />
           <SmoothScroll>
             <div className="relative z-10">
               <Nav />

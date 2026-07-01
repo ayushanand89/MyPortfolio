@@ -50,9 +50,14 @@ function Knot() {
   );
 }
 
-export default function HeroObjectScene() {
+export default function HeroObjectScene({
+  frameloop = "always",
+}: {
+  frameloop?: "always" | "demand" | "never";
+}) {
   return (
     <Canvas
+      frameloop={frameloop}
       dpr={[1, 1.25]}
       camera={{ position: [0, 0, 4.2], fov: 40 }}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}

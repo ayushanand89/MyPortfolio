@@ -7,7 +7,13 @@ import {
   useSpring,
   useReducedMotion,
 } from "framer-motion";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { cn } from "@/lib/utils";
 
 /**
@@ -62,13 +68,44 @@ export function ShowcaseCard({
 
   const base = cn(
     "relative overflow-hidden rounded-2xl",
-    solid
-      ? "border border-white/10 bg-card shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
-      : "glass",
+    solid ? "glass-strong" : "glass",
   );
 
+  // Always-on accent corner glow — gives every card a light source and a bit of
+  // personality even when it's static (touch / reduced motion), so cards never
+  // read as flat dark boxes.
+  const decor = (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full opacity-60 blur-3xl"
+      style={{
+        background:
+          "radial-gradient(circle, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%)",
+      }}
+    />
+  );
+
+  // Opaque fill whose opacity is driven (via the `--panel-solid` CSS var set by
+  // StackPanel on scroll) so a sticky card firms up as it stacks. Animating this
+  // overlay's opacity is compositor-only — far cheaper than repainting the
+  // card's own backdrop-blurred background each scroll frame. Defaults opaque
+  // (0.9) when no StackPanel drives it (e.g. reduced motion), so it never bleeds.
+  const panel = solid ? (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute inset-0 bg-card"
+      style={{ opacity: "var(--panel-solid, 0.9)" } as CSSProperties}
+    />
+  ) : null;
+
   if (reduce || !enabled) {
-    return <div className={cn(base, className)}>{children}</div>;
+    return (
+      <div className={cn(base, className)}>
+        {panel}
+        {decor}
+        <div className="relative z-10 h-full">{children}</div>
+      </div>
+    );
   }
 
   const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -102,6 +139,8 @@ export function ShowcaseCard({
         className,
       )}
     >
+      {panel}
+      {decor}
       {/* One-shot specular sheen that wipes across on hover (clipped by the
           card's overflow-hidden). Only the interactive branch renders it, so
           touch / reduced-motion never see it. */}

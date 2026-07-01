@@ -12,16 +12,27 @@ export function Backdrop() {
   const { resolvedTheme } = useTheme();
   const reduce = useReducedMotion();
   const [mounted, setMounted] = useState(false);
+  // The WebGL scene is a desktop layer only — on phones/tablets the aurora +
+  // particles carry the atmosphere, and skipping a second always-on canvas
+  // keeps mobile scrolling smooth.
+  const [desktop, setDesktop] = useState(false);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+    const mq = window.matchMedia("(min-width: 768px)");
+    setDesktop(mq.matches);
+    const onChange = () => setDesktop(mq.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
 
   if (!mounted) return null;
 
   const dark = resolvedTheme !== "light";
 
-  // Reduced motion: a calm static gradient instead of the live 3D scene.
-  if (reduce) {
+  // Reduced motion or mobile: a calm static gradient instead of the live 3D scene.
+  if (reduce || !desktop) {
     return (
       <div
         aria-hidden
@@ -47,7 +58,7 @@ export function Backdrop() {
       aria-hidden
       className={cn(
         "pointer-events-none fixed inset-0 z-0 [mask-image:radial-gradient(82%_82%_at_70%_32%,black,transparent_85%)]",
-        dark ? "opacity-70" : "opacity-50",
+        dark ? "opacity-80" : "opacity-50",
       )}
     >
       <BackdropScene {...palette} />

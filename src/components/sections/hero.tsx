@@ -13,6 +13,7 @@ import { profile } from "@/content/profile";
 import { Container, Reveal, ButtonLink } from "@/components/primitives";
 import { Magnetic, Spotlight } from "@/components/motion-fx";
 import { HeroObject } from "@/components/hero-object";
+import { Scramble } from "@/components/scramble";
 import { smoothScrollToHash } from "@/lib/scroll";
 
 export function Hero() {
@@ -50,8 +51,9 @@ export function Hero() {
       <Container>
         <Reveal immediate>
           <p className="eyebrow">
-            {profile.role} · {profile.location}
-            {profile.available ? " · Available for freelance" : ""}
+            <Scramble
+              text={`${profile.role} · ${profile.location}${profile.available ? " · Available for freelance" : ""}`}
+            />
           </p>
         </Reveal>
 

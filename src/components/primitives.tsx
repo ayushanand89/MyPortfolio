@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Scramble } from "@/components/scramble";
 
 export { MediaFrame } from "./media-frame";
 
@@ -82,8 +83,7 @@ export function SectionHeader({
     <div className={cn("mb-12 sm:mb-16", className)}>
       {eyebrow && (
         <span className="eyebrow">
-          {index ? `${index} — ` : ""}
-          {eyebrow}
+          <Scramble text={`${index ? `${index} — ` : ""}${eyebrow}`} />
         </span>
       )}
       <h2

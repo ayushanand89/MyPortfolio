@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useReducedMotion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const HeroObjectScene = dynamic(() => import("./hero-object-scene"), {
   ssr: false,
@@ -17,6 +17,10 @@ const HeroObjectScene = dynamic(() => import("./hero-object-scene"), {
 export function HeroObject() {
   const reduce = useReducedMotion();
   const [ok, setOk] = useState(false);
+  // Pause WebGL rendering while the hero is scrolled out of view — no point
+  // burning a frame loop on an off-screen desktop flourish.
+  const [active, setActive] = useState(true);
+  const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -25,14 +29,27 @@ export function HeroObject() {
     );
   }, []);
 
+  useEffect(() => {
+    if (!ok) return;
+    const el = boxRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setActive(entry.isIntersecting),
+      { rootMargin: "120px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [ok]);
+
   if (reduce || !ok) return null;
 
   return (
     <div
+      ref={boxRef}
       aria-hidden
-      className="pointer-events-none absolute right-[-4%] top-1/2 -z-10 hidden h-[560px] w-[46%] -translate-y-1/2 opacity-70 [mask-image:radial-gradient(58%_58%_at_58%_50%,black,transparent_82%)] lg:block"
+      className="pointer-events-none absolute right-[-4%] top-1/2 -z-10 hidden h-[560px] w-[46%] -translate-y-1/2 opacity-90 [mask-image:radial-gradient(58%_58%_at_58%_50%,black,transparent_82%)] lg:block"
     >
-      <HeroObjectScene />
+      <HeroObjectScene frameloop={active ? "always" : "never"} />
     </div>
   );
 }

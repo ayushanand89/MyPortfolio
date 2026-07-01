@@ -9,7 +9,7 @@ import {
 import { services } from "@/content/services";
 import { Container, Reveal, SectionHeader } from "@/components/primitives";
 import { ShowcaseCard } from "@/components/showcase-card";
-import { ParallaxWatermark } from "@/components/motion-fx";
+import { ParallaxWatermark, StackPanel } from "@/components/motion-fx";
 import { cn } from "@/lib/utils";
 
 const icons = {
@@ -51,10 +51,10 @@ export function Services() {
           {services.map((service, i) => {
             const Icon = icons[service.icon];
             return (
-              <div
+              <StackPanel
                 key={service.title}
                 className={cn("sticky h-full sm:static", spans[i % spans.length])}
-                style={{ top: `calc(5rem + ${i * 1.5}rem)` }}
+                top={`calc(5rem + ${i * 1.5}rem)`}
               >
                 <Reveal variant="scale" stagger={i % 3} className="h-full">
                   <ShowcaseCard solid className="group h-full p-7">
@@ -69,7 +69,7 @@ export function Services() {
                     </p>
                   </ShowcaseCard>
                 </Reveal>
-              </div>
+              </StackPanel>
             );
           })}
         </div>

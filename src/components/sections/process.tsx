@@ -24,7 +24,7 @@ export function Process() {
           <span className="rule-draw absolute inset-y-0 left-0 w-full bg-linear-to-r from-accent via-accent/80 to-transparent" />
         </div>
 
-        <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border lg:grid-cols-4">
           {process.map((item, i) => (
             <Reveal
               key={item.step}
@@ -32,9 +32,13 @@ export function Process() {
               stagger={i}
               className="h-full"
             >
-              <div className="h-full bg-background p-7">
-                <span className="display text-4xl text-accent">{item.step}</span>
-                <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
+              <div className="h-full bg-background p-5 sm:p-7">
+                <span className="display text-3xl text-accent sm:text-4xl">
+                  {item.step}
+                </span>
+                <h3 className="mt-3 text-base font-semibold sm:mt-4 sm:text-lg">
+                  {item.title}
+                </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">
                   {item.description}
                 </p>

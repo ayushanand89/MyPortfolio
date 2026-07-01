@@ -9,6 +9,7 @@ import {
   useVelocity,
   useTransform,
   useReducedMotion,
+  type MotionStyle,
 } from "framer-motion";
 import { useEffect, useRef, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -164,6 +165,46 @@ export function Parallax({
     <div ref={ref} className={className}>
       <motion.div style={zoom ? { y, scale } : { y }}>{children}</motion.div>
     </div>
+  );
+}
+
+/**
+ * Sticky-stack panel that firms up its card's frosted opacity as it scrolls
+ * into the pinned "reading" position and recedes to translucent while it's
+ * entering from below. Drives the `--panel-alpha` CSS variable that
+ * `.glass-strong` reads, so a card is see-through (3D shows) as it enters, then
+ * turns readable exactly when it overlaps the cards stacked above it — no bleed
+ * while you're reading it. Static (opaque fallback 88%) under reduced motion.
+ */
+export function StackPanel({
+  children,
+  className,
+  top,
+}: {
+  children: ReactNode;
+  className?: string;
+  top?: string;
+}) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    // 0 as the card's top sits at the viewport bottom (entering, translucent);
+    // 1 by the time it reaches its pin near the top (reading, opaque).
+    offset: ["start end", "start 14%"],
+  });
+  // Drives the card's opaque-overlay opacity (see ShowcaseCard `panel`).
+  // Overlay opacity is compositor-only — no backdrop-blur repaint on scroll.
+  const solid = useTransform(scrollYProgress, [0, 1], [0, 0.9]);
+
+  const style = (
+    reduce ? { top } : { top, "--panel-solid": solid }
+  ) as MotionStyle;
+
+  return (
+    <motion.div ref={ref} className={className} style={style}>
+      {children}
+    </motion.div>
   );
 }
 

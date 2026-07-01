@@ -5,6 +5,7 @@ import { ArrowUpRight, Github, Linkedin, Mail } from "lucide-react";
 import { profile } from "@/content/profile";
 import { Container, Reveal } from "@/components/primitives";
 import { Magnetic, ParallaxWatermark, Spotlight } from "@/components/motion-fx";
+import { Scramble } from "@/components/scramble";
 
 export function Contact() {
   const [name, setName] = useState("");
@@ -31,7 +32,9 @@ export function Contact() {
       <Spotlight size={620} />
       <Container>
         <Reveal>
-          <span className="eyebrow">Contact</span>
+          <span className="eyebrow">
+            <Scramble text="Contact" />
+          </span>
           <h2 className="display mt-4 max-w-3xl text-3xl text-balance sm:text-5xl">
             Have a project in mind? Let&apos;s build it.
           </h2>
@@ -43,7 +46,10 @@ export function Contact() {
 
         <div className="mt-12 grid gap-12 lg:grid-cols-2 lg:gap-16">
           <Reveal>
-            <form onSubmit={onSubmit} className="space-y-5">
+            <form
+              onSubmit={onSubmit}
+              className="mx-auto w-full max-w-md space-y-5 lg:mx-0 lg:max-w-none"
+            >
               <div>
                 <label htmlFor="name" className="eyebrow">
                   Name
@@ -99,7 +105,7 @@ export function Contact() {
           </Reveal>
 
           <Reveal>
-            <div className="flex flex-col">
+            <div className="mx-auto flex w-full max-w-md flex-col lg:mx-0 lg:max-w-none">
               <p className="text-sm text-muted">
                 Prefer something direct? Reach me here.
               </p>

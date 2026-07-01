@@ -6,6 +6,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SmoothScroll } from "@/components/smooth-scroll";
 import { Backdrop } from "@/components/backdrop";
+import { Aurora } from "@/components/aurora";
+import { Particles } from "@/components/particles";
 import { Intro } from "@/components/intro";
 import { ScrollProgress } from "@/components/scroll-progress";
 import { ScrollReveal } from "@/components/scroll-reveal";
@@ -109,6 +111,8 @@ export default function RootLayout({
           forcedTheme="dark"
           disableTransitionOnChange
         >
+          <Aurora />
+          <Particles />
           <Backdrop />
           <Grain />
           <ScrollProgress />

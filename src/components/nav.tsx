@@ -75,7 +75,7 @@ export function Nav() {
           className={cn(
             "flex h-14 items-center justify-between rounded-full pl-5 pr-3 transition-[background-color,box-shadow,border-color] duration-300 ease-out-strong sm:pr-4",
             scrolled
-              ? "glass shadow-[0_18px_50px_-24px_rgba(0,0,0,0.75)]"
+              ? "glass-strong shadow-[0_18px_50px_-24px_rgba(0,0,0,0.75)]"
               : "border border-transparent",
           )}
         >
@@ -142,7 +142,7 @@ export function Nav() {
 
         {/* Mobile drawer — a floating glass panel that drops under the pill. */}
         {open && (
-          <div className="glass mt-2 rounded-2xl px-4 py-2 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.75)] md:hidden">
+          <div className="glass-strong mt-2 rounded-2xl px-4 py-2 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.75)] md:hidden">
             <ul className="flex flex-col">
               {links.map((link) => (
                 <li key={link.href}>

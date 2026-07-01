@@ -69,13 +69,13 @@ export function Testimonials() {
         </div>
 
         <Reveal>
-          <ul className="mt-8 flex flex-wrap gap-x-7 gap-y-3">
+          <ul className="mt-8 grid grid-cols-2 gap-x-8 gap-y-3 sm:w-fit">
             {trustPoints.map((point) => (
               <li
                 key={point}
                 className="flex items-center gap-2 text-sm text-muted"
               >
-                <Check className="h-4 w-4 text-accent" />
+                <Check className="h-4 w-4 shrink-0 text-accent" />
                 {point}
               </li>
             ))}

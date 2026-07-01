@@ -2,7 +2,7 @@ import { flagshipProjects } from "@/content/projects";
 import { Container, Reveal, SectionHeader } from "@/components/primitives";
 import { FlagshipCard } from "@/components/project-card";
 import { ShowcaseCard } from "@/components/showcase-card";
-import { ParallaxWatermark } from "@/components/motion-fx";
+import { ParallaxWatermark, StackPanel } from "@/components/motion-fx";
 
 export function SelectedWork() {
   return (
@@ -21,10 +21,10 @@ export function SelectedWork() {
             Cards are `solid` so the stacked ones don't bleed through. */}
         <div className="mt-4">
           {flagshipProjects.map((project, i) => (
-            <div
+            <StackPanel
               key={project.slug}
               className="sticky"
-              style={{ top: `calc(5rem + ${i * 1.5}rem)` }}
+              top={`calc(5rem + ${i * 1.5}rem)`}
             >
               <div className="pb-6 sm:pb-8">
                 <ShowcaseCard
@@ -37,7 +37,7 @@ export function SelectedWork() {
                   <FlagshipCard project={project} index={i} />
                 </ShowcaseCard>
               </div>
-            </div>
+            </StackPanel>
           ))}
         </div>
       </Container>

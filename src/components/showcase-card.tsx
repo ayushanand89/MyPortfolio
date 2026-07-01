@@ -98,10 +98,17 @@ export function ShowcaseCard({
       style={{ transform: cardTransform, transformStyle: "preserve-3d" }}
       className={cn(
         base,
-        "transition-shadow duration-300 ease-out-strong hover:shadow-[0_28px_70px_-24px_rgba(0,0,0,0.65)]",
+        "group/card transition-shadow duration-300 ease-out-strong hover:shadow-[0_28px_70px_-24px_rgba(0,0,0,0.65)]",
         className,
       )}
     >
+      {/* One-shot specular sheen that wipes across on hover (clipped by the
+          card's overflow-hidden). Only the interactive branch renders it, so
+          touch / reduced-motion never see it. */}
+      <span
+        aria-hidden
+        className="card-sheen pointer-events-none absolute inset-0 z-20"
+      />
       <motion.span
         aria-hidden
         style={{

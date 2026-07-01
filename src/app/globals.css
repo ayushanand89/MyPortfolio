@@ -76,6 +76,29 @@
     background-color: var(--selection);
   }
 
+  /* Premium thin scrollbar — quiet by default, accent-tinted on hover. The
+     track stays transparent so it reads as a hairline on the editorial dark
+     ground rather than a chunky OS bar. */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border: 2px solid var(--background);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--accent) 55%, var(--border-strong));
+  }
+
   /* Account for the fixed header when jumping to in-page anchors */
   section[id] {
     scroll-margin-top: 6rem;
@@ -372,6 +395,52 @@
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
     }
+  }
+
+  /* Frosted form field — a subtle glass fill that firms up and lights an accent
+     ring on focus. Same reduced-transparency fallback as `.glass`. Only
+     colour/shadow transition (never layout), all under 300ms. */
+  .field {
+    background-color: color-mix(in srgb, var(--card) 40%, transparent);
+    backdrop-filter: blur(8px) saturate(1.1);
+    -webkit-backdrop-filter: blur(8px) saturate(1.1);
+    transition:
+      border-color 0.2s var(--ease-out-strong),
+      background-color 0.2s var(--ease-out-strong),
+      box-shadow 0.28s var(--ease-out-strong);
+  }
+  .field:hover {
+    border-color: var(--border-strong);
+  }
+  .field:focus {
+    border-color: var(--accent);
+    background-color: color-mix(in srgb, var(--card) 62%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .field {
+      background-color: var(--card);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+
+  /* One-shot specular sheen for glass cards — a thin diagonal light band that
+     wipes across on pointer-enter and retreats on leave. Transform/opacity
+     only (GPU-composited); the parent card clips it (overflow-hidden) and only
+     renders it on hover-capable pointers, so touch/reduced-motion never see it. */
+  .card-sheen {
+    background: linear-gradient(
+      105deg,
+      transparent 42%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 58%
+    );
+    transform: translateX(-130%);
+    transition: transform 0.85s var(--ease-out-strong);
+  }
+  .group\/card:hover .card-sheen {
+    transform: translateX(130%);
   }
 
   /* Editorial image reveal — a clip-path wipe + settle tied to scroll position.

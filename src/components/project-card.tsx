@@ -7,7 +7,7 @@ import { ArrowRight, ArrowUpRight, Github } from "lucide-react";
 import type { Project } from "@/content/projects";
 import { projectImages } from "@/content/projects";
 import { MediaFrame } from "@/components/primitives";
-import { Tilt, Parallax } from "@/components/motion-fx";
+import { Tilt, Parallax, ScrollVelocity } from "@/components/motion-fx";
 
 export function FlagshipCard({
   project,
@@ -107,14 +107,16 @@ export function FlagshipCard({
 
         <div className="md:col-span-5">
           <Parallax amount={36} zoom={0.1}>
-            <MediaFrame
-              src={project.image}
-              images={projectImages(project)}
-              active={hovering}
-              alt={`${project.title} preview`}
-              label={`${project.title} — cover`}
-              className="transition-transform duration-500 ease-out-strong hover-device:group-hover:scale-[1.03]"
-            />
+            <ScrollVelocity>
+              <MediaFrame
+                src={project.image}
+                images={projectImages(project)}
+                active={hovering}
+                alt={`${project.title} preview`}
+                label={`${project.title} — cover`}
+                className="transition-transform duration-500 ease-out-strong hover-device:group-hover:scale-[1.03]"
+              />
+            </ScrollVelocity>
           </Parallax>
         </div>
       </div>
@@ -126,15 +128,17 @@ export function SecondaryCard({ project }: { project: Project }) {
   return (
     <div className="group flex flex-col">
       <Parallax amount={28} zoom={0.08}>
-        <Tilt max={5}>
-          <MediaFrame
-            src={project.image}
-            alt={`${project.title} preview`}
-            label={project.title}
-            ratio="aspect-[16/10]"
-            className="transition-transform duration-500 ease-out-strong hover-device:group-hover:scale-[1.03]"
-          />
-        </Tilt>
+        <ScrollVelocity max={3.5}>
+          <Tilt max={5}>
+            <MediaFrame
+              src={project.image}
+              alt={`${project.title} preview`}
+              label={project.title}
+              ratio="aspect-[16/10]"
+              className="transition-transform duration-500 ease-out-strong hover-device:group-hover:scale-[1.03]"
+            />
+          </Tilt>
+        </ScrollVelocity>
       </Parallax>
 
       <div className="mt-5">

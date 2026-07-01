@@ -12,6 +12,7 @@ import { useLenis } from "lenis/react";
 import { profile } from "@/content/profile";
 import { Container, Reveal, ButtonLink } from "@/components/primitives";
 import { Magnetic, Spotlight } from "@/components/motion-fx";
+import { HeroObject } from "@/components/hero-object";
 import { smoothScrollToHash } from "@/lib/scroll";
 
 export function Hero() {
@@ -45,6 +46,7 @@ export function Hero() {
     >
       <Spotlight size={560} />
       <motion.div style={parallax}>
+      <HeroObject />
       <Container>
         <Reveal immediate>
           <p className="eyebrow">

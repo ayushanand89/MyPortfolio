@@ -6,6 +6,7 @@ import {
   useMotionTemplate,
   useSpring,
   useScroll,
+  useVelocity,
   useTransform,
   useReducedMotion,
 } from "framer-motion";
@@ -163,6 +164,48 @@ export function Parallax({
     <div ref={ref} className={className}>
       <motion.div style={zoom ? { y, scale } : { y }}>{children}</motion.div>
     </div>
+  );
+}
+
+/**
+ * Momentum shear: skews its child in proportion to scroll velocity, so images
+ * "lean" into the direction of travel and spring back to flat when the scroll
+ * settles. The velocity is spring-smoothed and clamped, then applied as a full
+ * `skewY` transform string (GPU-composited). Passthrough under reduced motion.
+ */
+export function ScrollVelocity({
+  children,
+  className,
+  max = 4,
+}: {
+  children: ReactNode;
+  className?: string;
+  max?: number;
+}) {
+  const reduce = useReducedMotion();
+  const { scrollY } = useScroll();
+  const velocity = useVelocity(scrollY);
+  const smooth = useSpring(velocity, {
+    stiffness: 300,
+    damping: 50,
+    mass: 0.5,
+  });
+  // Map a wide velocity band onto a small skew and clamp, so fast flings never
+  // shear past a tasteful few degrees.
+  const skew = useTransform(smooth, [-2400, 0, 2400], [max, 0, -max], {
+    clamp: true,
+  });
+  const transform = useMotionTemplate`skewY(${skew}deg)`;
+
+  if (reduce) return <div className={className}>{children}</div>;
+
+  return (
+    <motion.div
+      style={{ transform, willChange: "transform" }}
+      className={className}
+    >
+      {children}
+    </motion.div>
   );
 }
 

@@ -54,7 +54,7 @@ export function Contact() {
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-foreground outline-none transition-colors placeholder:text-faint focus:border-accent"
+                  className="field mt-2 w-full rounded-lg border border-border px-4 py-3 text-foreground outline-none placeholder:text-faint"
                   placeholder="Your name"
                 />
               </div>
@@ -68,7 +68,7 @@ export function Contact() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="mt-2 w-full rounded-lg border border-border bg-transparent px-4 py-3 text-foreground outline-none transition-colors placeholder:text-faint focus:border-accent"
+                  className="field mt-2 w-full rounded-lg border border-border px-4 py-3 text-foreground outline-none placeholder:text-faint"
                   placeholder="you@company.com"
                 />
               </div>
@@ -82,7 +82,7 @@ export function Contact() {
                   rows={5}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="mt-2 w-full resize-none rounded-lg border border-border bg-transparent px-4 py-3 text-foreground outline-none transition-colors placeholder:text-faint focus:border-accent"
+                  className="field mt-2 w-full resize-none rounded-lg border border-border px-4 py-3 text-foreground outline-none placeholder:text-faint"
                   placeholder="What are you building, timeline, budget range…"
                 />
               </div>

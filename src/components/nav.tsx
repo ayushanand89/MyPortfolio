@@ -67,26 +67,29 @@ export function Nav() {
   };
 
   return (
-    <header
-      className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-colors duration-300 ease-out-strong",
-        scrolled
-          ? "border-b border-border bg-background/80 backdrop-blur-md"
-          : "border-b border-transparent",
-      )}
-    >
-      <nav className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-6 sm:px-8">
-        <Link
-          href="/"
-          className="font-display text-base font-semibold tracking-tight"
-          onClick={() => setOpen(false)}
+    <header className="fixed inset-x-0 top-3 z-50 px-4 sm:top-4 sm:px-6">
+      {/* Floating glass bar — transparent while pinned to the hero, then
+          condenses into a frosted pill with depth once the page scrolls. */}
+      <div className="mx-auto max-w-4xl">
+        <nav
+          className={cn(
+            "flex h-14 items-center justify-between rounded-full pl-5 pr-3 transition-[background-color,box-shadow,border-color] duration-300 ease-out-strong sm:pr-4",
+            scrolled
+              ? "glass shadow-[0_18px_50px_-24px_rgba(0,0,0,0.75)]"
+              : "border border-transparent",
+          )}
         >
-          {profile.name}
-          <span className="text-accent">.</span>
-        </Link>
+          <Link
+            href="/"
+            className="font-display text-base font-semibold tracking-tight"
+            onClick={() => setOpen(false)}
+          >
+            {profile.name}
+            <span className="text-accent">.</span>
+          </Link>
 
-        {/* Desktop */}
-        <div className="hidden items-center gap-8 md:flex">
+          {/* Desktop */}
+          <div className="hidden items-center gap-8 md:flex">
           <ul className="flex items-center gap-7">
             {links.map((link) => {
               const isActive = active === link.href.replace("/#", "");
@@ -133,37 +136,38 @@ export function Nav() {
             className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground/80"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </nav>
+            </button>
+          </div>
+        </nav>
 
-      {/* Mobile drawer */}
-      {open && (
-        <div className="border-t border-border bg-background/95 backdrop-blur-md md:hidden">
-          <ul className="mx-auto flex w-full max-w-6xl flex-col px-6 py-4 sm:px-8">
-            {links.map((link) => (
-              <li key={link.href}>
+        {/* Mobile drawer — a floating glass panel that drops under the pill. */}
+        {open && (
+          <div className="glass mt-2 rounded-2xl px-4 py-2 shadow-[0_18px_50px_-24px_rgba(0,0,0,0.75)] md:hidden">
+            <ul className="flex flex-col">
+              {links.map((link) => (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    onClick={(e) => handleAnchor(e, link.href)}
+                    className="block py-3 text-lg text-foreground"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+              <li className="py-3">
                 <Link
-                  href={link.href}
-                  onClick={(e) => handleAnchor(e, link.href)}
-                  className="block py-3 text-lg text-foreground"
+                  href="/#contact"
+                  onClick={(e) => handleAnchor(e, "/#contact")}
+                  className="inline-flex rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background"
                 >
-                  {link.label}
+                  Work with me
                 </Link>
               </li>
-            ))}
-            <li className="pt-3">
-              <Link
-                href="/#contact"
-                onClick={(e) => handleAnchor(e, "/#contact")}
-                className="inline-flex rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background"
-              >
-                Work with me
-              </Link>
-            </li>
-          </ul>
-        </div>
-      )}
+            </ul>
+          </div>
+        )}
+      </div>
     </header>
   );
 }

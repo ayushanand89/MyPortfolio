@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export { MediaFrame } from "./media-frame";
@@ -54,17 +54,24 @@ export function SectionHeader({
   className,
 }: {
   index?: string;
-  eyebrow: string;
+  eyebrow?: string;
   title: ReactNode;
   className?: string;
 }) {
   return (
     <div className={cn("mb-12 sm:mb-16", className)}>
-      <span className="eyebrow">
-        {index ? `${index} — ` : ""}
-        {eyebrow}
-      </span>
-      <h2 className="display mt-4 text-3xl text-balance sm:text-4xl md:text-5xl">
+      {eyebrow && (
+        <span className="eyebrow">
+          {index ? `${index} — ` : ""}
+          {eyebrow}
+        </span>
+      )}
+      <h2
+        className={cn(
+          "display text-4xl text-balance sm:text-5xl md:text-[3.25rem]",
+          eyebrow && "mt-4",
+        )}
+      >
         {title}
       </h2>
     </div>
@@ -94,14 +101,31 @@ export function ButtonLink({
   className?: string;
   onClick?: React.MouseEventHandler;
 }) {
-  const styles =
-    variant === "primary"
-      ? "bg-foreground text-background hover:opacity-90"
-      : "border border-border text-foreground hover:border-border-strong";
+  const isPrimary = variant === "primary";
+  const styles = isPrimary
+    ? "bg-foreground text-background hover:opacity-95"
+    : "glass text-foreground hover:border-white/20";
   const classes = cn(
-    "inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-300 active:scale-[0.98]",
+    "group/btn inline-flex items-center gap-3 rounded-full py-1.5 pl-5 pr-1.5 text-sm font-medium transition-[transform,opacity,border-color] duration-150 ease-out-strong active:scale-[0.98]",
     styles,
     className,
+  );
+
+  // Trailing icon nested in its own circle that kicks diagonally on hover —
+  // "button-in-button" kinetic tension.
+  const Icon = external ? ArrowUpRight : ArrowRight;
+  const inner = (
+    <>
+      <span>{children}</span>
+      <span
+        className={cn(
+          "flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-200 ease-out-strong hover-device:group-hover/btn:translate-x-0.5 hover-device:group-hover/btn:-translate-y-0.5 hover-device:group-hover/btn:scale-105",
+          isPrimary ? "bg-background/10" : "bg-white/10",
+        )}
+      >
+        <Icon className="h-4 w-4" />
+      </span>
+    </>
   );
 
   if (external) {
@@ -113,15 +137,14 @@ export function ButtonLink({
         onClick={onClick}
         className={classes}
       >
-        {children}
-        <ArrowUpRight className="h-4 w-4" />
+        {inner}
       </a>
     );
   }
 
   return (
     <Link href={href} onClick={onClick} className={classes}>
-      {children}
+      {inner}
     </Link>
   );
 }

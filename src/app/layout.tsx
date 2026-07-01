@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "lenis/dist/lenis.css";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -17,9 +18,17 @@ const sans = Inter({
   display: "swap",
 });
 
-const display = Inter_Tight({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+// Cabinet Grotesk (Indian Type Foundry, via Fontshare) — self-hosted for the
+// display/headline face. Gives the editorial headlines real character where
+// Inter Tight read generic.
+const display = localFont({
+  src: [
+    { path: "../fonts/cabinet-400.woff2", weight: "400", style: "normal" },
+    { path: "../fonts/cabinet-500.woff2", weight: "500", style: "normal" },
+    { path: "../fonts/cabinet-700.woff2", weight: "700", style: "normal" },
+    { path: "../fonts/cabinet-800.woff2", weight: "800", style: "normal" },
+    { path: "../fonts/cabinet-900.woff2", weight: "900", style: "normal" },
+  ],
   variable: "--font-display",
   display: "swap",
 });

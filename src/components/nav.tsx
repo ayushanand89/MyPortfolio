@@ -68,7 +68,7 @@ export function Nav() {
   return (
     <header
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-all duration-300",
+        "fixed inset-x-0 top-0 z-50 transition-colors duration-300 ease-out-strong",
         scrolled
           ? "border-b border-border bg-background/80 backdrop-blur-md"
           : "border-b border-transparent",
@@ -114,7 +114,7 @@ export function Nav() {
           <Link
             href="/#contact"
             onClick={(e) => handleAnchor(e, "/#contact")}
-            className="rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-all duration-300 hover:opacity-90 active:scale-[0.98]"
+            className="rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-[transform,opacity] duration-150 ease-out-strong hover:opacity-90 active:scale-[0.98]"
           >
             Work with me
           </Link>

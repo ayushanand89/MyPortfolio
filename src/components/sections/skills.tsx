@@ -6,7 +6,7 @@ export function Skills() {
     <section id="skills" className="border-t border-border py-20 sm:py-28">
       <Container>
         <Reveal>
-          <SectionHeader index="04" eyebrow="Skills" title="The toolkit." />
+          <SectionHeader title="The toolkit." />
         </Reveal>
 
         <dl className="border-t border-border">

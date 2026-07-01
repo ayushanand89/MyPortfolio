@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Only apply hover styles on devices that actually hover (not touch taps). */
+@custom-variant hover-device (@media (hover: hover) and (pointer: fine));
+
 /* ---------------------------------------------------------------------------
    Editorial palette — dark only.
    One signature accent (soft sage). Change --accent to re-skin the whole site.
@@ -16,6 +19,12 @@
   --accent: #7cc8a2; /* soft sage */
   --accent-foreground: #0e0f0d;
   --selection: #7cc8a233;
+
+  /* Motion — strong custom easing curves (Emil Kowalski / animations.dev).
+     Built-in CSS easings are too weak; these give UI motion intentional punch. */
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1); /* entrances, presses, hovers */
+  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen movement */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); /* iOS-like drawer curve (Ionic) */
 }
 
 @theme inline {
@@ -29,6 +38,11 @@
   --color-border-strong: var(--border-strong);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+
+  /* Expose the easing curves as `ease-*` utilities. */
+  --ease-out-strong: var(--ease-out-strong);
+  --ease-in-out-strong: var(--ease-in-out-strong);
+  --ease-drawer: var(--ease-drawer);
 
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-display), var(--font-sans), sans-serif;
@@ -67,7 +81,7 @@
   h3,
   h4 {
     font-family: var(--font-display), var(--font-sans), sans-serif;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
   }
 
   a {
@@ -94,9 +108,9 @@
   /* Big editorial display sizing helper */
   .display {
     font-family: var(--font-display), var(--font-sans), sans-serif;
-    font-weight: 600;
-    letter-spacing: -0.035em;
-    line-height: 0.98;
+    font-weight: 700;
+    letter-spacing: -0.045em;
+    line-height: 0.94;
   }
 
   /* Animated underline for editorial links */
@@ -105,7 +119,7 @@
     background-position: 0 100%;
     background-repeat: no-repeat;
     background-size: 0% 1px;
-    transition: background-size 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: background-size 0.35s var(--ease-out-strong);
   }
   .link-underline:hover {
     background-size: 100% 1px;
@@ -139,7 +153,7 @@
     /* Above-the-fold: play once on load. */
     .reveal-now {
       opacity: 0;
-      animation: reveal-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation: reveal-up 0.7s var(--ease-out-strong) both;
       animation-delay: var(--reveal-delay, 0ms);
     }
   }
@@ -155,6 +169,66 @@
         animation-range: entry 0% cover 30%;
       }
     }
+  }
+
+  /* Frosted-glass surface — semi-transparent card tint, hairline highlight, and
+     an inner top edge. Solid-fills under prefers-reduced-transparency. */
+  .glass {
+    background-color: color-mix(in srgb, var(--card) 55%, transparent);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.06),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .glass {
+      background-color: var(--card);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+  }
+
+  /* Editorial image reveal — a clip-path wipe + settle tied to scroll position.
+     Base state is fully visible (see below): the animation is layered on only
+     where `animation-timeline: view()` is supported, so an image can never get
+     stuck hidden behind a JS/observer trigger. */
+  .media-reveal {
+    clip-path: inset(0 0 0 0);
+  }
+  @keyframes media-rise {
+    from {
+      clip-path: inset(0 0 100% 0);
+      transform: scale(1.06);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+      transform: scale(1);
+    }
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .media-reveal {
+        animation: media-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 5% cover 34%;
+      }
+    }
+  }
+
+  /* Gentle ambient float for the scroll cue — softer than Tailwind's bounce. */
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(5px);
+    }
+  }
+  .animate-float {
+    animation: float 2.6s var(--ease-in-out-strong) infinite;
   }
 
   /* Masked line reveal — each line slides up from behind a clip edge.
@@ -179,7 +253,7 @@
   }
   @media (prefers-reduced-motion: no-preference) {
     .line-mask > * {
-      animation: mask-rise 0.95s cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation: mask-rise 0.95s var(--ease-out-strong) both;
       animation-delay: var(--reveal-delay, 0ms);
     }
   }

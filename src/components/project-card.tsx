@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, ArrowUpRight, Github } from "lucide-react";
 import type { Project } from "@/content/projects";
 import { MediaFrame } from "@/components/primitives";
-import { Tilt } from "@/components/motion-fx";
+import { Tilt, Parallax } from "@/components/motion-fx";
 
 export function FlagshipCard({
   project,
@@ -56,7 +56,7 @@ export function FlagshipCard({
               className="inline-flex items-center gap-2 font-medium text-foreground"
             >
               Read case study
-              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+              <ArrowRight className="h-4 w-4 transition-transform duration-200 ease-out-strong hover-device:group-hover:translate-x-1" />
             </Link>
             {project.links.demo && (
               <a
@@ -85,14 +85,16 @@ export function FlagshipCard({
 
         <div className="md:col-span-5">
           <Link href={caseHref} className="block">
-            <Tilt>
-              <MediaFrame
-                src={project.image}
-                alt={`${project.title} preview`}
-                label={`${project.title} — cover`}
-                className="transition-transform duration-500 group-hover:scale-[1.01]"
-              />
-            </Tilt>
+            <Parallax amount={22}>
+              <Tilt>
+                <MediaFrame
+                  src={project.image}
+                  alt={`${project.title} preview`}
+                  label={`${project.title} — cover`}
+                  className="transition-transform duration-500 ease-out-strong hover-device:group-hover:scale-[1.03]"
+                />
+              </Tilt>
+            </Parallax>
           </Link>
         </div>
       </div>
@@ -109,6 +111,7 @@ export function SecondaryCard({ project }: { project: Project }) {
           alt={`${project.title} preview`}
           label={project.title}
           ratio="aspect-[16/10]"
+          className="transition-transform duration-500 ease-out-strong hover-device:group-hover:scale-[1.03]"
         />
       </Tilt>
 

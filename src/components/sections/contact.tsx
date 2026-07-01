@@ -82,7 +82,7 @@ export function Contact() {
               </div>
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-all duration-300 hover:opacity-90 active:scale-[0.98]"
+                className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-[transform,opacity] duration-150 ease-out-strong hover:opacity-90 active:scale-[0.98]"
               >
                 Send message
                 <ArrowUpRight className="h-4 w-4" />
@@ -168,7 +168,7 @@ function ContactRow({
       </span>
       <span className="flex items-center gap-2 text-foreground/90">
         {value}
-        <ArrowUpRight className="h-4 w-4 text-faint transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        <ArrowUpRight className="h-4 w-4 text-faint transition-transform duration-200 ease-out-strong hover-device:group-hover:-translate-y-0.5 hover-device:group-hover:translate-x-0.5" />
       </span>
     </a>
   );

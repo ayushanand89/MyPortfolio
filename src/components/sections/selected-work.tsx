@@ -8,7 +8,6 @@ export function SelectedWork() {
       <Container>
         <Reveal>
           <SectionHeader
-            index="02"
             eyebrow="Selected work"
             title="Products, built end to end."
           />

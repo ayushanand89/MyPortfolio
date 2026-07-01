@@ -8,6 +8,10 @@ import { cn } from "@/lib/utils";
  * so cached/fast images never get stuck behind the placeholder). A labelled
  * editorial placeholder sits behind it and is revealed only if the image is
  * missing or errors.
+ *
+ * `.media-reveal` layers a scroll-driven clip-path wipe on top *where the
+ * browser supports it* (see globals.css); everywhere else the image simply
+ * stays visible. The reveal can never hide the image.
  */
 export function MediaFrame({
   src,
@@ -47,7 +51,7 @@ export function MediaFrame({
           alt={alt}
           loading="lazy"
           onError={() => setFailed(true)}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="media-reveal absolute inset-0 h-full w-full object-cover"
         />
       )}
     </div>

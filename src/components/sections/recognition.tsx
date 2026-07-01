@@ -7,11 +7,7 @@ export function Recognition() {
     <section id="recognition" className="border-t border-border py-20 sm:py-28">
       <Container>
         <Reveal>
-          <SectionHeader
-            index="06"
-            eyebrow="Recognition"
-            title="Selected highlights."
-          />
+          <SectionHeader title="Selected highlights." />
         </Reveal>
 
         <div className="border-t border-border">

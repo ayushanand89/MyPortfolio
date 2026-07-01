@@ -1,6 +1,12 @@
 "use client";
 
-import type { CSSProperties } from "react";
+import { useRef, type CSSProperties } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  useReducedMotion,
+} from "framer-motion";
 import { ArrowDown, Check } from "lucide-react";
 import { useLenis } from "lenis/react";
 import { profile } from "@/content/profile";
@@ -10,6 +16,19 @@ import { smoothScrollToHash } from "@/lib/scroll";
 
 export function Hero() {
   const lenis = useLenis();
+  const ref = useRef<HTMLElement>(null);
+  const reduce = useReducedMotion();
+
+  // Scroll-driven parallax: the hero drifts down, scales back, and fades as it
+  // leaves — a cinematic "zoom out" hand-off to the rest of the page.
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [0, 140]);
+  const scale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+  const parallax = reduce ? undefined : { y, scale, opacity };
 
   const scrollTo = (hash: string) => (e: React.MouseEvent) => {
     if (document.querySelector(hash)) {
@@ -19,7 +38,12 @@ export function Hero() {
   };
 
   return (
-    <section id="top" className="relative pt-36 pb-20 sm:pt-44 sm:pb-24">
+    <section
+      ref={ref}
+      id="top"
+      className="relative pt-36 pb-20 sm:pt-44 sm:pb-24"
+    >
+      <motion.div style={parallax}>
       <Container>
         <Reveal immediate>
           <p className="eyebrow">
@@ -28,7 +52,7 @@ export function Hero() {
           </p>
         </Reveal>
 
-        <h1 className="display mt-6 text-[clamp(2.5rem,7.5vw,6rem)]">
+        <h1 className="display mt-6 text-[clamp(2.75rem,8.5vw,7rem)] font-extrabold">
           <span
             className="line-mask"
             style={{ "--reveal-delay": "0.05s" } as CSSProperties}
@@ -89,10 +113,11 @@ export function Hero() {
           </ul>
         </Reveal>
       </Container>
+      </motion.div>
 
       <Container>
         <div className="mt-16 flex items-center gap-3 text-faint sm:mt-20">
-          <ArrowDown className="h-4 w-4 animate-bounce" />
+          <ArrowDown className="h-4 w-4 animate-float" />
           <span className="eyebrow">Scroll</span>
         </div>
       </Container>

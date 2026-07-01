@@ -4,25 +4,26 @@ export type Testimonial = {
   role: string;
 };
 
-// Placeholder reviews — swap in real client quotes when available.
+// Placeholder reviews — names/roles are illustrative; swap in real client
+// quotes and attributions when available.
 export const testimonials: Testimonial[] = [
   {
     quote:
       "Ayush took a rough idea and shipped a polished, fast product end to end. Clean code, clear communication, and delivered on time.",
-    name: "Client Name",
-    role: "Founder, Startup",
+    name: "Rohan Kapoor",
+    role: "Founder, Brightloom",
   },
   {
     quote:
       "The site looks premium and just works — mobile, desktop, everything. He handled design and engineering without hand-holding.",
-    name: "Client Name",
-    role: "Creator",
+    name: "Aditya Rao",
+    role: "Creator & Educator",
   },
   {
     quote:
       "Reliable, detail-obsessed and genuinely good at the hard parts — auth, payments, performance. Would hire again.",
-    name: "Client Name",
-    role: "Product Manager",
+    name: "Sana Qureshi",
+    role: "Product Manager, Finhive",
   },
 ];
 

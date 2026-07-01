@@ -7,11 +7,7 @@ export function Experience() {
     <section id="experience" className="border-t border-border py-20 sm:py-28">
       <Container>
         <Reveal>
-          <SectionHeader
-            index="05"
-            eyebrow="Experience"
-            title="Where I've been working."
-          />
+          <SectionHeader title="Where I've been working." />
         </Reveal>
 
         <div className="border-t border-border">

@@ -6,11 +6,7 @@ export function Process() {
     <section id="process" className="border-t border-border py-20 sm:py-28">
       <Container>
         <Reveal>
-          <SectionHeader
-            index="03"
-            eyebrow="How I work"
-            title="From idea to launch."
-          />
+          <SectionHeader title="From idea to launch." />
         </Reveal>
 
         <div className="grid gap-px overflow-hidden rounded-xl border border-border bg-border md:grid-cols-2 lg:grid-cols-4">

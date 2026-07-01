@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Check, Quote } from "lucide-react";
 import { testimonials, trustPoints } from "@/content/testimonials";
 import { Container, Reveal, SectionHeader } from "@/components/primitives";
 import { ShowcaseCard } from "@/components/showcase-card";
+import { ParallaxGlow } from "@/components/motion-fx";
 
 export function Testimonials() {
   const trackRef = useRef<HTMLDivElement>(null);
@@ -18,7 +19,11 @@ export function Testimonials() {
   };
 
   return (
-    <section id="testimonials" className="border-t border-border py-20 sm:py-28">
+    <section
+      id="testimonials"
+      className="relative isolate border-t border-border py-20 sm:py-28"
+    >
+      <ParallaxGlow className="left-[22%]" />
       <Container>
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">

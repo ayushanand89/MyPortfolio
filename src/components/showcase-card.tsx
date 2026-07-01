@@ -25,12 +25,16 @@ export function ShowcaseCard({
   tilt = 7,
   glow = 320,
   lift = 34,
+  solid = false,
 }: {
   children: ReactNode;
   className?: string;
   tilt?: number;
   glow?: number;
   lift?: number;
+  /** Opaque surface instead of the translucent glass — needed when cards stack
+   *  over each other (sticky stack) so lower cards don't bleed through. */
+  solid?: boolean;
 }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
@@ -56,7 +60,12 @@ export function ShowcaseCard({
     setEnabled(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
   }, []);
 
-  const base = "glass relative overflow-hidden rounded-2xl";
+  const base = cn(
+    "relative overflow-hidden rounded-2xl",
+    solid
+      ? "border border-white/10 bg-card shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+      : "glass",
+  );
 
   if (reduce || !enabled) {
     return <div className={cn(base, className)}>{children}</div>;

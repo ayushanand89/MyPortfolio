@@ -16,13 +16,28 @@ export function SelectedWork() {
           />
         </Reveal>
 
-        <div className="space-y-6 sm:space-y-8">
+        {/* Sticky stack: each card pins a little lower than the last, so they
+            pile with a peeking edge as you scroll — on mobile and desktop alike.
+            Cards are `solid` so the stacked ones don't bleed through. */}
+        <div className="mt-4">
           {flagshipProjects.map((project, i) => (
-            <Reveal key={project.slug} delay={i * 0.05}>
-              <ShowcaseCard className="p-6 sm:p-9" tilt={3} lift={0} glow={520}>
-                <FlagshipCard project={project} index={i} />
-              </ShowcaseCard>
-            </Reveal>
+            <div
+              key={project.slug}
+              className="sticky"
+              style={{ top: `calc(5rem + ${i * 1.5}rem)` }}
+            >
+              <div className="pb-6 sm:pb-8">
+                <ShowcaseCard
+                  solid
+                  className="p-6 sm:p-9"
+                  tilt={3}
+                  lift={0}
+                  glow={520}
+                >
+                  <FlagshipCard project={project} index={i} />
+                </ShowcaseCard>
+              </div>
+            </div>
           ))}
         </div>
       </Container>

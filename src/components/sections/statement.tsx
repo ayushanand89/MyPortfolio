@@ -9,6 +9,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { Container } from "@/components/primitives";
+import { ParallaxGlow } from "@/components/motion-fx";
 
 const STATEMENT =
   "I design and build digital products end to end — obsessing over the details most people never notice, because that is exactly what makes software feel effortless.";
@@ -30,7 +31,8 @@ export function Statement() {
   const words = STATEMENT.split(" ");
 
   return (
-    <section className="py-28 sm:py-40">
+    <section className="relative isolate py-28 sm:py-40">
+      <ParallaxGlow />
       <Container>
         <p className="eyebrow mb-8">How I work</p>
         <p

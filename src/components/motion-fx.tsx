@@ -223,6 +223,55 @@ export function ParallaxWatermark({
 }
 
 /**
+ * Ambient accent glow that drifts with scroll — a soft depth layer behind a
+ * section's content. Scroll-driven (not perpetual), faint, GPU-composited, and
+ * null under reduced motion. Drop as the first child of a `relative isolate`
+ * section; reposition with `className` (defaults to centred).
+ */
+export function ParallaxGlow({
+  size = 620,
+  speed = 130,
+  className,
+}: {
+  size?: number;
+  speed?: number;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"],
+  });
+  const y = useTransform(scrollYProgress, [0, 1], [speed, -speed]);
+  const transform = useMotionTemplate`translate3d(-50%, calc(-50% + ${y}px), 0)`;
+
+  if (reduce) return null;
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden
+      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+    >
+      <motion.span
+        style={{
+          width: size,
+          height: size,
+          transform,
+          background:
+            "radial-gradient(circle, color-mix(in srgb, var(--accent) 13%, transparent), transparent 66%)",
+        }}
+        className={cn(
+          "absolute left-1/2 top-1/2 rounded-full blur-3xl",
+          className,
+        )}
+      />
+    </div>
+  );
+}
+
+/**
  * Cursor-follow accent glow. Listens on its parent element, so drop it as the
  * first child of any `relative isolate` container and it lights up where the
  * pointer is. Hover-capable pointers only (attaches no listeners on touch) and

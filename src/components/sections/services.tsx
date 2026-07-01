@@ -44,26 +44,32 @@ export function Services() {
           <SectionHeader title="What I can build for you." />
         </Reveal>
 
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
+        {/* Sticky-stack on mobile (cards pile with a peeking edge as you
+            scroll); the asymmetric bento grid takes over at sm+. Cards are
+            `solid` so stacked ones don't bleed through. */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
           {services.map((service, i) => {
             const Icon = icons[service.icon];
             return (
-              <Reveal
+              <div
                 key={service.title}
-                variant="scale"
-                stagger={i % 3}
-                className={cn("h-full", spans[i % spans.length])}
+                className={cn("sticky h-full sm:static", spans[i % spans.length])}
+                style={{ top: `calc(5rem + ${i * 1.5}rem)` }}
               >
-                <ShowcaseCard className="group h-full p-7">
-                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-accent">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="mt-5 text-lg font-semibold">{service.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted">
-                    {service.description}
-                  </p>
-                </ShowcaseCard>
-              </Reveal>
+                <Reveal variant="scale" stagger={i % 3} className="h-full">
+                  <ShowcaseCard solid className="group h-full p-7">
+                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-accent">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="mt-5 text-lg font-semibold">
+                      {service.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted">
+                      {service.description}
+                    </p>
+                  </ShowcaseCard>
+                </Reveal>
+              </div>
             );
           })}
         </div>

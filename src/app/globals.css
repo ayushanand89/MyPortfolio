@@ -282,14 +282,19 @@
         transform: none;
       }
 
-      /* Clip-wipe only — no transform here, so it never fights MediaFrame's
+      /* Media reveal is on a dedicated wrapper (not the img), so a fade + settle
+         is safe here — it can't fight the img's carousel opacity or the frame's
          hover scale. */
       html.reveal-js .media-reveal {
-        clip-path: inset(0 0 100% 0);
-        transition: clip-path 0.9s var(--ease-out-strong);
+        opacity: 0;
+        transform: scale(1.04);
+        transition:
+          opacity 0.9s var(--ease-out-strong),
+          transform 0.9s var(--ease-out-strong);
       }
       html.reveal-js .media-reveal.is-inview {
-        clip-path: inset(0 0 0 0);
+        opacity: 1;
+        transform: none;
       }
 
       html.reveal-js .mask-reveal > * {
@@ -464,29 +469,39 @@
     transform: translateX(130%);
   }
 
-  /* Editorial image reveal — a clip-path wipe + settle tied to scroll position.
-     Base state is fully visible (see below): the animation is layered on only
-     where `animation-timeline: view()` is supported, so an image can never get
-     stuck hidden behind a JS/observer trigger. */
+  /* Editorial image reveal — a fade + settle tied to scroll position, on a
+     dedicated wrapper (see MediaFrame). Base state is fully visible: the
+     animation is layered on only where `animation-timeline: view()` is
+     supported. Uses opacity/transform (NOT clip-path) — Firefox honours view()
+     timelines but won't animate clip-path on one, which left covers invisible. */
   .media-reveal {
-    clip-path: inset(0 0 0 0);
+    opacity: 1;
   }
   @keyframes media-rise {
     from {
-      clip-path: inset(0 0 100% 0);
-      transform: scale(1.06);
+      opacity: 0;
+      transform: scale(1.04);
     }
     to {
-      clip-path: inset(0 0 0 0);
-      transform: scale(1);
+      opacity: 1;
+      transform: none;
     }
   }
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
       .media-reveal {
+        opacity: 0;
         animation: media-rise linear both;
         animation-timeline: view();
         animation-range: entry 5% cover 34%;
+      }
+      /* Safety net: scroll-reveal.tsx adds `.is-inview` once the frame is well in
+         view, forcing it visible even if a browser mis-drives the view() timeline
+         (a no-op in Chromium, where the fade has already finished by then). */
+      .media-reveal.is-inview {
+        animation: none;
+        opacity: 1;
+        transform: none;
       }
     }
   }

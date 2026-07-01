@@ -27,13 +27,7 @@ export function SelectedWork() {
               top={`calc(5rem + ${i * 1.5}rem)`}
             >
               <div className="pb-6 sm:pb-8">
-                <ShowcaseCard
-                  solid
-                  className="p-6 sm:p-9"
-                  tilt={3}
-                  lift={0}
-                  glow={520}
-                >
+                <ShowcaseCard solid className="p-6 sm:p-9" glow={520}>
                   <FlagshipCard project={project} index={i} />
                 </ShowcaseCard>
               </div>

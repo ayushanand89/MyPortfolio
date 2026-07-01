@@ -54,7 +54,7 @@ export function Testimonials() {
               data-card
               className="w-[84%] shrink-0 snap-start sm:w-[21rem]"
             >
-              <ShowcaseCard className="flex h-full flex-col p-7" tilt={6}>
+              <ShowcaseCard className="flex h-full flex-col p-7">
                 <Quote className="h-7 w-7 text-accent/60" />
                 <blockquote className="mt-4 flex-1 leading-relaxed text-foreground/90">
                   &ldquo;{t.quote}&rdquo;

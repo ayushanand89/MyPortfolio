@@ -56,7 +56,7 @@ export const projects: Project[] = [
     role: "Designed & built end to end",
     category: "flagship",
     tags: ["Next.js 16", "React 19", "TypeScript", "Supabase", "Razorpay", "Tailwind"],
-    image: "/work/sukh-sadam/cover.png",
+    image: "/work/sukh-sadam/cover.jpg",
     links: {},
     hasCaseStudy: true,
     cover: {
@@ -86,7 +86,7 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/sukh-sadam/landing.png",
+        src: "/work/sukh-sadam/landing.jpg",
         alt: "Sukh Sadam landing page",
         caption: "Landing — verified counselors, private recovery tools, a community that's been there.",
       },
@@ -123,7 +123,7 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/sukh-sadam/dashboard.png",
+        src: "/work/sukh-sadam/dashboard.jpg",
         alt: "Patient recovery dashboard",
         caption: "Patient home — streak, daily check-in, mood, and next session at a glance.",
       },
@@ -199,7 +199,7 @@ export const projects: Project[] = [
     association: "Associated with ClanFlare",
     category: "flagship",
     tags: ["Next.js", "n8n", "RAG", "Pinecone", "Cohere", "Upstash", "Redis"],
-    image: "/work/enterprise-ai-chatbot/cover.png",
+    image: "/work/enterprise-ai-chatbot/cover.jpg",
     links: {},
     hasCaseStudy: true,
     cover: {
@@ -242,7 +242,7 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/enterprise-ai-chatbot/chat.png",
+        src: "/work/enterprise-ai-chatbot/chat.jpg",
         alt: "Chat interface answering in the creator's voice",
         caption: "Answers in his voice — short, blunt, Hinglish — and it cites the exact clip it's drawing from.",
       },
@@ -254,7 +254,7 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/enterprise-ai-chatbot/architecture.png",
+        src: "/work/enterprise-ai-chatbot/architecture.jpg",
         alt: "System architecture diagram",
         caption: "Interface separated from intelligence: Next.js → n8n agent → OpenRouter, with a two-tier retrieval layer.",
       },
@@ -329,7 +329,7 @@ export const projects: Project[] = [
     role: "Designed & built end to end",
     category: "flagship",
     tags: ["React 19", "Redux Toolkit", "Express", "MongoDB", "PayPal", "Vercel"],
-    image: "/work/barethreads/cover.png",
+    image: "/work/barethreads/cover.jpg",
     links: {
       demo: "https://barethreads.vercel.app",
       github: "https://github.com/ayushanand89/BareThreads",
@@ -362,7 +362,7 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/barethreads/storefront.png",
+        src: "/work/barethreads/storefront.jpg",
         alt: "BareThreads storefront collection page",
         caption:
           "Shop the edit — a filterable catalog by category, gender, size, colour, brand and price, with live sort and removable filter chips.",
@@ -392,7 +392,7 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/barethreads/product.png",
+        src: "/work/barethreads/product.jpg",
         alt: "BareThreads product detail page",
         caption:
           "A product page with magnifier zoom, gallery, size/colour pickers and a server-computed rating.",
@@ -414,7 +414,7 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/barethreads/admin.png",
+        src: "/work/barethreads/admin.jpg",
         alt: "BareThreads admin dashboard",
         caption:
           "The admin dashboard — products, orders and users, all behind role-gated, admin-only routes.",

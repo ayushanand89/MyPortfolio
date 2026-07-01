@@ -92,29 +92,37 @@ export function MediaFrame({
         </span>
       </div>
 
-      {showImage &&
-        gallery.map((s, i) => {
-          // Only the cover mounts until the user hovers in.
-          if (i > 0 && (!canCarousel || !activated)) return null;
-          const isCover = i === 0;
-          return (
-            // Plain img keeps us free of next/image remote config for a static portfolio.
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={s}
-              src={s}
-              alt={isCover ? alt : ""}
-              loading="lazy"
-              onError={isCover ? () => setFailed(true) : undefined}
-              className={cn(
-                "absolute inset-0 h-full w-full object-cover",
-                isCover && "media-reveal",
-                canCarousel && "transition-opacity duration-500 ease-out-strong",
-                canCarousel && i !== index ? "opacity-0" : "opacity-100",
-              )}
-            />
-          );
-        })}
+      {/* The scroll reveal lives on this STABLE wrapper (its className never
+          changes), not on the imgs — the imgs' classes flip on hover/carousel,
+          which would let React wipe the JS-fallback `.is-inview`. The reveal is
+          opacity/transform (not clip-path) so Firefox drives it on a view()
+          timeline too. */}
+      {showImage && (
+        <div className="media-reveal absolute inset-0">
+          {gallery.map((s, i) => {
+            // Only the cover mounts until the user hovers in.
+            if (i > 0 && (!canCarousel || !activated)) return null;
+            const isCover = i === 0;
+            return (
+              // Plain img keeps us free of next/image remote config for a static portfolio.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={s}
+                src={s}
+                alt={isCover ? alt : ""}
+                loading="lazy"
+                onError={isCover ? () => setFailed(true) : undefined}
+                className={cn(
+                  "absolute inset-0 h-full w-full object-cover",
+                  canCarousel &&
+                    "transition-opacity duration-500 ease-out-strong",
+                  canCarousel && i !== index ? "opacity-0" : "opacity-100",
+                )}
+              />
+            );
+          })}
+        </div>
+      )}
 
       {canCarousel && isHovering && (
         <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">

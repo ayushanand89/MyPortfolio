@@ -141,6 +141,37 @@
     line-height: 0.94;
   }
 
+  /* Hero-only display step — tighter than section H2s so the H1 visibly
+     outranks everything below it. Layer on top of `.display`. */
+  .display-hero {
+    letter-spacing: -0.055em;
+    line-height: 0.9;
+  }
+
+  /* Accent-coloured slice of an eyebrow — the chapter-number signature. */
+  .eyebrow-accent {
+    color: var(--accent);
+  }
+
+  /* Oversized stroked ghost numeral behind section headers — chapter identity
+     with zero scroll JS. Sits behind the header text (parent is `relative`,
+     the enclosing section is `isolate`). */
+  .chapter-num {
+    position: absolute;
+    top: -0.22em;
+    right: 0;
+    z-index: -1;
+    font-family: var(--font-display), var(--font-sans), sans-serif;
+    font-weight: 800;
+    font-size: clamp(5.5rem, 15vw, 11rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1px color-mix(in srgb, var(--foreground) 11%, transparent);
+    user-select: none;
+    pointer-events: none;
+  }
+
   /* Animated underline for editorial links */
   .link-underline {
     background-image: linear-gradient(currentColor, currentColor);
@@ -567,65 +598,168 @@
     }
   }
 
-  /* Page-load curtain — a cinematic intro that fills a bar then lifts to reveal
-     the page. Pure CSS so it works with no JS and removes itself; hidden under
-     reduced motion. */
+  /* Page-load dive intro — a glossy tile with a circular hole appears with
+     the wordmark, holds a beat, then scales up massively so the viewer flies
+     THROUGH the hole. The hole is filled with the page background colour, so
+     the closing overlay fade is an invisible seam straight onto the homepage.
+     Transform/opacity only (no per-frame paints), pure CSS so it works with
+     no JS and removes itself; hidden under reduced motion. One shared 4.2s
+     timeline across all pieces — unhurried on purpose, so the object and
+     wordmark get a real beat before the dive. */
   .intro-curtain {
     position: fixed;
     inset: 0;
     z-index: 100;
+    overflow: hidden;
     display: grid;
     place-items: center;
     background-color: var(--background);
-    animation: intro-lift 1.7s var(--ease-drawer) forwards;
+    animation: intro-overlay 4.2s linear forwards;
   }
-  .intro-inner {
+  .intro-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+  }
+  /* The object — a glossy sage-tinted tile with a punched circular "porthole". */
+  .intro-tile {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: clamp(150px, 24vw, 200px);
+    aspect-ratio: 1;
+    border-radius: 1.6rem;
+    background:
+      radial-gradient(
+        120% 120% at 18% 12%,
+        rgba(255, 255, 255, 0.22),
+        transparent 38%
+      ),
+      linear-gradient(
+        145deg,
+        color-mix(in srgb, var(--accent) 34%, #131713),
+        #0f120f 64%
+      );
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.14),
+      0 40px 90px -30px rgba(0, 0, 0, 0.8);
+    transform-origin: center;
+    will-change: transform;
+    animation: intro-tile 4.2s linear both;
+  }
+  /* The hole — page-background fill, so diving through it lands "inside"
+     the site. */
+  .intro-hole {
+    display: block;
+    width: 62%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background-color: var(--background);
+    box-shadow:
+      inset 0 6px 18px rgba(0, 0, 0, 0.55),
+      0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .intro-text {
+    position: relative;
+    z-index: 1;
     display: grid;
     justify-items: center;
-    gap: 1.1rem;
-    animation: intro-fade 1.7s ease forwards;
+    gap: 0.9rem;
+    animation: intro-text 4.2s linear both;
   }
-  .intro-bar {
-    position: relative;
+  .intro-eyebrow {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  .intro-word {
     display: block;
-    height: 2px;
-    width: 150px;
     overflow: hidden;
-    background-color: var(--border);
+    padding-bottom: 0.14em;
   }
-  .intro-bar::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    transform-origin: left;
-    background-color: var(--accent);
-    animation: intro-fill 1.15s var(--ease-out-strong) forwards;
+  .intro-word > span {
+    display: block;
+    font-family: var(--font-display), var(--font-sans), sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    font-size: clamp(1.9rem, 5vw, 3rem);
+    animation: intro-rise 1.1s var(--ease-out-strong) 0.35s both;
   }
-  @keyframes intro-fill {
-    from {
-      transform: scaleX(0);
+  /* Timeline (of 4.2s): 0–0.8s tile scales in · beat with the wordmark ·
+     1.5–1.8s a slight pull-back "breath in" · 1.8–3.7s the dive (scale 36
+     swallows the viewport through the hole) · 3.3–4.1s overlay fades onto
+     the identical page background while the hero headline rises. */
+  @keyframes intro-tile {
+    0% {
+      opacity: 0;
+      transform: scale(0.82);
+      animation-timing-function: var(--ease-out-strong);
     }
-    to {
-      transform: scaleX(1);
-    }
-  }
-  @keyframes intro-lift {
-    0%,
-    58% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(-100%);
-    }
-  }
-  @keyframes intro-fade {
-    0%,
-    45% {
+    19% {
       opacity: 1;
+      transform: scale(1);
+      animation-timing-function: linear;
     }
-    72%,
+    36% {
+      transform: scale(1);
+      animation-timing-function: var(--ease-in-out-strong);
+    }
+    43% {
+      transform: scale(0.94);
+      animation-timing-function: var(--ease-in-out-strong);
+    }
+    88%,
+    100% {
+      opacity: 1;
+      transform: scale(36);
+    }
+  }
+  @keyframes intro-text {
+    0%,
+    7% {
+      opacity: 0;
+      transform: translateY(14px);
+      animation-timing-function: var(--ease-out-strong);
+    }
+    21% {
+      opacity: 1;
+      transform: none;
+    }
+    41% {
+      opacity: 1;
+      transform: none;
+    }
+    52%,
     100% {
       opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+  @keyframes intro-rise {
+    from {
+      transform: translateY(115%);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes intro-overlay {
+    0%,
+    79% {
+      opacity: 1;
+    }
+    97% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
     }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -634,11 +768,27 @@
     }
   }
 
+  /* Landing sync — on a full page load (class set pre-paint by the inline
+     script in layout.tsx, removed after the intro finishes) the hero's
+     entrance is postponed so the headline rises right as the dive lands.
+     3.8s puts the rise AFTER the overlay has mostly cleared (it fades
+     3.3–4.1s) so the motion is actually seen, and the slightly longer
+     duration makes it read. Client navigations and no-JS/reduced-motion
+     loads never get the class. */
+  html.intro-sync .reveal-now,
+  html.intro-sync .line-mask > * {
+    animation-delay: calc(var(--reveal-delay, 0ms) + 3800ms);
+    animation-duration: 1.1s;
+  }
+  html.intro-sync .text-sweep {
+    animation-delay: 4.5s;
+  }
+
   /* Infinite tech marquee. */
   .marquee-track {
     display: flex;
     width: max-content;
-    animation: marquee 34s linear infinite;
+    animation: marquee 44s linear infinite;
   }
   @keyframes marquee {
     to {

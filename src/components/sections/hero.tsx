@@ -7,12 +7,12 @@ import {
   useTransform,
   useReducedMotion,
 } from "framer-motion";
-import { ArrowDown, Check } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { useLenis } from "lenis/react";
 import { profile } from "@/content/profile";
 import { Container, Reveal, ButtonLink } from "@/components/primitives";
 import { Magnetic, Spotlight } from "@/components/motion-fx";
-import { HeroObject } from "@/components/hero-object";
+import { LocalTime } from "@/components/local-time";
 import { Scramble } from "@/components/scramble";
 import { smoothScrollToHash } from "@/lib/scroll";
 
@@ -47,7 +47,6 @@ export function Hero() {
     >
       <Spotlight size={560} />
       <motion.div style={parallax}>
-      <HeroObject />
       <Container>
         <Reveal immediate>
           <p className="eyebrow">
@@ -57,7 +56,7 @@ export function Hero() {
           </p>
         </Reveal>
 
-        <h1 className="display mt-6 text-[clamp(2.75rem,8.5vw,7rem)] font-extrabold">
+        <h1 className="display display-hero mt-6 text-[clamp(2.75rem,8.5vw,7.5rem)] font-extrabold">
           <span
             className="line-mask"
             style={{ "--reveal-delay": "0.05s" } as CSSProperties}
@@ -104,28 +103,52 @@ export function Hero() {
           </div>
         </Reveal>
 
+        {/* Meta bar — live human signals (place + time, availability, current
+            role) instead of generic feature badges. Hairline-divided, fixed
+            row height so hydration of the clock never shifts layout. */}
         <Reveal immediate delay={0.5}>
-          <ul className="mt-12 flex flex-wrap gap-x-8 gap-y-3">
-            {profile.badges.map((badge) => (
-              <li
-                key={badge}
-                className="flex items-center gap-2 text-sm text-muted"
-              >
-                <Check className="h-4 w-4 text-accent" />
-                {badge}
-              </li>
-            ))}
-          </ul>
+          <dl className="mt-12 grid grid-cols-1 divide-y divide-border border-y border-border sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            <div className="flex min-h-18 flex-col justify-center gap-1 py-3 sm:py-0 sm:pr-6">
+              <dt className="eyebrow">Based in</dt>
+              <dd className="text-sm text-foreground/90">
+                {profile.location} · <LocalTime />
+              </dd>
+            </div>
+            <div className="flex min-h-18 flex-col justify-center gap-1 py-3 sm:py-0 sm:px-6">
+              <dt className="eyebrow">Availability</dt>
+              <dd className="flex items-center gap-2 text-sm text-foreground/90">
+                {profile.available && (
+                  <span className="relative flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+                  </span>
+                )}
+                {profile.availabilityLabel}
+              </dd>
+            </div>
+            <div className="flex min-h-18 flex-col justify-center gap-1 py-3 sm:py-0 sm:pl-6">
+              <dt className="eyebrow">Currently</dt>
+              <dd className="text-sm text-foreground/90">{profile.currently}</dd>
+            </div>
+          </dl>
         </Reveal>
-      </Container>
-      </motion.div>
 
-      <Container>
-        <div className="mt-16 flex items-center gap-3 text-faint sm:mt-20">
-          <ArrowDown className="h-4 w-4 animate-float" />
-          <span className="eyebrow">Scroll</span>
+        {/* Scroll cue — a real control that hands off to the About chapter,
+            inside the parallax wrapper so it fades out with the hero. */}
+        <div className="mt-14 sm:mt-16">
+          <button
+            type="button"
+            onClick={scrollTo("#about")}
+            className="group flex items-center gap-3 text-faint transition-colors duration-200 hover:text-foreground"
+          >
+            <ArrowDown className="h-4 w-4 animate-float" />
+            <span className="eyebrow transition-colors duration-200 group-hover:text-foreground">
+              Scroll
+            </span>
+          </button>
         </div>
       </Container>
+      </motion.div>
     </section>
   );
 }

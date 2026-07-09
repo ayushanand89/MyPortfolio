@@ -1,15 +1,39 @@
 import Link from "next/link";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { ArrowRight, Github, Linkedin, Mail } from "lucide-react";
 import { profile } from "@/content/profile";
 import { Container, Reveal } from "./primitives";
+import { Magnetic, ParallaxWatermark } from "./motion-fx";
+import { LocalTime } from "./local-time";
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-border py-12">
-      <Container>
-        <Reveal>
+    <footer className="relative isolate overflow-hidden border-t border-border">
+      {/* Finale — the closing CTA moment, with the name as the watermark. */}
+      <div className="relative py-20 sm:py-28">
+        <ParallaxWatermark text={profile.name} align="left" />
+        <Container>
+          <Reveal>
+            <span className="eyebrow">Next step</span>
+            <Magnetic strength={0.15}>
+              <Link
+                href="/#contact"
+                className="group mt-6 flex w-fit items-center gap-4 sm:gap-8"
+              >
+                <span className="display display-hero text-[clamp(3rem,9vw,7rem)] transition-colors duration-300 group-hover:text-accent">
+                  Let&rsquo;s build it
+                </span>
+                <ArrowRight className="h-9 w-9 shrink-0 transition-transform duration-300 ease-out-strong sm:h-14 sm:w-14 hover-device:group-hover:translate-x-3" />
+              </Link>
+            </Magnetic>
+          </Reveal>
+        </Container>
+      </div>
+
+      {/* Utility tier */}
+      <div className="border-t border-border py-12">
+        <Container>
           <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <Link
@@ -22,14 +46,9 @@ export function Footer() {
               <p className="mt-2 text-sm text-muted">
                 Full-Stack Web Developer · Available for freelance projects
               </p>
-              <a
-                href={profile.portfolio}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link-underline mt-1 inline-block text-sm text-faint hover:text-foreground"
-              >
-                ayush.clanflare.dev
-              </a>
+              <p className="mt-1 text-sm text-faint">
+                {profile.location} · <LocalTime />
+              </p>
             </div>
 
             <div className="flex items-center gap-5">
@@ -60,17 +79,17 @@ export function Footer() {
               </a>
             </div>
           </div>
-        </Reveal>
 
-        <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 text-sm text-faint sm:flex-row sm:items-center">
-          <p>
-            © {year} {profile.name}. Built with Next.js &amp; Tailwind.
-          </p>
-          <Link href="#top" className="link-underline hover:text-foreground">
-            Back to top ↑
-          </Link>
-        </div>
-      </Container>
+          <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 text-sm text-faint sm:flex-row sm:items-center">
+            <p>
+              © {year} {profile.name}. Built with Next.js &amp; Tailwind.
+            </p>
+            <Link href="#top" className="link-underline hover:text-foreground">
+              Back to top ↑
+            </Link>
+          </div>
+        </Container>
+      </div>
     </footer>
   );
 }

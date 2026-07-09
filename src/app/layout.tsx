@@ -83,6 +83,24 @@ export const metadata: Metadata = {
   },
 };
 
+// Person structured data — the highest-leverage SEO markup for a personal
+// brand site (name/role/profiles surface in rich results).
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.name,
+  url: profile.portfolio,
+  email: `mailto:${profile.email}`,
+  jobTitle: profile.role,
+  worksFor: { "@type": "Organization", name: "ClanFlare Solutions" },
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Delhi",
+    addressCountry: "IN",
+  },
+  sameAs: [profile.socials.github, profile.socials.linkedin],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -102,8 +120,12 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              '(function(){try{var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches;var s=window.CSS&&CSS.supports&&CSS.supports("animation-timeline: view()");if(!r&&!s&&"IntersectionObserver" in window){document.documentElement.classList.add("reveal-js")}}catch(e){}})();',
+              '(function(){try{var d=document.documentElement;var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches;var s=window.CSS&&CSS.supports&&CSS.supports("animation-timeline: view()");if(!r&&!s&&"IntersectionObserver" in window){d.classList.add("reveal-js")}if(!r){d.classList.add("intro-sync");setTimeout(function(){d.classList.remove("intro-sync")},7000)}}catch(e){}})();',
           }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
         <Intro />
         <ThemeProvider

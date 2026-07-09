@@ -15,12 +15,22 @@ export const profile = {
   resumeUrl:
     "https://drive.google.com/file/d/1HYQ31FpLT8X-f8RsEx66P_WQXo8pVfv5/view",
   available: true,
-  // Hero trust badges
-  badges: [
-    "Freelance projects delivered",
-    "Full-stack, end to end",
-    "Fast · responsive · scalable",
-  ],
+  availabilityLabel: "Open for freelance projects",
+  currently: "Software Developer @ ClanFlare",
+  // About chapter — first-person manifesto (scroll-scrubbed word by word) and
+  // the hairline fact-chip row beneath it.
+  about: {
+    manifesto:
+      "I'm Ayush — I design and build digital products end to end, obsessing over the details most people never notice, because that is exactly what makes software feel effortless.",
+    /** Words lit in accent as the manifesto scrubs (punctuation-stripped, lowercase). */
+    highlights: ["ayush", "end", "effortless"],
+    facts: [
+      { label: "Based in", value: "Delhi, India · IST" },
+      { label: "Currently", value: "Software Developer @ ClanFlare" },
+      { label: "Recognition", value: "TCS CodeVita — AIR 713" },
+      { label: "Education", value: "B.Tech Computer Engineering, ’25" },
+    ],
+  },
   socials: {
     github: "https://github.com/ayushanand89",
     linkedin: "https://www.linkedin.com/in/ayush-anand-a91919266/",

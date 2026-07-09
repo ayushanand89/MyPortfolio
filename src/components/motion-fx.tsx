@@ -169,6 +169,44 @@ export function Parallax({
 }
 
 /**
+ * "Approach from ahead" — the child enters from below oversized and faded,
+ * as if it's still in the distance ahead of the viewer, then settles to full
+ * size and opacity as it reaches its resting spot in the upper third of the
+ * viewport. Scale/opacity only (compositor-composited). The end point sits
+ * safely BELOW the sticky pin position, so progress always completes before
+ * a pinned card's rect stops moving. Passthrough under reduced motion.
+ */
+export function ScrollApproach({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    // 0 as the card's top crosses the viewport bottom; 1 once it reaches 35%
+    // from the top — before the sticky stack pins it (~14%), so the settle
+    // always finishes.
+    offset: ["start end", "start 35%"],
+  });
+  const scale = useTransform(scrollYProgress, [0, 1], [1.08, 1]);
+  const opacity = useTransform(scrollYProgress, [0, 1], [0.35, 1]);
+
+  if (reduce) {
+    return <div className={className}>{children}</div>;
+  }
+
+  return (
+    <motion.div ref={ref} className={className} style={{ scale, opacity }}>
+      {children}
+    </motion.div>
+  );
+}
+
+/**
  * Sticky-stack panel that firms up its card's frosted opacity as it scrolls
  * into the pinned "reading" position and recedes to translucent while it's
  * entering from below. Drives the `--panel-alpha` CSS variable that

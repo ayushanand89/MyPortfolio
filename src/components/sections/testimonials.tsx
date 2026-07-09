@@ -3,7 +3,12 @@
 import { useRef } from "react";
 import { ArrowLeft, ArrowRight, Check, Quote } from "lucide-react";
 import { testimonials, trustPoints } from "@/content/testimonials";
-import { Container, Reveal, SectionHeader } from "@/components/primitives";
+import {
+  Container,
+  Reveal,
+  Section,
+  SectionHeader,
+} from "@/components/primitives";
 import { ShowcaseCard } from "@/components/showcase-card";
 import { ParallaxGlow } from "@/components/motion-fx";
 
@@ -19,15 +24,13 @@ export function Testimonials() {
   };
 
   return (
-    <section
-      id="testimonials"
-      className="relative isolate border-t border-border py-20 sm:py-28"
-    >
+    <Section id="testimonials">
       <ParallaxGlow className="left-[22%]" />
       <Container>
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">
             <SectionHeader
+              eyebrow="Voices"
               title="What working with me is like."
               className="mb-0"
             />
@@ -82,7 +85,7 @@ export function Testimonials() {
           </ul>
         </Reveal>
       </Container>
-    </section>
+    </Section>
   );
 }
 

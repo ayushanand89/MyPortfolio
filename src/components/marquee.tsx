@@ -44,10 +44,10 @@ export function Marquee() {
           {sequence.map((item, i) => (
             <span
               key={i}
-              className="flex items-center whitespace-nowrap font-display text-2xl text-faint sm:text-3xl"
+              className="flex items-center whitespace-nowrap font-display text-2xl text-faint/80 sm:text-3xl"
             >
               {item}
-              <span className="mx-8 text-accent/50">✦</span>
+              <span className="mx-8 text-accent/40">✦</span>
             </span>
           ))}
         </div>

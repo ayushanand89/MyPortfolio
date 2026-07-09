@@ -97,7 +97,7 @@ function Meta({ label, value }: { label: string; value: string }) {
   );
 }
 
-function StatsRow({ items }: { items: Stat[] }) {
+export function StatsRow({ items }: { items: Stat[] }) {
   return (
     <dl className="mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
       {items.map((s) => (
@@ -154,7 +154,10 @@ function Block({ block }: { block: CaseStudyBlock }) {
 
     case "image":
       return (
-        <figure>
+        // Breakout width — the image outgrows the text column for a
+        // full-bleed editorial moment (the xl margin stays inside the
+        // viewport gutter, so nothing overflows).
+        <figure className="sm:-mx-8 xl:-mx-24">
           <Parallax amount={20}>
             <MediaFrame
               src={block.src}
@@ -164,7 +167,7 @@ function Block({ block }: { block: CaseStudyBlock }) {
             />
           </Parallax>
           {block.caption && (
-            <figcaption className="mt-3 text-sm text-faint">
+            <figcaption className="mt-3 text-sm text-faint sm:mx-8 xl:mx-24">
               {block.caption}
             </figcaption>
           )}
@@ -237,14 +240,27 @@ export function NextProject({ project }: { project: Project }) {
     <section className="border-t border-border py-16 sm:py-20">
       <Container>
         <Link href={`/work/${project.slug}`} className="group block">
-          <span className="eyebrow">Next project</span>
-          <div className="mt-4 flex items-center justify-between gap-6">
-            <h2 className="display text-3xl transition-colors group-hover:text-accent sm:text-5xl">
-              {project.title}
-            </h2>
-            <ArrowRight className="h-7 w-7 shrink-0 transition-transform duration-300 group-hover:translate-x-2" />
+          <div className="grid items-center gap-8 md:grid-cols-12">
+            <div className="md:col-span-8">
+              <span className="eyebrow">Next project</span>
+              <div className="mt-4 flex items-center gap-6">
+                <h2 className="display text-3xl transition-colors group-hover:text-accent sm:text-5xl">
+                  {project.title}
+                </h2>
+                <ArrowRight className="h-7 w-7 shrink-0 transition-transform duration-300 ease-out-strong group-hover:translate-x-2" />
+              </div>
+              <p className="mt-3 max-w-xl text-muted">{project.tagline}</p>
+            </div>
+            <div className="hidden md:col-span-4 md:block">
+              <MediaFrame
+                src={project.image}
+                alt={`${project.title} preview`}
+                label={project.title}
+                ratio="aspect-[16/10]"
+                className="transition-transform duration-500 ease-out-strong hover-device:group-hover:scale-[1.03]"
+              />
+            </div>
           </div>
-          <p className="mt-3 max-w-xl text-muted">{project.tagline}</p>
         </Link>
       </Container>
     </section>

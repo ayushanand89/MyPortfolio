@@ -1,27 +1,28 @@
 import { Hero } from "@/components/sections/hero";
 import { Marquee } from "@/components/marquee";
-import { Statement } from "@/components/sections/statement";
-import { Services } from "@/components/sections/services";
+import { About } from "@/components/sections/about";
 import { SelectedWork } from "@/components/sections/selected-work";
+import { Services } from "@/components/sections/services";
 import { Process } from "@/components/sections/process";
-import { Skills } from "@/components/sections/skills";
-import { Experience } from "@/components/sections/experience";
-import { Recognition } from "@/components/sections/recognition";
+import { Credibility } from "@/components/sections/credibility";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Contact } from "@/components/sections/contact";
 
+/**
+ * Narrative spine: identity → evidence → capability → method → proof →
+ * trust → conversion. Work sits above Services because shipped products are
+ * a stronger opener than claims.
+ */
 export default function Home() {
   return (
     <main>
       <Hero />
       <Marquee />
-      <Statement />
-      <Services />
+      <About />
       <SelectedWork />
+      <Services />
       <Process />
-      <Skills />
-      <Experience />
-      <Recognition />
+      <Credibility />
       <Testimonials />
       <Contact />
     </main>

@@ -11,8 +11,9 @@ import { smoothScrollToHash } from "@/lib/scroll";
 import { Magnetic } from "@/components/motion-fx";
 
 const links = [
-  { label: "Services", href: "/#services" },
+  { label: "About", href: "/#about" },
   { label: "Work", href: "/#work" },
+  { label: "Services", href: "/#services" },
   { label: "Process", href: "/#process" },
   { label: "Contact", href: "/#contact" },
 ];
@@ -119,8 +120,14 @@ export function Nav() {
             <Link
               href="/#contact"
               onClick={(e) => handleAnchor(e, "/#contact")}
-              className="inline-flex rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-[transform,opacity] duration-150 ease-out-strong hover:opacity-90 active:scale-[0.98]"
+              className="inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-1.5 text-sm font-medium text-background transition-[transform,opacity] duration-150 ease-out-strong hover:opacity-90 active:scale-[0.98]"
             >
+              {profile.available && (
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-70" />
+                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                </span>
+              )}
               Work with me
             </Link>
           </Magnetic>
@@ -159,8 +166,14 @@ export function Nav() {
                 <Link
                   href="/#contact"
                   onClick={(e) => handleAnchor(e, "/#contact")}
-                  className="inline-flex rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background"
+                  className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background"
                 >
+                  {profile.available && (
+                    <span className="relative flex h-1.5 w-1.5">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-70" />
+                      <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
+                    </span>
+                  )}
                   Work with me
                 </Link>
               </li>

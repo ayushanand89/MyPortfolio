@@ -8,15 +8,78 @@ export { MediaFrame } from "./media-frame";
 
 export function Container({
   className,
+  wide = false,
+  children,
+}: {
+  className?: string;
+  /** One width break — reserved for the Work chapter so it physically
+   *  outgrows the text column. */
+  wide?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className={cn(
+        "mx-auto w-full px-6 sm:px-8",
+        wide ? "max-w-6xl" : "max-w-5xl",
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}
+
+/**
+ * Section wrapper with varied vertical rhythm — `spacious` chapters breathe
+ * (no top border), `dense` ones compress. Alternating density is what keeps
+ * a long single page from reading as identical template bands.
+ */
+export function Section({
+  id,
+  variant = "default",
+  className,
+  children,
+}: {
+  id?: string;
+  variant?: "default" | "spacious" | "dense";
+  className?: string;
+  children: ReactNode;
+}) {
+  const rhythm = {
+    default: "border-t border-border py-20 sm:py-28",
+    spacious: "py-24 sm:py-36",
+    dense: "border-t border-border py-16 sm:py-24",
+  }[variant];
+
+  return (
+    <section id={id} className={cn("relative isolate", rhythm, className)}>
+      {children}
+    </section>
+  );
+}
+
+/** Pulsing-dot availability pill — shared by the hero meta bar and contact. */
+export function AvailabilityBadge({
+  className,
   children,
 }: {
   className?: string;
   children: ReactNode;
 }) {
   return (
-    <div className={cn("mx-auto w-full max-w-5xl px-6 sm:px-8", className)}>
+    <span
+      className={cn(
+        "inline-flex w-fit items-center gap-2 rounded-full border border-accent/40 px-4 py-2 text-sm text-foreground",
+        className,
+      )}
+    >
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+      </span>
       {children}
-    </div>
+    </span>
   );
 }
 
@@ -80,10 +143,16 @@ export function SectionHeader({
   rule?: boolean;
 }) {
   return (
-    <div className={cn("mb-12 sm:mb-16", className)}>
+    <div className={cn("relative mb-12 sm:mb-16", className)}>
+      {index && (
+        <span aria-hidden className="chapter-num reveal">
+          {index}
+        </span>
+      )}
       {eyebrow && (
         <span className="eyebrow">
-          <Scramble text={`${index ? `${index} — ` : ""}${eyebrow}`} />
+          {index && <span className="eyebrow-accent">{index} — </span>}
+          <Scramble text={eyebrow} />
         </span>
       )}
       <h2

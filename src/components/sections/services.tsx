@@ -7,9 +7,14 @@ import {
   ShoppingCart,
 } from "lucide-react";
 import { services } from "@/content/services";
-import { Container, Reveal, SectionHeader } from "@/components/primitives";
+import {
+  Container,
+  Reveal,
+  Section,
+  SectionHeader,
+} from "@/components/primitives";
 import { ShowcaseCard } from "@/components/showcase-card";
-import { ParallaxWatermark, StackPanel } from "@/components/motion-fx";
+import { StackPanel } from "@/components/motion-fx";
 import { cn } from "@/lib/utils";
 
 const icons = {
@@ -34,14 +39,14 @@ const spans = [
 
 export function Services() {
   return (
-    <section
-      id="services"
-      className="relative isolate border-t border-border py-20 sm:py-28"
-    >
-      <ParallaxWatermark text="Services" align="left" />
+    <Section id="services">
       <Container>
         <Reveal>
-          <SectionHeader title="What I can build for you." />
+          <SectionHeader
+            index="03"
+            eyebrow="Services"
+            title="What I can build for you."
+          />
         </Reveal>
 
         {/* Sticky-stack on mobile (cards pile with a peeking edge as you
@@ -61,12 +66,16 @@ export function Services() {
                     <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-accent">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <h3 className="mt-5 text-lg font-semibold">
-                      {service.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted">
-                      {service.description}
-                    </p>
+                    <Reveal stagger={1}>
+                      <h3 className="mt-5 text-lg font-semibold">
+                        {service.title}
+                      </h3>
+                    </Reveal>
+                    <Reveal stagger={2}>
+                      <p className="mt-2 text-sm leading-relaxed text-muted">
+                        {service.description}
+                      </p>
+                    </Reveal>
                   </ShowcaseCard>
                 </Reveal>
               </StackPanel>
@@ -74,6 +83,6 @@ export function Services() {
           })}
         </div>
       </Container>
-    </section>
+    </Section>
   );
 }

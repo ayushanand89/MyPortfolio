@@ -30,6 +30,9 @@ export type Project = {
   slug: string;
   title: string;
   tagline: string;
+  /** One proof-forward line for the card — what the project demonstrates,
+   *  pulled from its real stats. */
+  outcome?: string;
   summary: string;
   year: string;
   role?: string;
@@ -50,6 +53,7 @@ export const projects: Project[] = [
     slug: "sukh-sadam",
     title: "Sukh Sadam",
     tagline: "A full-stack recovery platform for gambling addiction.",
+    outcome: "30+ routes · 17 tables · RLS on every one · shipped solo",
     summary:
       "A two-sided product — a patient app for recovery and a counselor workspace for care — sharing one security-first data model. Bookings, payments, recovery tools, and an anonymous community, designed and built end to end.",
     year: "2026",
@@ -192,6 +196,7 @@ export const projects: Project[] = [
     slug: "enterprise-ai-chatbot",
     title: "Enterprise AI Persona Chatbot",
     tagline: "A production RAG agent that talks like a real creator.",
+    outcome: "2,000+ users · 95%+ persona adherence · ~20% lower latency",
     summary:
       "A persona AI with a versioned personality, a knowledge base built from a creator's entire video library, and live alerts that can overrule the model. Built for a client — names, branding and screenshots anonymized; the engineering is real.",
     year: "2026",
@@ -323,6 +328,7 @@ export const projects: Project[] = [
     slug: "barethreads",
     title: "BareThreads",
     tagline: "A full-stack fashion e-commerce platform — built end to end.",
+    outcome: "Storefront + admin · PayPal checkout · guest→user carts",
     summary:
       "A polished storefront for shoppers and an admin suite for the team, sharing one secure serverless REST API. Filterable catalog, guest→user carts, PayPal checkout, Google sign-in, and an admin dashboard — designed and engineered end to end.",
     year: "2024",

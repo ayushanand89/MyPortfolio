@@ -30,31 +30,44 @@ export function Scramble({
     if (!el) return;
 
     let interval: ReturnType<typeof setInterval> | undefined;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+
+    const churn = () => {
+      const start = performance.now();
+      const DURATION = 700;
+      interval = setInterval(() => {
+        const p = Math.min(1, (performance.now() - start) / DURATION);
+        if (p >= 1) {
+          clearInterval(interval);
+          setDisplay(text);
+          return;
+        }
+        const resolved = Math.floor(p * text.length);
+        setDisplay(
+          text
+            .split("")
+            .map((ch, i) =>
+              i < resolved || ch === " " || ch === "·"
+                ? ch
+                : GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+            )
+            .join(""),
+        );
+      }, 40);
+    };
+
     const io = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
         io.disconnect();
-        const start = performance.now();
-        const DURATION = 700;
-        interval = setInterval(() => {
-          const p = Math.min(1, (performance.now() - start) / DURATION);
-          if (p >= 1) {
-            clearInterval(interval);
-            setDisplay(text);
-            return;
-          }
-          const resolved = Math.floor(p * text.length);
-          setDisplay(
-            text
-              .split("")
-              .map((ch, i) =>
-                i < resolved || ch === " " || ch === "·"
-                  ? ch
-                  : GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
-              )
-              .join(""),
-          );
-        }, 40);
+        // On a full page load the dive intro covers the screen — hold the
+        // decode until the landing so it plays where it can be seen.
+        // performance.now() is time since navigation, so anything entering
+        // the viewport later (scroll) starts immediately as before.
+        const hold = document.documentElement.classList.contains("intro-sync")
+          ? Math.max(0, 3900 - performance.now())
+          : 0;
+        timeout = setTimeout(churn, hold);
       },
       { threshold: 0.5 },
     );
@@ -63,6 +76,7 @@ export function Scramble({
     return () => {
       io.disconnect();
       clearInterval(interval);
+      clearTimeout(timeout);
     };
   }, [text]);
 

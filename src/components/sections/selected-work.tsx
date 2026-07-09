@@ -1,16 +1,26 @@
 import { flagshipProjects } from "@/content/projects";
-import { Container, Reveal, SectionHeader } from "@/components/primitives";
+import {
+  Container,
+  Reveal,
+  Section,
+  SectionHeader,
+} from "@/components/primitives";
 import { FlagshipCard } from "@/components/project-card";
 import { ShowcaseCard } from "@/components/showcase-card";
-import { ParallaxWatermark, StackPanel } from "@/components/motion-fx";
+import {
+  ParallaxWatermark,
+  ScrollApproach,
+  StackPanel,
+} from "@/components/motion-fx";
 
 export function SelectedWork() {
   return (
-    <section id="work" className="relative isolate py-20 sm:py-28">
+    <Section id="work" variant="spacious">
       <ParallaxWatermark text="Work" align="right" />
-      <Container>
+      <Container wide>
         <Reveal>
           <SectionHeader
+            index="02"
             eyebrow="Selected work"
             title="Products, built end to end."
           />
@@ -27,14 +37,16 @@ export function SelectedWork() {
               top={`calc(5rem + ${i * 1.5}rem)`}
             >
               <div className="pb-6 sm:pb-8">
-                <ShowcaseCard solid className="p-6 sm:p-9" glow={520}>
-                  <FlagshipCard project={project} index={i} />
-                </ShowcaseCard>
+                <ScrollApproach>
+                  <ShowcaseCard solid className="p-6 sm:p-9" glow={520}>
+                    <FlagshipCard project={project} index={i} />
+                  </ShowcaseCard>
+                </ScrollApproach>
               </div>
             </StackPanel>
           ))}
         </div>
       </Container>
-    </section>
+    </Section>
   );
 }

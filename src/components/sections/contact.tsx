@@ -1,50 +1,80 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRight, Github, Linkedin, Mail } from "lucide-react";
+import {
+  ArrowUpRight,
+  Check,
+  Copy,
+  Github,
+  Linkedin,
+  Loader2,
+  Mail,
+} from "lucide-react";
 import { profile } from "@/content/profile";
-import { Container, Reveal } from "@/components/primitives";
+import {
+  AvailabilityBadge,
+  Container,
+  Reveal,
+  Section,
+  SectionHeader,
+} from "@/components/primitives";
 import { Magnetic, ParallaxWatermark, Spotlight } from "@/components/motion-fx";
-import { Scramble } from "@/components/scramble";
+import { cn } from "@/lib/utils";
+
+type Status = "idle" | "sending" | "sent" | "error";
 
 export function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [company, setCompany] = useState(""); // honeypot — humans never see it
+  const [status, setStatus] = useState<Status>("idle");
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const mailtoHref = () => {
     const subject = encodeURIComponent(
       `Project enquiry${name ? ` from ${name}` : ""}`,
     );
     const body = encodeURIComponent(
       `${message}\n\n— ${name}${email ? ` · ${email}` : ""}`,
     );
-    window.location.href = `mailto:${profile.email}?subject=${subject}&body=${body}`;
+    return `mailto:${profile.email}?subject=${subject}&body=${body}`;
+  };
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (status === "sending" || status === "sent") return;
+    setStatus("sending");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, message, company }),
+      });
+      setStatus(res.ok ? "sent" : "error");
+    } catch {
+      setStatus("error");
+    }
   };
 
   return (
-    <section
-      id="contact"
-      className="relative isolate border-t border-border py-20 sm:py-28"
-    >
+    <Section id="contact" variant="spacious">
       <ParallaxWatermark text="Say hello" align="left" />
       <Spotlight size={620} />
       <Container>
         <Reveal>
-          <span className="eyebrow">
-            <Scramble text="Contact" />
-          </span>
-          <h2 className="display mt-4 max-w-3xl text-3xl text-balance sm:text-5xl">
-            Have a project in mind? Let&apos;s build it.
-          </h2>
-          <p className="mt-5 max-w-xl text-muted">
+          <SectionHeader
+            index="06"
+            eyebrow="Contact"
+            title="Have a project in mind? Let’s build it."
+            className="mb-5 sm:mb-5"
+          />
+          <p className="mb-12 max-w-xl text-muted sm:mb-16">
             Tell me what you&apos;re building and I&apos;ll get back to you
             within a day. Freelance projects and full-time roles both welcome.
           </p>
         </Reveal>
 
-        <div className="mt-12 grid gap-12 lg:grid-cols-2 lg:gap-16">
+        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
           <Reveal>
             <form
               onSubmit={onSubmit}
@@ -92,15 +122,72 @@ export function Contact() {
                   placeholder="What are you building, timeline, budget range…"
                 />
               </div>
-              <Magnetic strength={0.4}>
-                <button
-                  type="submit"
-                  className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-[transform,opacity] duration-150 ease-out-strong hover:opacity-90 active:scale-[0.98]"
-                >
-                  Send message
-                  <ArrowUpRight className="h-4 w-4" />
-                </button>
-              </Magnetic>
+              {/* Honeypot — visually hidden, skipped by keyboard focus. */}
+              <div aria-hidden className="absolute -left-[9999px] h-0 overflow-hidden">
+                <label htmlFor="company">Company</label>
+                <input
+                  id="company"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-3">
+                <Magnetic strength={0.4}>
+                  <button
+                    type="submit"
+                    disabled={status === "sending" || status === "sent"}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-[transform,opacity,background-color] duration-150 ease-out-strong",
+                      status === "sent"
+                        ? "cursor-default bg-accent text-accent-foreground"
+                        : "bg-foreground text-background hover:opacity-90 active:scale-[0.98]",
+                      status === "sending" && "cursor-wait opacity-80",
+                    )}
+                  >
+                    {status === "sending" && (
+                      <>
+                        Sending
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      </>
+                    )}
+                    {status === "sent" && (
+                      <>
+                        Message sent
+                        <Check className="h-4 w-4" />
+                      </>
+                    )}
+                    {(status === "idle" || status === "error") && (
+                      <>
+                        Send message
+                        <ArrowUpRight className="h-4 w-4" />
+                      </>
+                    )}
+                  </button>
+                </Magnetic>
+                <p aria-live="polite" className="min-h-5 text-sm">
+                  {status === "sent" && (
+                    <span className="text-muted">
+                      Thanks — I&apos;ll reply within a day.
+                    </span>
+                  )}
+                  {status === "error" && (
+                    <span className="text-muted">
+                      Couldn&apos;t send right now —{" "}
+                      <a
+                        href={mailtoHref()}
+                        className="link-underline text-foreground"
+                      >
+                        email me directly
+                      </a>
+                      .
+                    </span>
+                  )}
+                </p>
+              </div>
             </form>
           </Reveal>
 
@@ -115,6 +202,7 @@ export function Contact() {
                   label="Email"
                   value={profile.email}
                   icon={<Mail className="h-4 w-4 text-accent" />}
+                  copyText={profile.email}
                 />
                 <ContactRow
                   href={profile.socials.linkedin}
@@ -139,19 +227,15 @@ export function Contact() {
                 />
               </div>
               {profile.available && (
-                <div className="mt-8 inline-flex w-fit items-center gap-2 rounded-full border border-accent/40 px-4 py-2 text-sm text-foreground">
-                  <span className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
-                  </span>
+                <AvailabilityBadge className="mt-8">
                   Available for freelance projects
-                </div>
+                </AvailabilityBadge>
               )}
             </div>
           </Reveal>
         </div>
       </Container>
-    </section>
+    </Section>
   );
 }
 
@@ -161,13 +245,31 @@ function ContactRow({
   value,
   icon,
   external,
+  copyText,
 }: {
   href: string;
   label: string;
   value: string;
   icon: React.ReactNode;
   external?: boolean;
+  /** When set, renders a copy-to-clipboard button beside the row. */
+  copyText?: string;
 }) {
+  const [copied, setCopied] = useState(false);
+
+  const copy = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!copyText) return;
+    try {
+      await navigator.clipboard.writeText(copyText);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Clipboard unavailable — the mailto link still works.
+    }
+  };
+
   return (
     <a
       href={href}
@@ -182,7 +284,22 @@ function ContactRow({
       </span>
       <span className="flex items-center gap-2 text-foreground/90">
         {value}
-        <ArrowUpRight className="h-4 w-4 text-faint transition-transform duration-200 ease-out-strong hover-device:group-hover:-translate-y-0.5 hover-device:group-hover:translate-x-0.5" />
+        {copyText ? (
+          <button
+            type="button"
+            aria-label={copied ? "Copied" : `Copy ${label.toLowerCase()}`}
+            onClick={copy}
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-faint transition-[color,border-color,transform] duration-200 ease-out-strong hover:border-border-strong hover:text-foreground active:scale-95"
+          >
+            {copied ? (
+              <Check className="h-3.5 w-3.5 text-accent" />
+            ) : (
+              <Copy className="h-3.5 w-3.5" />
+            )}
+          </button>
+        ) : (
+          <ArrowUpRight className="h-4 w-4 text-faint transition-transform duration-200 ease-out-strong hover-device:group-hover:-translate-y-0.5 hover-device:group-hover:translate-x-0.5" />
+        )}
       </span>
     </a>
   );

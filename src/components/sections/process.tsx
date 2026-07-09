@@ -1,17 +1,21 @@
 import { process } from "@/content/process";
-import { Container, Reveal, SectionHeader } from "@/components/primitives";
-import { ParallaxWatermark } from "@/components/motion-fx";
+import {
+  Container,
+  Reveal,
+  Section,
+  SectionHeader,
+} from "@/components/primitives";
 
 export function Process() {
   return (
-    <section
-      id="process"
-      className="relative isolate border-t border-border py-20 sm:py-28"
-    >
-      <ParallaxWatermark text="Process" align="left" />
+    <Section id="process">
       <Container>
         <Reveal>
-          <SectionHeader title="From idea to launch." />
+          <SectionHeader
+            index="04"
+            eyebrow="Process"
+            title="From idea to launch."
+          />
         </Reveal>
 
         {/* Timeline rail that draws left→right as the section enters — the
@@ -47,6 +51,6 @@ export function Process() {
           ))}
         </div>
       </Container>
-    </section>
+    </Section>
   );
 }

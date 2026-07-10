@@ -706,12 +706,8 @@
       transform: scale(1);
       animation-timing-function: linear;
     }
-    36% {
-      transform: scale(1);
-      animation-timing-function: var(--ease-in-out-strong);
-    }
     43% {
-      transform: scale(0.94);
+      transform: scale(1);
       animation-timing-function: var(--ease-in-out-strong);
     }
     88%,

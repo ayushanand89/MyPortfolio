@@ -33,6 +33,15 @@ export type Project = {
   /** One proof-forward line for the card — what the project demonstrates,
    *  pulled from its real stats. */
   outcome?: string;
+  /** Truthful product-domain label for the card meta bar,
+   *  e.g. "Health-tech · Recovery platform". */
+  domain?: string;
+  /** Two-line problem→result story for the card spec sheet. Restructured from
+   *  real case-study copy — never invented claims. */
+  story?: string;
+  /** Curated stats for the card's proof rail; cards fall back to
+   *  `stats.slice(0, 3)` when omitted. */
+  cardStats?: Stat[];
   summary: string;
   year: string;
   role?: string;
@@ -54,6 +63,14 @@ export const projects: Project[] = [
     title: "Sukh Sadam",
     tagline: "A full-stack recovery platform for gambling addiction.",
     outcome: "30+ routes · 17 tables · RLS on every one · shipped solo",
+    domain: "Health-tech · Recovery platform",
+    story:
+      "People fighting gambling addiction need private help at 2am — and counselors need context to give it. One security-first data model serves both sides: bookings, payments, recovery tools and an anonymous community, with authorization enforced in the database itself.",
+    cardStats: [
+      { value: "30+", label: "App routes" },
+      { value: "17", label: "Postgres tables" },
+      { value: "RLS", label: "On every table" },
+    ],
     summary:
       "A two-sided product — a patient app for recovery and a counselor workspace for care — sharing one security-first data model. Bookings, payments, recovery tools, and an anonymous community, designed and built end to end.",
     year: "2026",
@@ -197,6 +214,14 @@ export const projects: Project[] = [
     title: "Enterprise AI Persona Chatbot",
     tagline: "A production RAG agent that talks like a real creator.",
     outcome: "2,000+ users · 95%+ persona adherence · ~20% lower latency",
+    domain: "AI · Production RAG agent",
+    story:
+      "His audience should talk to it like it's him — not a FAQ bot with his face on it. A versioned persona over two-tier retrieval answers 2,000+ users at 95%+ adherence, with human-posted alerts that can overrule the model.",
+    cardStats: [
+      { value: "2,000+", label: "Users" },
+      { value: "95%+", label: "Persona adherence" },
+      { value: "~20%", label: "Lower latency" },
+    ],
     summary:
       "A persona AI with a versioned personality, a knowledge base built from a creator's entire video library, and live alerts that can overrule the model. Built for a client — names, branding and screenshots anonymized; the engineering is real.",
     year: "2026",
@@ -329,6 +354,14 @@ export const projects: Project[] = [
     title: "BareThreads",
     tagline: "A full-stack fashion e-commerce platform — built end to end.",
     outcome: "Storefront + admin · PayPal checkout · guest→user carts",
+    domain: "E-commerce · Storefront + admin",
+    story:
+      "Anyone can list products online; few stores feel like a brand and hold up underneath. A polished storefront and a role-gated admin suite share one secure serverless REST API — guest carts merge on sign-in, PayPal checkout runs end to end.",
+    cardStats: [
+      { value: "2 sides", label: "Storefront + admin" },
+      { value: "40+", label: "Products" },
+      { value: "9", label: "Redux slices" },
+    ],
     summary:
       "A polished storefront for shoppers and an admin suite for the team, sharing one secure serverless REST API. Filterable catalog, guest→user carts, PayPal checkout, Google sign-in, and an admin dashboard — designed and engineered end to end.",
     year: "2024",

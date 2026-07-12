@@ -394,6 +394,82 @@ export function ParallaxGlow({
 }
 
 /**
+ * Cursor-follow CTA pill. Listens on its parent element (like Spotlight): drop
+ * it inside any `relative` hover target and a solid pill chases the pointer.
+ * Purely decorative affordance (aria-hidden, non-interactive) — the host must
+ * keep a real link for keyboard/AT. Hover-capable pointers only (attaches no
+ * listeners on touch), null under reduced motion, and transform/opacity only —
+ * deliberately no backdrop-blur, which would repaint on every frame while
+ * translating.
+ */
+export function CursorCta({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(-9999);
+  const y = useMotionValue(-9999);
+  const o = useMotionValue(0);
+  const sx = useSpring(x, { stiffness: 350, damping: 28, mass: 0.5 });
+  const sy = useSpring(y, { stiffness: 350, damping: 28, mass: 0.5 });
+  const so = useSpring(o, { stiffness: 260, damping: 24 });
+  const scale = useTransform(so, (v) => 0.8 + v * 0.2);
+  const transform = useMotionTemplate`translate3d(${sx}px, ${sy}px, 0) translate(-50%, -50%) scale(${scale})`;
+
+  useEffect(() => {
+    const host = ref.current?.parentElement;
+    if (!host) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+
+    const move = (e: PointerEvent) => {
+      const r = host.getBoundingClientRect();
+      const px = e.clientX - r.left;
+      const py = e.clientY - r.top;
+      // First contact: snap to the pointer instead of springing across the
+      // card from the resting position.
+      if (o.get() === 0) {
+        x.jump(px);
+        y.jump(py);
+        sx.jump(px);
+        sy.jump(py);
+      }
+      x.set(px);
+      y.set(py);
+      o.set(1);
+    };
+    const leave = () => o.set(0);
+
+    host.addEventListener("pointermove", move, { passive: true });
+    host.addEventListener("pointerleave", leave);
+    return () => {
+      host.removeEventListener("pointermove", move);
+      host.removeEventListener("pointerleave", leave);
+    };
+  }, [x, y, o, sx, sy]);
+
+  if (reduce) return null;
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden
+      className={cn("pointer-events-none absolute inset-0 z-20", className)}
+    >
+      <motion.span
+        style={{ transform, opacity: so }}
+        className="absolute left-0 top-0 inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-foreground px-4 py-2 text-xs font-semibold text-background shadow-lg"
+      >
+        {children}
+      </motion.span>
+    </div>
+  );
+}
+
+/**
  * Cursor-follow accent glow. Listens on its parent element, so drop it as the
  * first child of any `relative isolate` container and it lights up where the
  * pointer is. Hover-capable pointers only (attaches no listeners on touch) and

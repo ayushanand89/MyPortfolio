@@ -3,6 +3,11 @@
 /* Only apply hover styles on devices that actually hover (not touch taps). */
 @custom-variant hover-device (@media (hover: hover) and (pointer: fine));
 
+/* Viewports with real vertical room (> 840px). Written compact-first
+   (`p-6 sm:tall:p-9`) so short laptop screens get the tighter rhythm from the
+   base utility — no override-order dependence. */
+@custom-variant tall (@media (min-height: 841px));
+
 /* ---------------------------------------------------------------------------
    Editorial palette — dark only.
    One signature accent (soft sage). Change --accent to re-skin the whole site.
@@ -452,6 +457,15 @@
       backdrop-filter: none;
       -webkit-backdrop-filter: none;
     }
+  }
+
+  /* Glass look WITHOUT backdrop-filter — for grids of repeated cells (case-study
+     features/stack). A dozen blurred cells is a real scroll-repaint cost under
+     Lenis, and over the flat near-black body the blur is invisible anyway. */
+  .glass-soft {
+    background-color: color-mix(in srgb, var(--card) 72%, transparent);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
   }
 
   /* Frosted form field — a subtle glass fill that firms up and lights an accent

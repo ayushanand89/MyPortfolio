@@ -21,6 +21,9 @@ export function MediaFrame({
   className,
   ratio = "aspect-[16/10]",
   active,
+  scrim = false,
+  zoomOnHover = false,
+  eager = false,
 }: {
   src?: string;
   images?: string[];
@@ -31,6 +34,16 @@ export function MediaFrame({
   /** Controlled hover — when set, the parent (e.g. the whole card) drives the
    *  carousel. When omitted, the frame reacts to its own hover. */
   active?: boolean;
+  /** Bottom gradient scrim — settles the image into the card and gives the
+   *  carousel dots / overlaid text contrast. */
+  scrim?: boolean;
+  /** Slow cinematic zoom while an ancestor `group` is hovered (hover-capable
+   *  devices only). Lives on an inner wrapper, NOT `.media-reveal` — the
+   *  Safari/Firefox reveal fallback transitions transform on that wrapper. */
+  zoomOnHover?: boolean;
+  /** Load the cover immediately — for images that are the page's LCP
+   *  (e.g. the case-study hero cover). */
+  eager?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
   const [enabled, setEnabled] = useState(false);
@@ -99,29 +112,48 @@ export function MediaFrame({
           timeline too. */}
       {showImage && (
         <div className="media-reveal absolute inset-0">
-          {gallery.map((s, i) => {
-            // Only the cover mounts until the user hovers in.
-            if (i > 0 && (!canCarousel || !activated)) return null;
-            const isCover = i === 0;
-            return (
-              // Plain img keeps us free of next/image remote config for a static portfolio.
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={s}
-                src={s}
-                alt={isCover ? alt : ""}
-                loading="lazy"
-                onError={isCover ? () => setFailed(true) : undefined}
-                className={cn(
-                  "absolute inset-0 h-full w-full object-cover",
-                  canCarousel &&
-                    "transition-opacity duration-500 ease-out-strong",
-                  canCarousel && i !== index ? "opacity-0" : "opacity-100",
-                )}
-              />
-            );
-          })}
+          {/* Zoom lives on this dedicated layer so it can't fight the reveal
+              fallback's transform (on .media-reveal) or the carousel's opacity
+              flips (on the imgs). */}
+          <div
+            className={cn(
+              "absolute inset-0",
+              zoomOnHover &&
+                "transition-transform duration-1400 ease-out-strong hover-device:group-hover:scale-[1.06]",
+            )}
+          >
+            {gallery.map((s, i) => {
+              // Only the cover mounts until the user hovers in.
+              if (i > 0 && (!canCarousel || !activated)) return null;
+              const isCover = i === 0;
+              return (
+                // Plain img keeps us free of next/image remote config for a static portfolio.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  key={s}
+                  src={s}
+                  alt={isCover ? alt : ""}
+                  loading={eager && isCover ? "eager" : "lazy"}
+                  decoding="async"
+                  onError={isCover ? () => setFailed(true) : undefined}
+                  className={cn(
+                    "absolute inset-0 h-full w-full object-cover",
+                    canCarousel &&
+                      "transition-opacity duration-500 ease-out-strong",
+                    canCarousel && i !== index ? "opacity-0" : "opacity-100",
+                  )}
+                />
+              );
+            })}
+          </div>
         </div>
+      )}
+
+      {scrim && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-background/70 to-transparent"
+        />
       )}
 
       {canCarousel && isHovering && (

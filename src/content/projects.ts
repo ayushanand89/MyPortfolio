@@ -78,7 +78,7 @@ export const projects: Project[] = [
     category: "flagship",
     tags: ["Next.js 16", "React 19", "TypeScript", "Supabase", "Razorpay", "Tailwind"],
     image: "/work/sukh-sadam/cover.jpg",
-    links: {},
+    links: { demo: "https://quitgambling.in" },
     hasCaseStudy: true,
     cover: {
       eyebrow: "Case study — designed & built end to end",

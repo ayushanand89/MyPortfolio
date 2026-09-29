@@ -2,6 +2,7 @@ import { flagshipProjects } from "@/content/projects";
 import { Container, SectionHeader } from "@/components/primitives";
 import { ProjectDeck, ProjectFeature } from "@/components/project-card";
 import { Marquee } from "@/components/marquee";
+import { Engineering } from "@/components/sections/engineering";
 
 const years = flagshipProjects.map((p) => Number(p.year));
 const span = `${Math.min(...years)}–${Math.max(...years)}`;
@@ -50,6 +51,7 @@ export function SelectedWork() {
             />
           ))}
         </div>
+        <Engineering />
       </Container>
     </section>
   );

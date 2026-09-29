@@ -1,3 +1,4 @@
+import type { BriefType } from "./brief";
 /* ---------------------------------------------------------------------------
    Project + case-study content model.
    Flagship projects carry a `blocks` array that the case-study page renders.
@@ -63,6 +64,8 @@ export type Project = {
   title: string;
   /** Compact name for tight spots (the phone project index). */
   shortTitle?: string;
+  /** Brief type pre-selected by the case study's "start a project" CTA. */
+  brief?: BriefType;
   tagline: string;
   /** One proof-forward line for the card - what the project demonstrates,
    *  pulled from its real stats. */
@@ -94,6 +97,7 @@ export type Project = {
 export const projects: Project[] = [
   {
     slug: "quit-gambling",
+    brief: "webapp",
     title: "Quit Gambling",
     tagline: "A full-stack recovery platform for gambling addiction.",
     outcome: "30+ routes · 17 tables · RLS on every one · shipped solo",
@@ -297,6 +301,7 @@ export const projects: Project[] = [
   },
   {
     slug: "enterprise-ai-chatbot",
+    brief: "ai",
     title: "Enterprise AI Persona Chatbot",
     shortTitle: "AI Chatbot",
     tagline: "A production RAG agent that talks like a real creator.",
@@ -502,6 +507,7 @@ export const projects: Project[] = [
   },
   {
     slug: "barethreads",
+    brief: "ecommerce",
     title: "BareThreads",
     tagline: "A full-stack fashion e-commerce platform, built end to end.",
     outcome: "Storefront + admin · PayPal checkout · guest→user carts",

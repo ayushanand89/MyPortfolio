@@ -7,7 +7,7 @@ import { useScrollProgress } from "@/lib/motion";
 import { useMediaQuery } from "@/lib/use-media-query";
 
 /**
- * 02 - the identity chapter, an ink sheet over Work. The manifesto pins to
+ * 03 - the identity chapter, an ink sheet over Work. The manifesto pins to
  * the viewport and lights word by word as you scroll: one `--p` custom
  * property on the paragraph, each word derives its opacity in CSS. Below it,
  * the facts as a hairline spec sheet. Reduced motion shows everything lit.
@@ -40,7 +40,7 @@ export function About() {
             <div className="label relative flex items-center justify-between pt-4">
               <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-line-strong" />
               <span>
-                <span className="text-accent">(02)&nbsp;&nbsp;</span>About
+                <span className="text-accent">(03)&nbsp;&nbsp;</span>About
               </span>
               <span className="text-muted">Manifesto</span>
             </div>

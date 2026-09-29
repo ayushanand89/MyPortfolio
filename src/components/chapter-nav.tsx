@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, m } from "framer-motion";
 import { useLenis } from "lenis/react";
-import { ArrowUp, ArrowUpRight, ChevronUp, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronUp, X } from "lucide-react";
 import { CHAPTERS, useActiveChapter } from "@/lib/chapters";
 import { scroll } from "@/lib/motion";
 import { smoothScrollToHash } from "@/lib/scroll";
@@ -204,11 +204,11 @@ export function ChapterDock() {
                       type="button"
                       onClick={() => {
                         setOpen(false);
-                        jump("top");
+                        jump("contact");
                       }}
-                      className="label flex items-center justify-center gap-2 rounded-full bg-white/[0.07] py-3"
+                      className="label flex items-center justify-center gap-2 rounded-full bg-paper py-3 text-ink"
                     >
-                      <ArrowUp className="h-3.5 w-3.5" /> Top
+                      Let&rsquo;s talk <ArrowRight className="h-3.5 w-3.5" />
                     </button>
                     <a
                       href={profile.resumeUrl}

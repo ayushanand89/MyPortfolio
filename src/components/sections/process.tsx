@@ -53,7 +53,7 @@ export function Process() {
     >
       <Container>
         <SectionHeader
-          index="04"
+          index="05"
           eyebrow="Process"
           meta="Four steps · no surprises"
           title={["From idea", <em key="e">to launch.</em>]}

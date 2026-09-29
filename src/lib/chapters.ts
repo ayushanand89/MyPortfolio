@@ -5,12 +5,14 @@ import { useSyncExternalStore } from "react";
 /** The homepage chapters, in page order. */
 export const CHAPTERS = [
   { id: "work", n: "01", label: "Work" },
-  { id: "about", n: "02", label: "About" },
-  { id: "services", n: "03", label: "Services" },
-  { id: "process", n: "04", label: "Process" },
-  { id: "experience", n: "05", label: "Track record" },
+  { id: "engineering", n: "02", label: "Engineering" },
+  { id: "about", n: "03", label: "About" },
+  { id: "services", n: "04", label: "Services" },
+  { id: "process", n: "05", label: "Process" },
+  { id: "experience", n: "06", label: "Track record" },
   { id: "testimonials", n: "", label: "Voices" },
-  { id: "contact", n: "06", label: "Contact" },
+  { id: "faq", n: "", label: "FAQ" },
+  { id: "contact", n: "07", label: "Contact" },
 ] as const;
 
 export type ChapterId = (typeof CHAPTERS)[number]["id"];

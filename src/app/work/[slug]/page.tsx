@@ -10,6 +10,8 @@ import {
   CaseStudyHero,
   NextProject,
 } from "@/components/case-study";
+import { CaseStudyCta } from "@/components/case-study-cta";
+import { ReadingProgress } from "@/components/reading-progress";
 
 export const dynamicParams = false;
 
@@ -56,12 +58,14 @@ export default async function CaseStudyPage({
 
   return (
     <main id="main">
+      <ReadingProgress />
       <div data-surface="paper">
         <CaseStudyHero project={project} index={Math.max(0, currentIndex)} total={total} />
         {project.blocks && (
           <CaseStudyBody blocks={project.blocks} project={project} />
         )}
       </div>
+      <CaseStudyCta project={project} />
       {next && next.slug !== slug && (
         <NextProject project={next} index={nextIndex} total={total} />
       )}

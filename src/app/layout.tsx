@@ -11,6 +11,9 @@ import { Grain } from "@/components/grain";
 import { Nav } from "@/components/nav";
 import { ChapterDock, ChapterRail } from "@/components/chapter-nav";
 import { MotionProvider } from "@/components/motion-provider";
+import { CommandPalette } from "@/components/command-palette";
+import { ResumeQuickLook } from "@/components/resume-quicklook";
+import { ConsoleSignature } from "@/components/console-signature";
 import { Footer } from "@/components/footer";
 import { profile } from "@/content/profile";
 
@@ -39,7 +42,7 @@ const mono = JetBrains_Mono({
 });
 
 const description =
-  "Ayush Anand, full-stack & freelance web developer. I design and build premium websites, web apps, dashboards and full-stack products for startups, creators and businesses. Available for freelance projects.";
+  "Ayush Anand, full-stack & freelance web developer. I design and build premium websites, web apps, dashboards and full-stack products for startups, creators and businesses. Open to freelance projects and full-time roles.";
 
 const title = "Ayush Anand | Full-Stack & Freelance Web Developer";
 
@@ -142,6 +145,9 @@ export default function RootLayout({
             <Nav />
             <ChapterRail />
             <ChapterDock />
+            <CommandPalette />
+            <ResumeQuickLook />
+            <ConsoleSignature />
             {/* Pages scroll up and away over the sticky footer beneath. */}
             <div className="relative z-[1] bg-ink">
               {children}

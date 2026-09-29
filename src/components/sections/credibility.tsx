@@ -45,7 +45,7 @@ export function Credibility() {
     <Section id="experience" surface="paper" sheet>
       <Container>
         <SectionHeader
-          index="05"
+          index="06"
           eyebrow="Track record"
           meta="Numbers · roles · recognition"
           title={["Proof,", <em key="e">not promises.</em>]}
@@ -76,10 +76,15 @@ export function Credibility() {
             data-surface="ink"
             className="flex flex-col gap-5 rounded-2xl p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8"
           >
-            <p className="serif text-[clamp(1.5rem,2.6vw,2.25rem)] leading-tight">
-              The whole record, on one page.{" "}
-              <span className="italic text-signal">Always up to date.</span>
-            </p>
+            <div>
+              <p className="serif text-[clamp(1.5rem,2.6vw,2.25rem)] leading-tight">
+                The whole record, on one page.{" "}
+                <span className="italic text-signal">Always up to date.</span>
+              </p>
+              <p className="data mt-3 text-muted">
+                Open to full-time roles · {profile.location} · Replies within 24 hours
+              </p>
+            </div>
             <ButtonLink href={profile.resumeUrl} external variant="accent" className="shrink-0">
               View my résumé
             </ButtonLink>

@@ -1,10 +1,18 @@
 import { ImageResponse } from "next/og";
+import { brandFonts } from "@/lib/og-font";
 
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 export const alt = "Ayush Anand | Full-Stack & Freelance Web Developer";
 
-export default function OpengraphImage() {
+const tagline = "Premium websites & full-stack products.";
+
+export default async function OpengraphImage() {
+  const { fonts, hasDisplay, hasSerif } = await brandFonts(
+    "AYUSH ANAND.",
+    tagline,
+    "FULL-STACK ENGINEER · PROJECTS & FULL-TIME ROLES DELHI, INDIA",
+  );
   return new ImageResponse(
     (
       <div
@@ -40,7 +48,7 @@ export default function OpengraphImage() {
                 background: "#ff3b1f",
               }}
             />
-            Full-stack · Freelance developer
+            Full-stack engineer · Projects &amp; full-time roles
           </span>
           <span>Delhi, India</span>
         </div>
@@ -48,25 +56,32 @@ export default function OpengraphImage() {
           <div
             style={{
               display: "flex",
-              fontSize: 132,
+              flexDirection: "column",
+              fontSize: hasDisplay ? 150 : 132,
               fontWeight: 900,
+              fontFamily: hasDisplay ? "Archivo" : undefined,
               lineHeight: 0.88,
-              letterSpacing: -4,
+              letterSpacing: hasDisplay ? -1 : -4,
               textTransform: "uppercase",
             }}
           >
-            Ayush Anand
-            <span style={{ color: "#ff3b1f" }}>.</span>
+            <span>Ayush</span>
+            <span style={{ display: "flex" }}>
+              Anand
+              <span style={{ color: "#ff3b1f" }}>.</span>
+            </span>
           </div>
           <div
             style={{
               display: "flex",
               marginTop: 28,
-              fontSize: 40,
+              fontSize: hasSerif ? 50 : 40,
+              fontFamily: hasSerif ? "Instrument Serif" : undefined,
+              fontStyle: hasSerif ? "italic" : "normal",
               color: "#9d978b",
             }}
           >
-            Premium websites &amp; full-stack products.
+            {tagline}
           </div>
         </div>
         <div
@@ -79,6 +94,6 @@ export default function OpengraphImage() {
         />
       </div>
     ),
-    size,
+    { ...size, fonts },
   );
 }

@@ -36,7 +36,7 @@ export function NextProject({
             <span className="text-accent">({pad(index + 1)}/{pad(total)})&nbsp;&nbsp;</span>
             Next case study
           </span>
-          <span className="text-muted">{project.domain}</span>
+          <span className="hidden text-muted sm:inline">{project.domain}</span>
         </div>
 
         <TransitionLink

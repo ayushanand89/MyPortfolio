@@ -5,11 +5,12 @@ import { Services } from "@/components/sections/services";
 import { Process } from "@/components/sections/process";
 import { Credibility } from "@/components/sections/credibility";
 import { Testimonials } from "@/components/sections/testimonials";
+import { Faq } from "@/components/sections/faq";
 import { Contact } from "@/components/sections/contact";
 
 /**
- * Narrative spine: work → identity → capability → method → proof → trust →
- * conversion. The projects lead - the strongest evidence comes first. Each
+ * Narrative spine: work → engineering → identity → capability → method →
+ * proof → trust → objections → conversion. The projects lead - the strongest evidence comes first. Each
  * chapter is a sheet (ink / paper / signal) that slides over the one before.
  *
  * The hero pins inside `#top`, so the Work sheet (with the red tape on its
@@ -28,6 +29,7 @@ export default function Home() {
       <Process />
       <Credibility />
       <Testimonials />
+      <Faq />
       <Contact />
     </main>
   );

@@ -6,7 +6,7 @@ export const profile = {
   // Editorial hero statement
   headline: "I build premium websites & full-stack products.",
   // Short hero lede - the long intro lives in metadata and the About chapter.
-  lede: "Freelance full-stack developer. Websites, web apps and dashboards for startups, creators and businesses, from idea to launch.",
+  lede: "Full-stack engineer shipping production web apps, AI features and interfaces people enjoy using, from idea to launch. Open to freelance projects and full-time roles.",
   intro:
     "Freelance full-stack developer. I design and build premium websites, web apps and dashboards for startups, creators and businesses, from idea to launch. Also a Software Developer at ClanFlare, where I build a Community-as-a-Service platform.",
   location: "Delhi, India",
@@ -17,8 +17,14 @@ export const profile = {
   resumeUrl:
     "https://drive.google.com/file/d/1HYQ31FpLT8X-f8RsEx66P_WQXo8pVfv5/view",
   available: true,
-  availabilityLabel: "Open for freelance projects",
+  availabilityLabel: "Open to projects & full-time roles",
   currently: "Software Developer @ ClanFlare",
+  // Hero proof line - each point is documented in Work / Track record.
+  proof: [
+    "3 products shipped end to end",
+    "2,000+ users on my AI build",
+    "Top 0.15% · TCS CodeVita",
+  ],
   // About chapter - first-person manifesto (scroll-scrubbed word by word) and
   // the hairline fact-chip row beneath it.
   about: {

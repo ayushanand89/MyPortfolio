@@ -146,7 +146,7 @@ export function Footer() {
 
         <div className="data mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-5 text-muted">
           <p>
-            © {year} {profile.name}. Designed &amp; built in Delhi with Next.js
+            © {year} {profile.name}. Designed and built from scratch in Delhi. No templates.
           </p>
           <TransitionLink
             href={pathname}

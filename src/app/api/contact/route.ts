@@ -17,15 +17,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  const { name, email, message, company } = (body ?? {}) as Record<
-    string,
-    unknown
-  >;
+  const { name, email, message, company, kind, type, timeline, org, role } = (body ??
+    {}) as Record<string, unknown>;
 
   // Honeypot - humans never see the "company" field; pretend success to bots.
   if (typeof company === "string" && company.trim()) {
     return NextResponse.json({ ok: true });
   }
+
+  // Optional short fields from the brief (chips / hiring door).
+  const short = (v: unknown) =>
+    typeof v === "string" && v.trim() ? v.trim().slice(0, 120) : "";
+  const hiring = kind === "hiring";
+  const fields: Record<string, string> = hiring
+    ? { Company: short(org), Role: short(role) }
+    : { Building: short(type), Timeline: short(timeline) };
+  const text = typeof message === "string" ? message.trim() : "";
 
   if (
     typeof name !== "string" ||
@@ -34,9 +41,10 @@ export async function POST(req: Request) {
     typeof email !== "string" ||
     !EMAIL_RE.test(email) ||
     email.length > 320 ||
-    typeof message !== "string" ||
-    !message.trim() ||
-    message.length > 5000
+    (message !== undefined && typeof message !== "string") ||
+    text.length > 5000 ||
+    // Something to act on: a message, or at least one brief field.
+    (!text && !Object.values(fields).some(Boolean))
   ) {
     return NextResponse.json(
       { error: "Missing or invalid fields" },
@@ -62,8 +70,21 @@ export async function POST(req: Request) {
       from: process.env.CONTACT_FROM_EMAIL ?? "Portfolio <onboarding@resend.dev>",
       to: [process.env.CONTACT_TO_EMAIL ?? profile.email],
       reply_to: email,
-      subject: `Project enquiry from ${name.trim()}`,
-      text: `${message.trim()}\n\nFrom ${name.trim()} · ${email}`,
+      subject: hiring
+        ? `Role enquiry${fields.Role ? `: ${fields.Role}` : ""}${fields.Company ? ` at ${fields.Company}` : ""} · ${name.trim()}`
+        : `New project${fields.Building ? `: ${fields.Building}` : ""} · ${name.trim()}`,
+      text: [
+        hiring ? "HIRING ENQUIRY" : "PROJECT BRIEF",
+        ...Object.entries(fields)
+          .filter(([, v]) => v)
+          .map(([k, v]) => `${k}: ${v}`),
+        "",
+        text,
+        "",
+        `From ${name.trim()} · ${email}`,
+      ]
+        .join("\n")
+        .replace(/\n{3,}/g, "\n\n"),
     }),
   });
 

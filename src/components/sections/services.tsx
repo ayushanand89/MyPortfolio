@@ -10,14 +10,16 @@ import {
   Section,
   SectionHeader,
 } from "@/components/primitives";
+import { BriefLink } from "@/components/brief-link";
 import { cn } from "@/lib/utils";
 
 const spring = { type: "spring", stiffness: 380, damping: 38, mass: 0.9 } as const;
 
 /**
- * 03 - Services as an editorial index. Each row is a hairline entry; on a fine
- * pointer, ink wipes up from the row's bottom edge, the title slides over, an
- * italic aside fades in and the arrow turns - all CSS, no listeners.
+ * 04 - Services as an editorial index. Each row is a hairline entry and a
+ * link: it opens the contact brief with that service already picked. On a
+ * fine pointer, ink wipes up from the row's bottom edge, the title slides
+ * over, an italic aside fades in and the arrow turns - all CSS.
  *
  * Phones get an accordion instead of six tall rows: one entry open at a time,
  * and the ink block that marks it glides between rows (shared layout) while
@@ -28,7 +30,7 @@ export function Services() {
     <Section id="services" surface="paper" sheet>
       <Container>
         <SectionHeader
-          index="03"
+          index="04"
           eyebrow="Services"
           meta="Freelance · Remote · Worldwide"
           title={["What I can", <em key="e">build for you.</em>]}
@@ -43,9 +45,13 @@ export function Services() {
               as="li"
               className="row-wipe group border-t border-line-strong"
             >
-              <div className="grid grid-cols-[4rem_1fr_auto] items-baseline gap-x-4 gap-y-3 py-9 transition-colors duration-500 ease-out-strong lg:grid-cols-[5rem_minmax(0,7fr)_minmax(0,4fr)_3rem] hover-device:group-hover:text-bg">
+              <BriefLink
+                brief={service.brief}
+                data-cursor="Get a quote"
+                className="grid grid-cols-[4rem_1fr_auto] items-baseline gap-x-4 gap-y-3 py-9 transition-colors duration-500 ease-out-strong lg:grid-cols-[5rem_minmax(0,7fr)_minmax(0,4fr)_3rem] hover-device:group-hover:text-bg"
+              >
                 <span className="data pt-1 text-muted transition-colors duration-500 hover-device:group-hover:text-bg/60">
-                  03.{i + 1}
+                  04.{i + 1}
                 </span>
                 <h3 className="caps text-[clamp(1.5rem,3.4vw,3.25rem)] transition-transform duration-700 ease-out-strong hover-device:group-hover:translate-x-3">
                   {service.title}{" "}
@@ -55,12 +61,17 @@ export function Services() {
                 </h3>
                 <p className="col-span-2 col-start-2 max-w-md text-[0.95rem] leading-relaxed text-muted transition-colors duration-500 lg:col-span-1 lg:col-start-3 hover-device:group-hover:text-bg/75">
                   {service.description}
+                  {/* Touch screens: a visible cue (a mouse gets the cursor label). */}
+                  <span className="label mt-4 flex items-center gap-2 text-fg hover-device:hidden">
+                    Get a quote
+                    <span aria-hidden>→</span>
+                  </span>
                 </p>
                 <ArrowUpRight
                   aria-hidden
                   className="col-start-3 row-start-1 h-7 w-7 justify-self-end rotate-45 transition-transform duration-500 ease-out-strong lg:col-start-4 hover-device:group-hover:rotate-0"
                 />
-              </div>
+              </BriefLink>
             </Reveal>
           ))}
         </ol>
@@ -106,7 +117,7 @@ function ServiceAccordion() {
                 )}
               >
                 <span className={cn("data transition-colors duration-500", on ? "text-signal" : "text-muted")}>
-                  03.{i + 1}
+                  04.{i + 1}
                 </span>
                 <span className="caps text-[1.15rem] leading-tight">{service.title}</span>
                 <span
@@ -137,6 +148,12 @@ function ServiceAccordion() {
                     <p className="mt-2.5 text-[0.95rem] leading-relaxed text-[#b9b2a6]">
                       {service.description}
                     </p>
+                    <BriefLink
+                      brief={service.brief}
+                      className="label mt-4 inline-flex items-center gap-2 rounded-full bg-paper px-4 py-2.5 text-ink"
+                    >
+                      Get a quote <span aria-hidden>→</span>
+                    </BriefLink>
                   </div>
                 </m.div>
               )}

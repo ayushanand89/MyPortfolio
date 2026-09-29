@@ -109,7 +109,7 @@ export function Hero() {
           <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-line-strong" />
           <span>
             {profile.role}
-            <span className="text-muted"> · Freelance</span>
+            <span className="text-muted"> · Freelance &amp; full-time</span>
           </span>
           <span className="hidden items-center justify-center gap-2.5 md:flex">
             {profile.available && <Dot />}
@@ -138,12 +138,20 @@ export function Hero() {
 
         <div className="relative z-10 grid gap-7 pt-6 md:mt-8 md:grid-cols-12 md:items-end md:gap-6 md:pt-5">
           <span aria-hidden className="load-fade absolute inset-x-0 top-0 h-px bg-line" style={d(700)} />
-          <p
-            className="load-fade max-w-md text-[1rem] leading-relaxed text-muted text-pretty sm:text-[1.05rem] md:col-span-5 lg:col-span-4"
-            style={d(750)}
-          >
-            {profile.lede}
-          </p>
+          <div className="load-fade md:col-span-5 lg:col-span-4" style={d(750)}>
+            <p className="max-w-md text-[1rem] leading-relaxed text-muted text-pretty sm:text-[1.05rem]">
+              {profile.lede}
+            </p>
+            {/* Proof in the first five seconds - facts documented further down. */}
+            <ul className="data mt-5 flex flex-wrap gap-x-5 gap-y-2 text-fg">
+              {profile.proof.map((point) => (
+                <li key={point} className="flex items-center gap-2">
+                  <span aria-hidden className="h-1 w-1 rounded-full bg-signal" />
+                  {point}
+                </li>
+              ))}
+            </ul>
+          </div>
           {/* Phones: two equal actions in one row. */}
           <div className="load-fade grid grid-cols-2 gap-3 md:hidden" style={d(850)}>
             <ButtonLink href="/#work" className="justify-center px-4!">
@@ -280,7 +288,6 @@ function Screening({ paused }: { paused: boolean }) {
     <TransitionLink
       href="/#work"
       data-cursor="See the work"
-      aria-label="Now showing: see selected work"
       className="group relative z-0 block w-full max-md:hidden lg:col-span-5 lg:col-start-8 lg:row-start-1"
     >
       <div className="relative aspect-[16/10] overflow-hidden rounded-[12px] bg-raised shadow-[0_40px_90px_-40px_rgba(0,0,0,0.85)] ring-1 ring-white/10">

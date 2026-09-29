@@ -3,13 +3,15 @@
 import { useEffect, useState, type CSSProperties } from "react";
 import { usePathname } from "next/navigation";
 import { useLenis } from "lenis/react";
-import { ArrowLeft, ArrowUpRight, FileText } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, FileText, Search } from "lucide-react";
 import { profile } from "@/content/profile";
 import { cn } from "@/lib/utils";
 import { TransitionLink } from "@/components/transition-link";
 import { LocalTime } from "@/components/local-time";
 import { Dot, Roll, type Surface } from "@/components/primitives";
 import { CHAPTERS, observeChapters, useActiveChapter } from "@/lib/chapters";
+import { PALETTE_EVENT } from "@/components/command-palette";
+import { useIsApple } from "@/lib/use-platform";
 
 const links = [
   { label: "Work", href: "/#work" },
@@ -55,6 +57,7 @@ export function Nav() {
   const active = CHAPTERS.find((c) => c.id === activeId);
   const chapter = active ? (active.n ? `(${active.n}) ${active.label}` : active.label) : "";
   const isCase = pathname.startsWith("/work/");
+  const apple = useIsApple();
 
   // Hide on scroll down, reveal on scroll up.
   useEffect(() => {
@@ -145,7 +148,7 @@ export function Nav() {
     >
       <div
         className={cn(
-          "gutter relative z-10 mx-auto grid h-16 max-w-[1600px] grid-cols-[1fr_auto] items-center gap-6 transition-colors duration-500 lg:grid-cols-[auto_1fr_auto] sm:h-[4.5rem]",
+          "gutter relative z-10 mx-auto grid h-16 max-w-[1600px] grid-cols-[1fr_auto] items-center gap-3 transition-colors sm:gap-6 duration-500 lg:grid-cols-[auto_1fr_auto] sm:h-[4.5rem]",
           t.text,
         )}
       >
@@ -156,7 +159,7 @@ export function Nav() {
           aria-label={`${profile.name}, home`}
         >
           {profile.available && <Dot className="max-md:hidden" />}
-          <span className="caps whitespace-nowrap text-[0.9rem] tracking-[-0.01em] sm:text-[0.95rem]">
+          <span className="caps whitespace-nowrap text-[0.82rem] tracking-[-0.01em] min-[380px]:text-[0.9rem] sm:text-[0.95rem]">
             <Roll>{profile.name}</Roll>
           </span>
         </TransitionLink>
@@ -196,6 +199,20 @@ export function Nav() {
               </li>
             ))}
           </ul>
+          {/* Command menu (⌘K / Ctrl K) - desktop, where there's a keyboard. */}
+          <button
+            type="button"
+            aria-label="Open command menu"
+            aria-keyshortcuts={apple ? "Meta+K" : "Control+K"}
+            onClick={() => window.dispatchEvent(new Event(PALETTE_EVENT))}
+            className={cn(
+              "label hidden items-center gap-2 rounded-full border px-3 py-2.5 opacity-80 transition-[opacity,border-color] duration-500 hover:opacity-100 lg:inline-flex",
+              t.line,
+            )}
+          >
+            <Search aria-hidden className="h-3.5 w-3.5" />
+            <kbd className="font-[inherit] tracking-normal">{apple ? "⌘K" : "Ctrl K"}</kbd>
+          </button>
           <TransitionLink
             href="/#contact"
             className={cn(
@@ -232,7 +249,10 @@ export function Nav() {
             onClick={() => setOpen((v) => !v)}
             className="label group/roll inline-flex h-10 items-center gap-2.5 lg:hidden"
           >
-            <Roll>{open ? "Close" : "Menu"}</Roll>
+            {/* Narrow phones: the icon alone (the label stays for screen readers). */}
+            <span className="max-[379px]:sr-only">
+              <Roll>{open ? "Close" : "Menu"}</Roll>
+            </span>
             <span aria-hidden className="relative block h-2.5 w-5">
               <span
                 className={cn(

@@ -8,86 +8,140 @@
    base utility — no override-order dependence. */
 @custom-variant tall (@media (min-height: 841px));
 
+/* Enough height for a pinned, full-viewport hero. */
+@custom-variant roomy (@media (min-height: 640px));
+
 /* ---------------------------------------------------------------------------
-   Editorial palette — dark only.
-   One signature accent (soft sage). Change --accent to re-skin the whole site.
+   INK · PAPER · SIGNAL
+   Three surfaces, one signal colour. Every section declares
+   `data-surface="ink|paper|signal"` and components only ever read the local
+   tokens (--bg / --fg / --muted / --line / --accent / --raised), so a block
+   re-skins itself by moving between chapters.
 --------------------------------------------------------------------------- */
 :root {
-  --background: #0e0f0d; /* near-black */
-  --foreground: #ecebe4; /* off-white */
-  --muted: #a39e92;
-  --faint: #6e6a60;
-  --card: #161613;
-  --card-foreground: #ecebe4;
-  --border: #26271f;
-  --border-strong: #353629;
-  --accent: #7cc8a2; /* soft sage */
-  --accent-foreground: #0e0f0d;
-  --selection: #7cc8a233;
+  --ink: #0c0b0a;
+  --ink-2: #161513;
+  --paper: #efebe3;
+  --paper-2: #e6e1d6;
+  --signal: #ff3b1f; /* bright — on ink, and display sizes on paper */
+  --signal-deep: #c0271a; /* surface red; AA with paper text (4.98:1) */
 
-  /* Motion — strong custom easing curves (Emil Kowalski / animations.dev).
-     Built-in CSS easings are too weak; these give UI motion intentional punch. */
-  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1); /* entrances, presses, hovers */
-  --ease-in-out-strong: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen movement */
-  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); /* iOS-like drawer curve (Ionic) */
+  /* Motion — one vocabulary for the whole site. */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* entrances, reveals */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen travel */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --gutter: clamp(1.25rem, 3.4vw, 3rem);
+  --sheet-radius: clamp(1.5rem, 3.2vw, 3rem);
+
+  color-scheme: dark;
+}
+
+:root,
+[data-surface="ink"] {
+  --bg: var(--ink);
+  --raised: var(--ink-2);
+  --fg: var(--paper);
+  --muted: #9d978b;
+  --faint: #6b665d;
+  --line: #262420;
+  --line-strong: #3a3731;
+  --accent: var(--signal);
+  --on-accent: var(--ink);
+}
+[data-surface="paper"] {
+  --bg: var(--paper);
+  --raised: var(--paper-2);
+  --fg: var(--ink);
+  --muted: #5d5850;
+  --faint: #8a8479;
+  --line: #d3cdc1;
+  --line-strong: #bdb6a8;
+  --accent: var(--signal-deep);
+  --on-accent: var(--paper);
+  color-scheme: light;
+}
+[data-surface="signal"] {
+  --bg: var(--signal-deep);
+  --raised: #a82115;
+  --fg: var(--paper);
+  --muted: #f3c9c2;
+  --faint: #e59a8f;
+  --line: #d8584a;
+  --line-strong: #e7786b;
+  --accent: var(--ink);
+  --on-accent: var(--paper);
+}
+[data-surface] {
+  background-color: var(--bg);
+  color: var(--fg);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-raised: var(--raised);
   --color-muted: var(--muted);
   --color-faint: var(--faint);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-border: var(--border);
-  --color-border-strong: var(--border-strong);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-on-accent: var(--on-accent);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-paper: var(--paper);
+  --color-signal: var(--signal);
+  --color-signal-deep: var(--signal-deep);
 
-  /* Expose the easing curves as `ease-*` utilities. */
-  --ease-out-strong: var(--ease-out-strong);
-  --ease-in-out-strong: var(--ease-in-out-strong);
+  /* Legacy aliases so dormant components (SecondaryCard, MoreWork) keep
+     compiling against the old utility names. */
+  --color-foreground: var(--fg);
+  --color-background: var(--bg);
+  --color-border: var(--line);
+  --color-border-strong: var(--line-strong);
+  --color-card: var(--raised);
+
+  --ease-out-strong: var(--ease-out);
+  --ease-in-out-strong: var(--ease-in-out);
   --ease-drawer: var(--ease-drawer);
 
   --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-display), var(--font-sans), sans-serif;
+  --font-display: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
   --font-mono: var(--font-mono), ui-monospace, monospace;
 }
 
 @layer base {
   * {
-    border-color: var(--border);
+    border-color: var(--line);
   }
 
   html {
-    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    /* Guard against horizontal scroll from oversized decorative layers
-       (parallax watermarks, marquee skew, slide-in reveals). `clip` — not
-       `hidden` — so it never turns into a scroll container or breaks
-       position: sticky / Lenis. */
+    /* Guard against horizontal scroll from the tilted marquee tape and
+       oversized type. `clip` — not `hidden` — never creates a scroll
+       container, so position: sticky and Lenis keep working. */
     overflow-x: clip;
+    background-color: var(--ink);
+    scrollbar-width: thin;
+    scrollbar-color: var(--line-strong) transparent;
   }
 
   body {
-    background-color: var(--background);
-    color: var(--foreground);
+    background-color: var(--ink);
+    color: var(--fg);
     font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
-    font-feature-settings: "ss01", "cv01", "calt";
+    font-size: 1rem;
+    line-height: 1.55;
   }
 
   ::selection {
-    background-color: var(--selection);
+    background-color: var(--signal);
+    color: var(--ink);
   }
 
-  /* Premium thin scrollbar — quiet by default, accent-tinted on hover. The
-     track stays transparent so it reads as a hairline on the editorial dark
-     ground rather than a chunky OS bar. */
-  html {
-    scrollbar-width: thin;
-    scrollbar-color: var(--border-strong) transparent;
-  }
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -96,25 +150,17 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: var(--border-strong);
-    border: 2px solid var(--background);
+    background: #3a3731;
+    border: 2px solid var(--ink);
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: color-mix(in srgb, var(--accent) 55%, var(--border-strong));
+    background: var(--signal);
   }
 
-  /* Account for the fixed header when jumping to in-page anchors */
+  /* Account for the fixed header when jumping to in-page anchors. */
   section[id] {
-    scroll-margin-top: 6rem;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4 {
-    font-family: var(--font-display), var(--font-sans), sans-serif;
-    letter-spacing: -0.025em;
+    scroll-margin-top: 5rem;
   }
 
   a {
@@ -126,236 +172,539 @@
     outline-offset: 3px;
     border-radius: 2px;
   }
+
+  img {
+    -webkit-user-drag: none;
+  }
 }
 
 @layer utilities {
-  /* Small uppercase mono label — "01 — SELECTED WORK" motif */
+  /* ----- Type ------------------------------------------------------------
+     Display: Archivo pushed to its widest cut, all caps, set tight — the
+     poster voice. `em` inside any display line switches to Instrument Serif
+     italic in the accent colour: the signature interjection. */
+  .display {
+    font-family: var(--font-sans), ui-sans-serif, sans-serif;
+    font-variation-settings: "wdth" 125;
+    font-weight: 850;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    line-height: 0.86;
+  }
+  .display em,
+  .serif-em {
+    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-variation-settings: normal;
+    font-style: italic;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: -0.01em;
+    color: var(--accent);
+    /* Serif x-height reads small next to extended caps — nudge it up. */
+    font-size: 1.1em;
+    line-height: 0;
+  }
+
+  /* Medium caps for card / row titles — wide but not poster-heavy. */
+  .caps {
+    font-family: var(--font-sans), ui-sans-serif, sans-serif;
+    font-variation-settings: "wdth" 118;
+    font-weight: 750;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+  }
+
+  .serif {
+    font-family: var(--font-serif), ui-serif, Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+
+  /* Micro caps — the inspo's tiny uppercase labels. */
+  .label {
+    font-family: var(--font-sans), ui-sans-serif, sans-serif;
+    font-variation-settings: "wdth" 112;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  /* Mono data label — indices, clocks, stat captions. */
+  .data {
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Legacy eyebrow (dormant components). */
   .eyebrow {
     font-family: var(--font-mono), ui-monospace, monospace;
     font-size: 0.72rem;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--faint);
-  }
-
-  /* Big editorial display sizing helper */
-  .display {
-    font-family: var(--font-display), var(--font-sans), sans-serif;
-    font-weight: 700;
-    letter-spacing: -0.045em;
-    line-height: 0.94;
-  }
-
-  /* Hero-only display step — tighter than section H2s so the H1 visibly
-     outranks everything below it. Layer on top of `.display`. */
-  .display-hero {
-    letter-spacing: -0.055em;
-    line-height: 0.9;
-  }
-
-  /* Accent-coloured slice of an eyebrow — the chapter-number signature. */
-  .eyebrow-accent {
-    color: var(--accent);
-  }
-
-  /* Oversized stroked ghost numeral behind section headers — chapter identity
-     with zero scroll JS. Sits behind the header text (parent is `relative`,
-     the enclosing section is `isolate`). */
-  .chapter-num {
-    position: absolute;
-    top: -0.22em;
-    right: 0;
-    z-index: -1;
-    font-family: var(--font-display), var(--font-sans), sans-serif;
-    font-weight: 800;
-    font-size: clamp(5.5rem, 15vw, 11rem);
-    line-height: 1;
-    letter-spacing: -0.04em;
-    color: transparent;
-    -webkit-text-stroke: 1px color-mix(in srgb, var(--foreground) 11%, transparent);
-    user-select: none;
-    pointer-events: none;
-  }
-
-  /* Animated underline for editorial links */
-  .link-underline {
-    background-image: linear-gradient(currentColor, currentColor);
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    background-size: 0% 1px;
-    transition: background-size 0.35s var(--ease-out-strong);
-  }
-  .link-underline:hover {
-    background-size: 100% 1px;
   }
 
   .text-balance {
     text-wrap: balance;
   }
+  .text-pretty {
+    text-wrap: pretty;
+  }
 
-  /* ----- Entrance reveals (pure CSS, progressive enhancement) -----
-     Default state is VISIBLE, so content renders with no JS and ships in the
-     SSR HTML. Animation is layered on only where supported and when the user
-     hasn't asked for reduced motion. */
-  .reveal,
-  .reveal-now {
+  .gutter {
+    padding-inline: var(--gutter);
+  }
+
+  .stroke-text {
+    color: transparent;
+    -webkit-text-stroke: 1px currentColor;
+  }
+
+  /* ----- Links & buttons ------------------------------------------------ */
+
+  /* Underline that wipes in from the left and out to the right. */
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 100% 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 0.45s var(--ease-out);
+  }
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-position: 0 100%;
+    background-size: 100% 1px;
+  }
+
+  /* Text roll — the label is doubled via data-text; on hover the visible copy
+     rolls up and the ghost copy rolls in from below. Transform only. */
+  .roll {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    line-height: 1.2;
+  }
+  .roll > span {
+    display: block;
+    transition: transform 0.55s var(--ease-out);
+  }
+  .roll::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 100%;
+    white-space: nowrap;
+    transition: transform 0.55s var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .group\/roll:hover .roll > span,
+    .group\/roll:hover .roll::after {
+      transform: translateY(-100%);
+    }
+  }
+
+  /* Pill button with a fill that wipes up from the bottom on hover. */
+  .btn {
+    position: relative;
+    isolation: isolate;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    overflow: hidden;
+    border-radius: 999px;
+    padding: 0.95rem 1.4rem;
+    font-variation-settings: "wdth" 112;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition:
+      color 0.45s var(--ease-out),
+      border-color 0.45s var(--ease-out),
+      transform 0.2s var(--ease-out);
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    transform: translateY(101%);
+    transition: transform 0.55s var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn:hover::before {
+      transform: none;
+    }
+  }
+  .btn-solid {
+    background-color: var(--fg);
+    color: var(--bg);
+  }
+  .btn-solid::before {
+    background-color: var(--accent);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-solid:hover {
+      color: var(--on-accent);
+    }
+  }
+  .btn-accent {
+    background-color: var(--accent);
+    color: var(--on-accent);
+  }
+  .btn-accent::before {
+    background-color: var(--fg);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-accent:hover {
+      color: var(--bg);
+    }
+  }
+  .btn-line {
+    border: 1px solid var(--line-strong);
+    color: var(--fg);
+  }
+  .btn-line::before {
+    background-color: var(--fg);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-line:hover {
+      color: var(--bg);
+      border-color: var(--fg);
+    }
+  }
+
+  /* Index-row hover wipe: a fill rises from the row's bottom edge. */
+  .row-wipe {
+    position: relative;
+    isolation: isolate;
+  }
+  .row-wipe::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-color: var(--fg);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.6s var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .row-wipe:hover::before {
+      transform: scaleY(1);
+    }
+  }
+
+  /* ----- Entrance reveals -----------------------------------------------
+     Content is VISIBLE by default (SSR / no-JS / reduced motion). The
+     pre-paint script sets `html[data-reveal-js]` only when motion is allowed,
+     and `scroll-reveal.tsx` sets `data-in` on each target as it enters the
+     viewport (an attribute, not a class — React never rewrites it).
+     Time-based, not scroll-scrubbed, so nothing sits half-faded on screen.
+     `--i` (explicit) and `--auto` (same-batch order) cascade siblings. */
+  html[data-reveal-js] [data-reveal] {
+    transition:
+      opacity 0.9s var(--ease-out),
+      transform 1.1s var(--ease-out);
+    transition-delay: calc((var(--i, 0) + var(--auto, 0)) * 80ms + var(--d, 0ms));
+  }
+  html[data-reveal-js] [data-reveal]:not([data-in]) {
+    opacity: 0;
+    transform: translate3d(0, 2.25rem, 0);
+  }
+  html[data-reveal-js] [data-reveal="fade"]:not([data-in]) {
+    transform: none;
+  }
+  html[data-reveal-js] [data-reveal="scale"]:not([data-in]) {
+    transform: scale(0.94);
+  }
+  @media (min-width: 640px) {
+    html[data-reveal-js] [data-reveal="left"]:not([data-in]) {
+      transform: translate3d(-3rem, 0, 0);
+    }
+    html[data-reveal-js] [data-reveal="right"]:not([data-in]) {
+      transform: translate3d(3rem, 0, 0);
+    }
+  }
+  /* Already scrolled past on load (mid-page reload): no entrance. */
+  html[data-reveal-js] [data-in="instant"],
+  html[data-reveal-js] [data-in="instant"] * {
+    transition: none !important;
+  }
+
+  /* Masked line rise: `.line` clips, its child rises from below the edge.
+     The observer watches the parent (children start clipped out of view). */
+  .line {
+    display: block;
+    overflow: clip;
+    overflow-clip-margin: 0.08em;
+    padding-bottom: 0.06em;
+    margin-bottom: -0.06em;
+  }
+  .line > span {
+    display: block;
+  }
+  html[data-reveal-js] [data-reveal="lines"]:not([data-in]) {
+    opacity: 1;
+    transform: none;
+  }
+  html[data-reveal-js] [data-reveal="lines"] .line > span {
+    transition: transform 1.15s var(--ease-out);
+    transition-delay: calc(var(--l, 0) * 110ms + var(--d, 0ms) + var(--auto, 0) * 80ms);
+  }
+  html[data-reveal-js] [data-reveal="lines"]:not([data-in]) .line > span {
+    transform: translate3d(0, 128%, 0);
+  }
+
+  /* Media window: the frame opens from a smaller window while the picture
+     inside settles from an overscan — compositor-only transforms, no
+     clip-path repaints. */
+  html[data-reveal-js] [data-reveal="window"] {
+    transition: transform 1.3s var(--ease-out);
+  }
+  html[data-reveal-js] [data-reveal="window"] [data-window-inner] {
+    transition: transform 1.6s var(--ease-out);
+  }
+  html[data-reveal-js] [data-reveal="window"]:not([data-in]) {
+    opacity: 1;
+    transform: scale(0.88);
+  }
+  html[data-reveal-js] [data-reveal="window"]:not([data-in]) [data-window-inner] {
+    transform: scale(1.22);
+  }
+
+  /* Footer wordmark: rises when the page end scrolls into view (the footer
+     itself is always "in view" beneath the page, so it has its own trigger). */
+  html[data-reveal-js] .footer-mark .line > span {
+    transition: transform 1.4s var(--ease-out);
+  }
+  html[data-reveal-js] footer:not([data-open]) .footer-mark .line > span {
+    transform: translate3d(0, 128%, 0);
+  }
+
+  /* Hairline that draws left → right. */
+  html[data-reveal-js] [data-reveal="rule"] {
+    transform-origin: left center;
+    transition: transform 1.2s var(--ease-in-out);
+  }
+  html[data-reveal-js] [data-reveal="rule"]:not([data-in]) {
+    opacity: 1;
+    transform: scaleX(0);
+  }
+
+  /* ----- Hero entrance (plays on load, synced with the intro) ---------- */
+  @keyframes rise {
+    from {
+      transform: translate3d(0, 128%, 0);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 1.25rem, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes settle {
+    from {
+      transform: scale(1.05);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .load-rise > span {
+      animation: rise 1.25s var(--ease-out) both;
+      animation-delay: calc(var(--l, 0) * 110ms + var(--hero-delay, 0ms) + 80ms);
+    }
+    .load-fade {
+      animation: fade-up 1s var(--ease-out) both;
+      animation-delay: calc(var(--d, 0ms) + var(--hero-delay, 0ms));
+    }
+    .load-window {
+      animation: fade-in 1.2s var(--ease-out) both;
+      animation-delay: calc(var(--d, 0ms) + var(--hero-delay, 0ms));
+    }
+    /* Transform-only settle (never hidden): the element paints immediately,
+       so a large hero image can be the LCP even under the intro curtain. */
+    .load-settle {
+      animation: settle 1.6s var(--ease-out) both;
+      animation-delay: calc(var(--d, 0ms) + var(--hero-delay, 0ms));
+    }
+  }
+  /* First visit of the session: hold the hero until the curtain lifts. */
+  html[data-intro="play"] {
+    --hero-delay: 1500ms;
+  }
+
+  /* ----- Hero reel: three covers crossfading with a slow push-in -------- */
+  .reel-item {
+    opacity: 0;
+    animation: reel 12s linear infinite;
+    animation-delay: calc(var(--r) * 4s - 0.01s);
+  }
+  .reel-item:first-child {
     opacity: 1;
   }
-
-  @keyframes reveal-up {
-    from {
+  .reel-item img {
+    animation: reel-push 12s linear infinite;
+    animation-delay: calc(var(--r) * 4s - 0.01s);
+  }
+  @keyframes reel {
+    0% {
       opacity: 0;
-      transform: translateY(28px) scale(0.985);
     }
-    to {
+    4%,
+    33.3% {
+      opacity: 1;
+    }
+    38%,
+    100% {
+      opacity: 0;
+    }
+  }
+  @keyframes reel-push {
+    0% {
+      transform: scale(1.12);
+    }
+    38%,
+    100% {
+      transform: scale(1.02);
+    }
+  }
+  .reel-caption {
+    opacity: 0;
+    animation: reel-caption 12s linear infinite;
+    animation-delay: calc(var(--r) * 4s - 0.01s);
+  }
+  @keyframes reel-caption {
+    0%,
+    3% {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+    6%,
+    32% {
       opacity: 1;
       transform: none;
     }
+    35%,
+    100% {
+      opacity: 0;
+      transform: translateY(-0.5rem);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reel-item,
+    .reel-item img,
+    .reel-caption {
+      animation: none;
+    }
+    .reel-caption:first-child {
+      opacity: 1;
+    }
   }
 
-  /* Directional / scale reveal variants (opt in via `<Reveal variant="…">`).
-     Slides start off to one side; scale gives a subtle pop. */
-  @keyframes reveal-left {
+  /* ----- Intro curtain (first visit per session) -----------------------
+     Pure CSS, plays before hydration. 0–1.2s: counter 00→100 + name rises;
+     1.25–1.95s: the curtain lifts with its bottom edge rounding, straight into
+     the hero (which is held via --hero-delay). */
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    pointer-events: none;
+  }
+  html[data-intro="play"] .intro {
+    display: block;
+  }
+  .intro-sheet {
+    position: absolute;
+    inset: 0 0 -12vh;
+    background-color: var(--ink);
+    color: var(--paper);
+    border-radius: 0 0 50% 50% / 0 0 0 0;
+    animation: intro-lift 0.8s var(--ease-in-out) 1.25s both;
+    will-change: transform;
+  }
+  .intro-name {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: calc(12vh + var(--gutter) + 2.5rem);
+    display: block;
+    overflow: clip;
+    font-size: clamp(2.6rem, 11.5vw, 12rem);
+  }
+  .intro-name > span {
+    display: block;
+    animation: rise 1s var(--ease-out) 0.1s both;
+  }
+  .intro-count {
+    position: absolute;
+    left: var(--gutter);
+    bottom: calc(12vh + var(--gutter));
+    font-family: var(--font-mono), ui-monospace, monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    counter-reset: n var(--n);
+    animation: intro-count 1.1s var(--ease-in-out) both;
+  }
+  .intro-count::before {
+    content: counter(n, decimal-leading-zero);
+  }
+  .intro-bar {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: calc(12vh + var(--gutter) - 0.9rem);
+    height: 1px;
+    background-color: var(--signal);
+    transform-origin: left;
+    animation: intro-bar 1.1s var(--ease-in-out) both;
+  }
+  .intro-role {
+    position: absolute;
+    right: var(--gutter);
+    bottom: calc(12vh + var(--gutter));
+    animation: fade-in 0.6s var(--ease-out) 0.3s both;
+  }
+  @keyframes intro-count {
     from {
-      opacity: 0;
-      transform: translateX(-44px);
+      --n: 0;
     }
     to {
-      opacity: 1;
-      transform: none;
+      --n: 100;
     }
   }
-  @keyframes reveal-right {
-    from {
-      opacity: 0;
-      transform: translateX(44px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  @keyframes reveal-scale {
-    from {
-      opacity: 0;
-      transform: scale(0.9);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    /* Above-the-fold: play once on load. */
-    .reveal-now {
-      opacity: 0;
-      animation: reveal-up 0.7s var(--ease-out-strong) both;
-      animation-delay: var(--reveal-delay, 0ms);
-    }
-  }
-
-  /* Scroll-linked reveal where the browser supports it; elsewhere the
-     content simply stays visible (the default above). */
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .reveal {
-        opacity: 0;
-        animation: reveal-up linear both;
-        animation-timeline: view();
-        animation-range: entry 0% cover 30%;
-      }
-      /* Scale pop is safe at any width. */
-      .reveal.reveal--scale {
-        animation-name: reveal-scale;
-      }
-      /* Horizontal slides only on wider screens — on phones every reveal rises
-         (translateX off a narrow viewport reads as jitter). */
-      @media (min-width: 640px) {
-        .reveal.reveal--left {
-          animation-name: reveal-left;
-        }
-        .reveal.reveal--right {
-          animation-name: reveal-right;
-        }
-      }
-    }
-  }
-
-  /* JS-driven fallback for browsers WITHOUT scroll-driven CSS animations
-     (Safari, Firefox). `html.reveal-js` is set before first paint by the inline
-     script in `layout.tsx` — only when the native feature is unsupported and the
-     user hasn't asked for reduced motion — and `scroll-reveal.tsx` adds
-     `.is-inview` as each element enters the viewport. Chromium never matches
-     this block (its `@supports` above wins) and no-JS/reduced-motion users never
-     get `html.reveal-js`, so the visible-by-default content stays intact. */
-  @supports not (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      html.reveal-js .reveal {
-        opacity: 0;
-        transform: translateY(28px) scale(0.985);
-        transition:
-          opacity 0.7s var(--ease-out-strong),
-          transform 0.7s var(--ease-out-strong);
-        /* Cluster cascade: rows/cards that share a viewport entry stagger in
-           (native gets this for free from each element's own view timeline). */
-        transition-delay: calc(var(--reveal-order, 0) * 70ms);
-      }
-      /* Variant start states (must precede `.is-inview` so it can reset them). */
-      html.reveal-js .reveal.reveal--scale {
-        transform: scale(0.9);
-      }
-      @media (min-width: 640px) {
-        html.reveal-js .reveal.reveal--left {
-          transform: translateX(-44px);
-        }
-        html.reveal-js .reveal.reveal--right {
-          transform: translateX(44px);
-        }
-      }
-      html.reveal-js .reveal.is-inview {
-        opacity: 1;
-        transform: none;
-      }
-
-      /* Media reveal is on a dedicated wrapper (not the img), so a fade + settle
-         is safe here — it can't fight the img's carousel opacity or the frame's
-         hover scale. */
-      html.reveal-js .media-reveal {
-        opacity: 0;
-        transform: scale(1.04);
-        transition:
-          opacity 0.9s var(--ease-out-strong),
-          transform 0.9s var(--ease-out-strong);
-      }
-      html.reveal-js .media-reveal.is-inview {
-        opacity: 1;
-        transform: none;
-      }
-
-      html.reveal-js .mask-reveal > * {
-        opacity: 0;
-        transform: translateY(115%);
-        transition:
-          opacity 0.95s var(--ease-out-strong),
-          transform 0.95s var(--ease-out-strong);
-      }
-      html.reveal-js .mask-reveal > *.is-inview {
-        opacity: 1;
-        transform: none;
-      }
-    }
-  }
-
-  /* Scroll-draw accent rule — the short line under section headers grows from
-     left to right as the header enters. Visible by default (no-JS / reduced
-     motion); native scroll-timeline where supported, `.reveal-js` fallback
-     elsewhere (observed by scroll-reveal.tsx alongside the reveals). */
-  .rule-draw {
-    transform-origin: left center;
-    transform: scaleX(1);
-  }
-  @keyframes rule-draw {
+  @keyframes intro-bar {
     from {
       transform: scaleX(0);
     }
@@ -363,527 +712,171 @@
       transform: scaleX(1);
     }
   }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .rule-draw {
-        transform: scaleX(0);
-        animation: rule-draw linear both;
-        animation-timeline: view();
-        animation-range: entry 8% cover 24%;
-      }
-    }
-  }
-  @supports not (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      html.reveal-js .rule-draw {
-        transform: scaleX(0);
-        transition: transform 0.8s var(--ease-out-strong);
-      }
-      html.reveal-js .rule-draw.is-inview {
-        transform: scaleX(1);
-      }
-    }
-  }
-
-  /* One-shot light sweep across a gradient-clipped headline accent. Plays once
-     on load; rests as a near-solid accent. Falls back to a flat accent fill
-     under reduced motion. */
-  @keyframes text-sweep {
+  @keyframes intro-lift {
     from {
-      background-position: 220% center;
+      transform: none;
+      border-radius: 0 0 50% 50% / 0 0 0 0;
     }
     to {
-      background-position: 0% center;
+      transform: translate3d(0, -115%, 0);
+      border-radius: 0 0 50% 50% / 0 0 12vh 12vh;
     }
   }
-  .text-sweep {
-    background: linear-gradient(
-      100deg,
-      var(--accent) 44%,
-      color-mix(in srgb, var(--accent) 35%, #ffffff) 50%,
-      var(--accent) 56%
-    );
-    background-size: 220% auto;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    -webkit-text-fill-color: transparent;
-    animation: text-sweep 1.5s var(--ease-out-strong) 0.6s both;
-  }
+  /* (Browsers without @property step the counter 00 → 100 discretely.) */
   @media (prefers-reduced-motion: reduce) {
-    .text-sweep {
-      animation: none;
-      background: none;
-      color: var(--accent);
-      -webkit-text-fill-color: var(--accent);
-    }
-  }
-
-  /* Frosted-glass surface — semi-transparent card tint, hairline highlight, and
-     an inner top edge. Solid-fills under prefers-reduced-transparency. */
-  .glass {
-    background-color: color-mix(in srgb, var(--card) 55%, transparent);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(12px) saturate(1.2);
-    -webkit-backdrop-filter: blur(12px) saturate(1.2);
-  }
-  @media (prefers-reduced-transparency: reduce) {
-    .glass {
-      background-color: var(--card);
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
-  }
-
-  /* Heavier frosted surface — mostly opaque so text stays readable and stacked
-     cards don't bleed, but translucent enough (and blurred) that the 3D scene
-     shows faintly through. Used by the floating nav and the `solid`
-     ShowcaseCards. Solid-fills under prefers-reduced-transparency. */
-  .glass-strong {
-    background-color: color-mix(in srgb, var(--card) 88%, transparent);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.06),
-      inset 0 0 0 1px rgba(255, 255, 255, 0.02);
-    backdrop-filter: blur(16px) saturate(1.25);
-    -webkit-backdrop-filter: blur(16px) saturate(1.25);
-  }
-  @media (prefers-reduced-transparency: reduce) {
-    .glass-strong {
-      background-color: var(--card);
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
-  }
-
-  /* Glass look WITHOUT backdrop-filter — for grids of repeated cells (case-study
-     features/stack). A dozen blurred cells is a real scroll-repaint cost under
-     Lenis, and over the flat near-black body the blur is invisible anyway. */
-  .glass-soft {
-    background-color: color-mix(in srgb, var(--card) 72%, transparent);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  }
-
-  /* Frosted form field — a subtle glass fill that firms up and lights an accent
-     ring on focus. Same reduced-transparency fallback as `.glass`. Only
-     colour/shadow transition (never layout), all under 300ms. */
-  .field {
-    background-color: color-mix(in srgb, var(--card) 40%, transparent);
-    backdrop-filter: blur(8px) saturate(1.1);
-    -webkit-backdrop-filter: blur(8px) saturate(1.1);
-    transition:
-      border-color 0.2s var(--ease-out-strong),
-      background-color 0.2s var(--ease-out-strong),
-      box-shadow 0.28s var(--ease-out-strong);
-  }
-  .field:hover {
-    border-color: var(--border-strong);
-  }
-  .field:focus {
-    border-color: var(--accent);
-    background-color: color-mix(in srgb, var(--card) 62%, transparent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent);
-  }
-  @media (prefers-reduced-transparency: reduce) {
-    .field {
-      background-color: var(--card);
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
-  }
-
-  /* One-shot specular sheen for glass cards — a thin diagonal light band that
-     wipes across on pointer-enter and retreats on leave. Transform/opacity
-     only (GPU-composited); the parent card clips it (overflow-hidden) and only
-     renders it on hover-capable pointers, so touch/reduced-motion never see it. */
-  .card-sheen {
-    background: linear-gradient(
-      105deg,
-      transparent 42%,
-      rgba(255, 255, 255, 0.1) 50%,
-      transparent 58%
-    );
-    transform: translateX(-130%);
-    transition: transform 0.85s var(--ease-out-strong);
-  }
-  .group\/card:hover .card-sheen {
-    transform: translateX(130%);
-  }
-
-  /* Editorial image reveal — a fade + settle tied to scroll position, on a
-     dedicated wrapper (see MediaFrame). Base state is fully visible: the
-     animation is layered on only where `animation-timeline: view()` is
-     supported. Uses opacity/transform (NOT clip-path) — Firefox honours view()
-     timelines but won't animate clip-path on one, which left covers invisible. */
-  .media-reveal {
-    opacity: 1;
-  }
-  @keyframes media-rise {
-    from {
-      opacity: 0;
-      transform: scale(1.04);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .media-reveal {
-        opacity: 0;
-        animation: media-rise linear both;
-        animation-timeline: view();
-        animation-range: entry 5% cover 34%;
-      }
-      /* Safety net: scroll-reveal.tsx adds `.is-inview` once the frame is well in
-         view, forcing it visible even if a browser mis-drives the view() timeline
-         (a no-op in Chromium, where the fade has already finished by then). */
-      .media-reveal.is-inview {
-        animation: none;
-        opacity: 1;
-        transform: none;
-      }
-    }
-  }
-
-  /* Gentle ambient float for the scroll cue — softer than Tailwind's bounce. */
-  @keyframes float {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(5px);
-    }
-  }
-  .animate-float {
-    animation: float 2.6s var(--ease-in-out-strong) infinite;
-  }
-
-  /* Masked line reveal — each line slides up from behind a clip edge.
-     Default (no JS / reduced motion) is fully visible. */
-  .line-mask {
-    display: block;
-    overflow: hidden;
-    padding-bottom: 0.12em;
-  }
-  .line-mask > * {
-    display: block;
-  }
-  @keyframes mask-rise {
-    from {
-      transform: translateY(115%);
-      opacity: 0;
-    }
-    to {
-      transform: none;
-      opacity: 1;
-    }
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .line-mask > * {
-      animation: mask-rise 0.95s var(--ease-out-strong) both;
-      animation-delay: var(--reveal-delay, 0ms);
-    }
-  }
-
-  /* Scroll-unfurl: title rises out of a clip edge as it enters the viewport.
-     Base state visible; the scroll-driven animation layers on where supported. */
-  .mask-reveal {
-    display: block;
-    overflow: hidden;
-    padding-bottom: 0.12em;
-  }
-  .mask-reveal > * {
-    display: block;
-  }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .mask-reveal > * {
-        animation: mask-rise linear both;
-        animation-timeline: view();
-        animation-range: entry 0% cover 26%;
-      }
-    }
-  }
-
-  /* Page-load dive intro — a glossy tile with a circular hole appears with
-     the wordmark, holds a beat, then scales up massively so the viewer flies
-     THROUGH the hole. The hole is filled with the page background colour, so
-     the closing overlay fade is an invisible seam straight onto the homepage.
-     Transform/opacity only (no per-frame paints), pure CSS so it works with
-     no JS and removes itself; hidden under reduced motion. One shared 4.2s
-     timeline across all pieces — unhurried on purpose, so the object and
-     wordmark get a real beat before the dive. */
-  .intro-curtain {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    overflow: hidden;
-    display: grid;
-    place-items: center;
-    background-color: var(--background);
-    animation: intro-overlay 4.2s linear forwards;
-  }
-  .intro-stage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-  }
-  /* The object — a glossy sage-tinted tile with a punched circular "porthole". */
-  .intro-tile {
-    position: relative;
-    z-index: 2;
-    display: grid;
-    place-items: center;
-    width: clamp(150px, 24vw, 200px);
-    aspect-ratio: 1;
-    border-radius: 1.6rem;
-    background:
-      radial-gradient(
-        120% 120% at 18% 12%,
-        rgba(255, 255, 255, 0.22),
-        transparent 38%
-      ),
-      linear-gradient(
-        145deg,
-        color-mix(in srgb, var(--accent) 34%, #131713),
-        #0f120f 64%
-      );
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      0 40px 90px -30px rgba(0, 0, 0, 0.8);
-    transform-origin: center;
-    will-change: transform;
-    animation: intro-tile 4.2s linear both;
-  }
-  /* The hole — page-background fill, so diving through it lands "inside"
-     the site. */
-  .intro-hole {
-    display: block;
-    width: 62%;
-    aspect-ratio: 1;
-    border-radius: 9999px;
-    background-color: var(--background);
-    box-shadow:
-      inset 0 6px 18px rgba(0, 0, 0, 0.55),
-      0 1px 0 rgba(255, 255, 255, 0.08);
-  }
-  .intro-text {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    justify-items: center;
-    gap: 0.9rem;
-    animation: intro-text 4.2s linear both;
-  }
-  .intro-eyebrow {
-    font-family: var(--font-mono), ui-monospace, monospace;
-    font-size: 0.72rem;
-    letter-spacing: 0.24em;
-    text-transform: uppercase;
-    color: var(--faint);
-  }
-  .intro-word {
-    display: block;
-    overflow: hidden;
-    padding-bottom: 0.14em;
-  }
-  .intro-word > span {
-    display: block;
-    font-family: var(--font-display), var(--font-sans), sans-serif;
-    font-weight: 800;
-    letter-spacing: -0.045em;
-    line-height: 1;
-    font-size: clamp(1.9rem, 5vw, 3rem);
-    animation: intro-rise 1.1s var(--ease-out-strong) 0.35s both;
-  }
-  /* Timeline (of 4.2s): 0–0.8s tile scales in · beat with the wordmark ·
-     1.5–1.8s a slight pull-back "breath in" · 1.8–3.7s the dive (scale 36
-     swallows the viewport through the hole) · 3.3–4.1s overlay fades onto
-     the identical page background while the hero headline rises. */
-  @keyframes intro-tile {
-    0% {
-      opacity: 0;
-      transform: scale(0.82);
-      animation-timing-function: var(--ease-out-strong);
-    }
-    19% {
-      opacity: 1;
-      transform: scale(1);
-      animation-timing-function: linear;
-    }
-    43% {
-      transform: scale(1);
-      animation-timing-function: var(--ease-in-out-strong);
-    }
-    88%,
-    100% {
-      opacity: 1;
-      transform: scale(36);
-    }
-  }
-  @keyframes intro-text {
-    0%,
-    7% {
-      opacity: 0;
-      transform: translateY(14px);
-      animation-timing-function: var(--ease-out-strong);
-    }
-    21% {
-      opacity: 1;
-      transform: none;
-    }
-    41% {
-      opacity: 1;
-      transform: none;
-    }
-    52%,
-    100% {
-      opacity: 0;
-      transform: scale(0.96);
-    }
-  }
-  @keyframes intro-rise {
-    from {
-      transform: translateY(115%);
-    }
-    to {
-      transform: none;
-    }
-  }
-  @keyframes intro-overlay {
-    0%,
-    79% {
-      opacity: 1;
-    }
-    97% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 0;
-      visibility: hidden;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .intro-curtain {
+    html[data-intro="play"] .intro {
       display: none;
     }
   }
 
-  /* Landing sync — on a full page load (class set pre-paint by the inline
-     script in layout.tsx, removed after the intro finishes) the hero's
-     entrance is postponed so the headline rises right as the dive lands.
-     3.8s puts the rise AFTER the overlay has mostly cleared (it fades
-     3.3–4.1s) so the motion is actually seen, and the slightly longer
-     duration makes it read. Client navigations and no-JS/reduced-motion
-     loads never get the class. */
-  html.intro-sync .reveal-now,
-  html.intro-sync .line-mask > * {
-    animation-delay: calc(var(--reveal-delay, 0ms) + 3800ms);
-    animation-duration: 1.1s;
-  }
-  html.intro-sync .text-sweep {
-    animation-delay: 4.5s;
-  }
-
-  /* Infinite tech marquee. */
-  .marquee-track {
-    display: flex;
-    width: max-content;
-    animation: marquee 44s linear infinite;
-  }
-  @keyframes marquee {
+  /* ----- Scroll cue: a drop of light running down a hairline ------------ */
+  @keyframes scroll-cue {
+    from {
+      transform: translateY(-100%);
+    }
     to {
-      transform: translateX(-50%);
+      transform: translateY(200%);
     }
   }
-  @media (prefers-reduced-motion: reduce) {
-    .marquee-track {
-      animation: none;
-    }
+  .scroll-cue {
+    animation: scroll-cue 2.2s var(--ease-in-out) infinite;
   }
 
-  /* Ambient aurora — slow-drifting accent light-fields behind the content. The
-     primary depth layer on mobile (where the WebGL scene is faint / dialled
-     back); dimmed on large screens so the 3D leads there. All on-brand sage,
-     varying only in weight. Transform-only drift (GPU-composited); the global
-     reduced-motion rule freezes it to a static wash. */
-  .aurora-blob {
+  /* ----- Manifesto: words light up as --p (scroll progress) passes them.
+     --words = word count + ramp, --w = word index. (Not `--n` — that's the
+     intro counter's registered, non-inheriting property.) Defaults to fully lit (no-JS /
+     reduced motion); the About chapter writes --p while pinned. */
+  .manifesto {
+    --p: 1;
+  }
+  .manifesto > span {
+    opacity: clamp(0.25, calc((var(--p) * var(--words) - var(--w)) / 3), 1);
+  }
+
+  /* ----- Marquee tape --------------------------------------------------- */
+  .tape {
+    transform: rotate(-2.5deg);
+    width: 112%;
+    margin-left: -6%;
+  }
+
+  /* ----- Availability ping ---------------------------------------------- */
+  @keyframes ping {
+    75%,
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+  .ping::after {
+    content: "";
     position: absolute;
-    border-radius: 9999px;
-    filter: blur(64px);
-    will-change: transform;
+    inset: 0;
+    border-radius: 999px;
+    background: inherit;
+    animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
-  .aurora-blob--1 {
-    top: -12%;
-    left: -8%;
-    width: 62vw;
-    height: 62vw;
-    background: radial-gradient(
-      circle,
-      color-mix(in srgb, var(--accent) 20%, transparent),
-      transparent 70%
-    );
-    animation: aurora-1 20s var(--ease-in-out-strong) infinite alternate;
+
+  /* ----- Client-navigation entrance (fallback when View Transitions are
+     unavailable — see template.tsx). */
+  .route-enter {
+    animation: fade-up 0.7s var(--ease-out) both;
   }
-  .aurora-blob--2 {
-    top: 32%;
-    right: -14%;
-    width: 54vw;
-    height: 54vw;
-    background: radial-gradient(
-      circle,
-      color-mix(in srgb, var(--accent) 12%, transparent),
-      transparent 70%
-    );
-    animation: aurora-2 26s var(--ease-in-out-strong) infinite alternate;
+
+  /* ----- Cursor label ---------------------------------------------------- */
+  .cursor-pill {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+    transition:
+      transform 0.45s var(--ease-out),
+      opacity 0.3s var(--ease-out);
   }
-  .aurora-blob--3 {
-    bottom: -16%;
-    left: 18%;
-    width: 50vw;
-    height: 50vw;
-    background: radial-gradient(
-      circle,
-      color-mix(in srgb, var(--accent) 15%, transparent),
-      transparent 70%
-    );
-    animation: aurora-3 23s var(--ease-in-out-strong) infinite alternate;
+  .cursor-pill[data-on] {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
   }
-  @keyframes aurora-1 {
-    to {
-      transform: translate3d(12%, 10%, 0) scale(1.15);
-    }
+  /* Gone the instant a page transition starts, so it isn't baked into the
+     outgoing snapshot. */
+  html[data-vt] .cursor-pill {
+    opacity: 0;
+    transition: none;
   }
-  @keyframes aurora-2 {
-    to {
-      transform: translate3d(-14%, 8%, 0) scale(1.1);
-    }
+}
+
+/* Must live at the top level (not inside @layer) to register. */
+@property --n {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+@media print {
+  [data-reveal],
+  [data-reveal] .line > span,
+  [data-window-inner] {
+    opacity: 1 !important;
+    transform: none !important;
   }
-  @keyframes aurora-3 {
-    to {
-      transform: translate3d(10%, -12%, 0) scale(1.2);
-    }
+  .intro,
+  header {
+    display: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   View Transitions — client navigations morph the clicked project image into
+   the case-study cover while the new page wipes up over the old one.
+--------------------------------------------------------------------------- */
+::view-transition-group(*) {
+  animation-duration: 0.9s;
+  animation-timing-function: var(--ease-in-out);
+}
+/* The morphing cover keeps its crop instead of stretching between the card's
+   21:9 and the hero's aspect. */
+::view-transition-old(cover),
+::view-transition-new(cover) {
+  height: 100%;
+  object-fit: cover;
+}
+::view-transition-image-pair(cover) {
+  overflow: clip;
+  border-radius: 14px;
+}
+::view-transition-old(root) {
+  animation: vt-old-root 0.9s var(--ease-in-out) both;
+}
+::view-transition-new(root) {
+  animation: vt-new-root 0.9s var(--ease-in-out) both;
+}
+@keyframes vt-old-root {
+  to {
+    opacity: 0.35;
+    transform: translateY(-6vh) scale(0.96);
+  }
+}
+@keyframes vt-new-root {
+  from {
+    clip-path: inset(100% 0 0 0 round var(--sheet-radius) var(--sheet-radius) 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0 round 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
   *,
   *::before,
   *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

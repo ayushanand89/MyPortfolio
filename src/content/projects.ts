@@ -10,7 +10,15 @@ export type Stat = { value: string; label: string };
 export type CaseStudyBlock =
   | { type: "section"; eyebrow?: string; title: string; body?: string }
   | { type: "text"; body: string }
-  | { type: "image"; src?: string; alt: string; caption?: string }
+  | {
+      type: "image";
+      src?: string;
+      alt: string;
+      caption?: string;
+      /** Low-res source (e.g. logged-in or client-only screens that can't be
+       *  re-captured): shown at a reading width instead of full bleed. */
+      narrow?: boolean;
+    }
   | { type: "stats"; items: Stat[] }
   | {
       type: "features";
@@ -19,7 +27,19 @@ export type CaseStudyBlock =
       items: { title: string; body: string }[];
     }
   | { type: "stack"; items: { name: string; why: string }[] }
-  | { type: "quote"; text: string };
+  | { type: "quote"; text: string }
+  /** A vector diagram (SVG) — stays sharp at any size; scrolls on phones. */
+  | { type: "diagram"; src: string; alt: string; caption?: string }
+  /** A row of phone frames — mobile recordings and/or screenshots. */
+  | {
+      type: "mobile";
+      eyebrow?: string;
+      title?: string;
+      items: { src: string; video?: string; alt: string; caption?: string }[];
+    };
+
+/** A recording of the live site: a looping video + its first-frame poster. */
+export type Recording = { video: string; poster: string };
 
 export type ProjectLinks = {
   demo?: string;
@@ -28,6 +48,17 @@ export type ProjectLinks = {
 
 export type Project = {
   slug: string;
+  /** The real, public site — drives the LIVE badge, "Visit live site" and the
+   *  click-to-launch embed on the case study (both hosts allow framing). */
+  live?: { url: string; host: string };
+  /** Recordings of the live site (captured with the scratchpad CDP tool —
+   *  see public/work/README.md). */
+  media?: {
+    desktop?: Recording;
+    mobile?: Recording;
+    /** Short, small clip for the hero "now showing" reel. */
+    reel?: string;
+  };
   title: string;
   tagline: string;
   /** One proof-forward line for the card — what the project demonstrates,
@@ -59,8 +90,8 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    slug: "sukh-sadam",
-    title: "Sukh Sadam",
+    slug: "quit-gambling",
+    title: "Quit Gambling",
     tagline: "A full-stack recovery platform for gambling addiction.",
     outcome: "30+ routes · 17 tables · RLS on every one · shipped solo",
     domain: "Health-tech · Recovery platform",
@@ -77,12 +108,24 @@ export const projects: Project[] = [
     role: "Designed & built end to end",
     category: "flagship",
     tags: ["Next.js 16", "React 19", "TypeScript", "Supabase", "Razorpay", "Tailwind"],
-    image: "/work/sukh-sadam/cover.jpg",
+    image: "/work/quit-gambling/cover.jpg",
     links: { demo: "https://quitgambling.in" },
+    live: { url: "https://quitgambling.in", host: "quitgambling.in" },
+    media: {
+      desktop: {
+        video: "/work/quit-gambling/desktop.mp4",
+        poster: "/work/quit-gambling/desktop.jpg",
+      },
+      mobile: {
+        video: "/work/quit-gambling/mobile.mp4",
+        poster: "/work/quit-gambling/mobile.jpg",
+      },
+      reel: "/work/quit-gambling/reel.mp4",
+    },
     hasCaseStudy: true,
     cover: {
       eyebrow: "Case study — designed & built end to end",
-      title: "Sukh Sadam",
+      title: "Quit Gambling",
       subtitle:
         "A full-stack recovery platform for gambling addiction. Bookings · payments · recovery tools · an anonymous community.",
     },
@@ -107,9 +150,9 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/sukh-sadam/landing.jpg",
-        alt: "Sukh Sadam landing page",
-        caption: "Landing — verified counselors, private recovery tools, a community that's been there.",
+        src: "/work/quit-gambling/counselors.jpg",
+        alt: "Quit Gambling counselor directory",
+        caption: "Counselors — licensed in India, vetted in person, each with languages, specialty and live ratings.",
       },
       {
         type: "features",
@@ -144,7 +187,37 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/sukh-sadam/dashboard.jpg",
+        src: "/work/quit-gambling/toolkit.jpg",
+        alt: "The recovery toolkit — mood graph, streak, journal and SOS",
+        caption: "The space between sessions — a one-tap mood graph, a gambling-free streak, a private journal and an SOS for the urge that won't wait.",
+      },
+      {
+        type: "mobile",
+        eyebrow: "Built for the phone in your pocket",
+        title: "Help at 2am happens on a phone.",
+        items: [
+          {
+            src: "/work/quit-gambling/mobile.jpg",
+            video: "/work/quit-gambling/mobile.mp4",
+            alt: "Quit Gambling on mobile — scrolling the live site",
+            caption: "The live site on a phone",
+          },
+          {
+            src: "/work/quit-gambling/m-toolkit.jpg",
+            alt: "Mobile toolkit — mood graph",
+            caption: "Toolkit",
+          },
+          {
+            src: "/work/quit-gambling/m-pricing.jpg",
+            alt: "Mobile care plans",
+            caption: "Care plans",
+          },
+        ],
+      },
+      {
+        type: "image",
+        src: "/work/quit-gambling/dashboard.jpg",
+        narrow: true,
         alt: "Patient recovery dashboard",
         caption: "Patient home — streak, daily check-in, mood, and next session at a glance.",
       },
@@ -185,6 +258,12 @@ export const projects: Project[] = [
             body: "Streaks and ratings are computed once and reused, so no two screens disagree.",
           },
         ],
+      },
+      {
+        type: "image",
+        src: "/work/quit-gambling/pricing.jpg",
+        alt: "Care plans — one payment, months of support",
+        caption: "Care plans — one payment, no subscription; session credits are deducted atomically so a slot can never be oversold.",
       },
       {
         type: "stack",
@@ -229,8 +308,21 @@ export const projects: Project[] = [
     association: "Associated with ClanFlare",
     category: "flagship",
     tags: ["Next.js", "n8n", "RAG", "Pinecone", "Cohere", "Upstash", "Redis"],
-    image: "/work/enterprise-ai-chatbot/cover.jpg",
+    image: "/work/enterprise-ai-chatbot/answer.jpg",
     links: {},
+    // Recorded from the real app in its anonymized showcase mode (persona
+    // "Marcus Vale", scripted conversation, no real names or channel).
+    media: {
+      desktop: {
+        video: "/work/enterprise-ai-chatbot/desktop.mp4",
+        poster: "/work/enterprise-ai-chatbot/desktop.jpg",
+      },
+      mobile: {
+        video: "/work/enterprise-ai-chatbot/mobile.mp4",
+        poster: "/work/enterprise-ai-chatbot/mobile.jpg",
+      },
+      reel: "/work/enterprise-ai-chatbot/reel.mp4",
+    },
     hasCaseStudy: true,
     cover: {
       eyebrow: "Case study — built for a client · anonymized",
@@ -272,9 +364,9 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/enterprise-ai-chatbot/chat.jpg",
-        alt: "Chat interface answering in the creator's voice",
-        caption: "Answers in his voice — short, blunt, Hinglish — and it cites the exact clip it's drawing from.",
+        src: "/work/enterprise-ai-chatbot/answer.jpg",
+        alt: "Chat interface answering in the creator's voice, with the source clip and live alerts",
+        caption: "Answers in his voice — short, blunt, Hinglish — with the exact clip it's drawing from, and the desk's live alerts alongside.",
       },
       {
         type: "section",
@@ -284,8 +376,20 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/enterprise-ai-chatbot/architecture.jpg",
-        alt: "System architecture diagram",
+        src: "/work/enterprise-ai-chatbot/alert-override.jpg",
+        alt: "An answer deferring to a live desk alert on Gold",
+        caption: "A human-posted alert on Gold is live, so the persona defers to it — the alert outranks the model's earlier read.",
+      },
+      {
+        type: "image",
+        src: "/work/enterprise-ai-chatbot/admin.jpg",
+        alt: "The alert console — post, schedule and expire desk alerts",
+        caption: "The alert console: post, schedule and expire. Every write is checked against an admin secret on the server.",
+      },
+      {
+        type: "diagram",
+        src: "/work/enterprise-ai-chatbot/architecture.svg",
+        alt: "System architecture: chat and admin UIs → Next.js API → n8n agent → OpenRouter, with Upstash Vector, Pinecone and Redis",
         caption: "Interface separated from intelligence: Next.js → n8n agent → OpenRouter, with a two-tier retrieval layer.",
       },
       {
@@ -323,6 +427,41 @@ export const projects: Project[] = [
           {
             title: "Redis sessions",
             body: "Per-user state, isolated — 2,000+ conversations that never cross wires, with sub-millisecond reads.",
+          },
+        ],
+      },
+      {
+        type: "diagram",
+        src: "/work/enterprise-ai-chatbot/rag-dilution.svg",
+        alt: "Semantic dilution: keyword search buries the right clip at rank 6; searching with the full question plus HyDE puts it first",
+        caption: "Semantic dilution: repeated themes buried the one clip that answered the question. Searching with the full question plus a hypothetical answer (HyDE) put it on top.",
+      },
+      {
+        type: "diagram",
+        src: "/work/enterprise-ai-chatbot/redis-sessions.svg",
+        alt: "One Redis key per user keeps each conversation's context isolated",
+        caption: "One Redis key per user: a stateless app and agent pass the sessionId, so conversations stay isolated and reads stay fast.",
+      },
+      {
+        type: "mobile",
+        eyebrow: "Mobile",
+        title: "The same desk, sized for a phone.",
+        items: [
+          {
+            src: "/work/enterprise-ai-chatbot/mobile.jpg",
+            video: "/work/enterprise-ai-chatbot/mobile.mp4",
+            alt: "The chat on a phone — a scripted demo conversation",
+            caption: "The conversation",
+          },
+          {
+            src: "/work/enterprise-ai-chatbot/m-answer.jpg",
+            alt: "A reply with its source clip on a phone",
+            caption: "Source clip in the reply",
+          },
+          {
+            src: "/work/enterprise-ai-chatbot/m-sheet.jpg",
+            alt: "Live alerts as a bottom sheet on a phone",
+            caption: "Live alerts sheet",
           },
         ],
       },
@@ -368,10 +507,22 @@ export const projects: Project[] = [
     role: "Designed & built end to end",
     category: "flagship",
     tags: ["React 19", "Redux Toolkit", "Express", "MongoDB", "PayPal", "Vercel"],
-    image: "/work/barethreads/cover.jpg",
+    image: "/work/barethreads/home.jpg",
     links: {
       demo: "https://barethreads.vercel.app",
       github: "https://github.com/ayushanand89/BareThreads",
+    },
+    live: { url: "https://barethreads.vercel.app", host: "barethreads.vercel.app" },
+    media: {
+      desktop: {
+        video: "/work/barethreads/desktop.mp4",
+        poster: "/work/barethreads/desktop.jpg",
+      },
+      mobile: {
+        video: "/work/barethreads/mobile.mp4",
+        poster: "/work/barethreads/mobile.jpg",
+      },
+      reel: "/work/barethreads/reel.mp4",
     },
     hasCaseStudy: true,
     cover: {
@@ -401,7 +552,7 @@ export const projects: Project[] = [
       },
       {
         type: "image",
-        src: "/work/barethreads/storefront.jpg",
+        src: "/work/barethreads/catalog.jpg",
         alt: "BareThreads storefront collection page",
         caption:
           "Shop the edit — a filterable catalog by category, gender, size, colour, brand and price, with live sort and removable filter chips.",
@@ -430,8 +581,31 @@ export const projects: Project[] = [
         ],
       },
       {
+        type: "mobile",
+        eyebrow: "Mobile storefront",
+        title: "Shoppable from the thumb.",
+        items: [
+          {
+            src: "/work/barethreads/mobile.jpg",
+            video: "/work/barethreads/mobile.mp4",
+            alt: "BareThreads on mobile — scrolling the live storefront",
+            caption: "The live storefront on a phone",
+          },
+          {
+            src: "/work/barethreads/m-arrivals.jpg",
+            alt: "Mobile new-arrivals carousel",
+            caption: "New arrivals",
+          },
+          {
+            src: "/work/barethreads/m-product.jpg",
+            alt: "Mobile product page",
+            caption: "Product page",
+          },
+        ],
+      },
+      {
         type: "image",
-        src: "/work/barethreads/product.jpg",
+        src: "/work/barethreads/product-page.jpg",
         alt: "BareThreads product detail page",
         caption:
           "A product page with magnifier zoom, gallery, size/colour pickers and a server-computed rating.",
@@ -454,6 +628,7 @@ export const projects: Project[] = [
       {
         type: "image",
         src: "/work/barethreads/admin.jpg",
+        narrow: true,
         alt: "BareThreads admin dashboard",
         caption:
           "The admin dashboard — products, orders and users, all behind role-gated, admin-only routes.",

@@ -1,11 +1,4 @@
-import {
-  Boxes,
-  Gauge,
-  Globe,
-  LayoutDashboard,
-  Rocket,
-  ShoppingCart,
-} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { services } from "@/content/services";
 import {
   Container,
@@ -13,75 +6,51 @@ import {
   Section,
   SectionHeader,
 } from "@/components/primitives";
-import { ShowcaseCard } from "@/components/showcase-card";
-import { StackPanel } from "@/components/motion-fx";
-import { cn } from "@/lib/utils";
 
-const icons = {
-  globe: Globe,
-  rocket: Rocket,
-  "shopping-cart": ShoppingCart,
-  "layout-dashboard": LayoutDashboard,
-  boxes: Boxes,
-  gauge: Gauge,
-} as const;
-
-// Asymmetric bento rhythm on a 6-col grid — every row fills (4+2 / 2+4 / 3+3),
-// breaking the generic "three equal cards" feature row.
-const spans = [
-  "lg:col-span-4",
-  "lg:col-span-2",
-  "lg:col-span-2",
-  "lg:col-span-4",
-  "lg:col-span-3",
-  "lg:col-span-3",
-];
-
+/**
+ * 03 — Services as an editorial index. Each row is a hairline entry; on a fine
+ * pointer, ink wipes up from the row's bottom edge, the title slides over, an
+ * italic aside fades in and the arrow turns — all CSS, no listeners.
+ */
 export function Services() {
   return (
-    <Section id="services">
+    <Section id="services" surface="paper" sheet>
       <Container>
-        <Reveal>
-          <SectionHeader
-            index="03"
-            eyebrow="Services"
-            title="What I can build for you."
-          />
-        </Reveal>
+        <SectionHeader
+          index="03"
+          eyebrow="Services"
+          meta="Freelance · Remote · Worldwide"
+          title={["What I can", <em key="e">build for you.</em>]}
+        />
 
-        {/* Sticky-stack on mobile (cards pile with a peeking edge as you
-            scroll); the asymmetric bento grid takes over at sm+. Cards are
-            `solid` so stacked ones don't bleed through. */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
-          {services.map((service, i) => {
-            const Icon = icons[service.icon];
-            return (
-              <StackPanel
-                key={service.title}
-                className={cn("sticky h-full sm:static", spans[i % spans.length])}
-                top={`calc(5rem + ${i * 1.5}rem)`}
-              >
-                <Reveal variant="scale" stagger={i % 3} className="h-full">
-                  <ShowcaseCard solid className="group h-full p-7">
-                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-accent">
-                      <Icon className="h-5 w-5" />
-                    </div>
-                    <Reveal stagger={1}>
-                      <h3 className="mt-5 text-lg font-semibold">
-                        {service.title}
-                      </h3>
-                    </Reveal>
-                    <Reveal stagger={2}>
-                      <p className="mt-2 text-sm leading-relaxed text-muted">
-                        {service.description}
-                      </p>
-                    </Reveal>
-                  </ShowcaseCard>
-                </Reveal>
-              </StackPanel>
-            );
-          })}
-        </div>
+        <ol className="border-b border-line-strong">
+          {services.map((service, i) => (
+            <Reveal
+              key={service.title}
+              as="li"
+              className="row-wipe group border-t border-line-strong"
+            >
+              <div className="grid grid-cols-[2.5rem_1fr_auto] items-baseline gap-x-4 gap-y-3 py-7 transition-colors duration-500 ease-out-strong sm:grid-cols-[4rem_1fr_auto] sm:py-9 lg:grid-cols-[5rem_minmax(0,7fr)_minmax(0,4fr)_3rem] hover-device:group-hover:text-bg">
+                <span className="data pt-1 text-muted transition-colors duration-500 hover-device:group-hover:text-bg/60">
+                  03.{i + 1}
+                </span>
+                <h3 className="caps text-[clamp(1.5rem,3.4vw,3.25rem)] transition-transform duration-700 ease-out-strong hover-device:group-hover:translate-x-3">
+                  {service.title}{" "}
+                  <span className="serif inline-block translate-y-1 text-[1.1em] leading-none font-normal normal-case italic text-signal opacity-0 transition-[opacity,transform] duration-500 ease-out-strong [font-variation-settings:normal] hover-device:group-hover:translate-y-0 hover-device:group-hover:opacity-100">
+                    {service.keyword}
+                  </span>
+                </h3>
+                <p className="col-span-2 col-start-2 max-w-md text-[0.95rem] leading-relaxed text-muted transition-colors duration-500 lg:col-span-1 lg:col-start-3 hover-device:group-hover:text-bg/75">
+                  {service.description}
+                </p>
+                <ArrowUpRight
+                  aria-hidden
+                  className="col-start-3 row-start-1 h-6 w-6 justify-self-end rotate-45 transition-transform duration-500 ease-out-strong sm:h-7 sm:w-7 lg:col-start-4 hover-device:group-hover:rotate-0"
+                />
+              </div>
+            </Reveal>
+          ))}
+        </ol>
       </Container>
     </Section>
   );

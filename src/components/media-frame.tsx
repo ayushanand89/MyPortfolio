@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import { useEffect, useState, type Ref } from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Editorial image frame. Shows the cover image immediately (visible by default,
- * with a scroll-driven clip reveal via `.media-reveal`), falling back to a
- * labelled placeholder if the image is missing or errors.
+ * Editorial image frame on next/image (responsive AVIF/WebP). Shows the cover
+ * immediately, falling back to a labelled placeholder if it's missing or
+ * errors.
  *
- * When passed an `images` gallery of 2+ and on a hover-capable device, hovering
- * cross-fades through the images like a carousel (with dots). The extra images
- * only mount on first hover, so they don't all load on page render. Under touch
- * or reduced motion it's just the static cover.
+ * Entrance: a "window" reveal — the frame opens from a smaller window while
+ * the picture settles from an overscan (compositor-only transforms, driven by
+ * the shared reveal observer). The frame's own className never changes after
+ * mount, so React can't wipe the observer's `.is-in` class.
+ *
+ * With an `images` gallery of 2+ on a hover-capable device, hovering
+ * cross-fades through them (with progress ticks). Extra images only mount on
+ * first hover.
  */
 export function MediaFrame({
   src,
@@ -24,6 +29,10 @@ export function MediaFrame({
   scrim = false,
   zoomOnHover = false,
   eager = false,
+  reveal = true,
+  sizes = "(min-width: 1280px) 80vw, 100vw",
+  vtCover = false,
+  ref,
 }: {
   src?: string;
   images?: string[];
@@ -34,16 +43,19 @@ export function MediaFrame({
   /** Controlled hover — when set, the parent (e.g. the whole card) drives the
    *  carousel. When omitted, the frame reacts to its own hover. */
   active?: boolean;
-  /** Bottom gradient scrim — settles the image into the card and gives the
-   *  carousel dots / overlaid text contrast. */
+  /** Bottom gradient scrim for overlaid text/ticks. */
   scrim?: boolean;
-  /** Slow cinematic zoom while an ancestor `group` is hovered (hover-capable
-   *  devices only). Lives on an inner wrapper, NOT `.media-reveal` — the
-   *  Safari/Firefox reveal fallback transitions transform on that wrapper. */
+  /** Slow zoom while an ancestor `group` is hovered (fine pointers). */
   zoomOnHover?: boolean;
-  /** Load the cover immediately — for images that are the page's LCP
-   *  (e.g. the case-study hero cover). */
+  /** Preload the cover — for the page's LCP image. */
   eager?: boolean;
+  /** Window-reveal entrance on scroll-in. */
+  reveal?: boolean;
+  sizes?: string;
+  /** This frame is the page's morph target (`view-transition-name: cover`).
+   *  Keep `reveal` off on it — the transition tracks the live element. */
+  vtCover?: boolean;
+  ref?: Ref<HTMLDivElement>;
 }) {
   const [failed, setFailed] = useState(false);
   const [enabled, setEnabled] = useState(false);
@@ -81,14 +93,18 @@ export function MediaFrame({
     setActivated(true);
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % galleryLen);
-    }, 1100);
+    }, 1200);
     return () => clearInterval(id);
   }, [isHovering, canCarousel, galleryLen]);
 
   return (
     <div
+      ref={ref}
+      data-reveal={reveal ? "window" : undefined}
+      data-vt-cover={vtCover ? "" : undefined}
+      style={vtCover ? { viewTransitionName: "cover" } : undefined}
       className={cn(
-        "relative overflow-hidden rounded-xl border border-border bg-card",
+        "relative isolate overflow-hidden rounded-[inherit] bg-raised",
         ratio,
         className,
       )}
@@ -99,27 +115,21 @@ export function MediaFrame({
         !controlled && canCarousel ? () => setSelfHover(false) : undefined
       }
     >
-      <div className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(135deg,transparent,transparent_11px,var(--border)_11px,var(--border)_12px)]">
-        <span className="rounded-full border border-border bg-background px-3 py-1 eyebrow">
-          {label ?? "Screenshot"}
-        </span>
-      </div>
+      {!showImage && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(135deg,transparent,transparent_11px,var(--line)_11px,var(--line)_12px)]">
+          <span className="label rounded-full border border-line bg-bg px-3 py-1.5 text-muted">
+            {label ?? "Screenshot"}
+          </span>
+        </div>
+      )}
 
-      {/* The scroll reveal lives on this STABLE wrapper (its className never
-          changes), not on the imgs — the imgs' classes flip on hover/carousel,
-          which would let React wipe the JS-fallback `.is-inview`. The reveal is
-          opacity/transform (not clip-path) so Firefox drives it on a view()
-          timeline too. */}
       {showImage && (
-        <div className="media-reveal absolute inset-0">
-          {/* Zoom lives on this dedicated layer so it can't fight the reveal
-              fallback's transform (on .media-reveal) or the carousel's opacity
-              flips (on the imgs). */}
+        <div data-window-inner className="absolute inset-0">
           <div
             className={cn(
               "absolute inset-0",
               zoomOnHover &&
-                "transition-transform duration-1400 ease-out-strong hover-device:group-hover:scale-[1.06]",
+                "transition-transform duration-1600 ease-out-strong hover-device:group-hover:scale-[1.05]",
             )}
           >
             {gallery.map((s, i) => {
@@ -127,19 +137,18 @@ export function MediaFrame({
               if (i > 0 && (!canCarousel || !activated)) return null;
               const isCover = i === 0;
               return (
-                // Plain img keeps us free of next/image remote config for a static portfolio.
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <Image
                   key={s}
                   src={s}
                   alt={isCover ? alt : ""}
-                  loading={eager && isCover ? "eager" : "lazy"}
-                  decoding="async"
+                  fill
+                  sizes={sizes}
+                  preload={eager && isCover}
                   onError={isCover ? () => setFailed(true) : undefined}
                   className={cn(
-                    "absolute inset-0 h-full w-full object-cover",
+                    "object-cover",
                     canCarousel &&
-                      "transition-opacity duration-500 ease-out-strong",
+                      "transition-opacity duration-700 ease-out-strong",
                     canCarousel && i !== index ? "opacity-0" : "opacity-100",
                   )}
                 />
@@ -152,20 +161,26 @@ export function MediaFrame({
       {scrim && (
         <span
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-linear-to-t from-background/70 to-transparent"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black/55 to-transparent"
         />
       )}
 
       {canCarousel && isHovering && (
-        <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
+        <div className="absolute inset-x-4 bottom-4 flex gap-1.5">
           {gallery.map((_, i) => (
             <span
               key={i}
-              className={cn(
-                "h-1.5 w-1.5 rounded-full transition-colors duration-300",
-                i === index ? "bg-accent" : "bg-foreground/40",
-              )}
-            />
+              className="relative h-0.5 flex-1 overflow-hidden rounded-full bg-white/25"
+            >
+              <span
+                className={cn(
+                  "absolute inset-0 origin-left rounded-full bg-white transition-transform ease-linear",
+                  i < index && "scale-x-100 duration-0",
+                  i === index && "scale-x-100 duration-1200",
+                  i > index && "scale-x-0 duration-0",
+                )}
+              />
+            </span>
           ))}
         </div>
       )}

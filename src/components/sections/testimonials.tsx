@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { ArrowLeft, ArrowRight, Check, Quote } from "lucide-react";
+import { useState } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { testimonials, trustPoints } from "@/content/testimonials";
 import {
   Container,
@@ -9,87 +9,83 @@ import {
   Section,
   SectionHeader,
 } from "@/components/primitives";
-import { ShowcaseCard } from "@/components/showcase-card";
-import { ParallaxGlow } from "@/components/motion-fx";
 
+/**
+ * Voices (deliberately unnumbered). One quote at a time, set large in the
+ * serif; stepping re-mounts it so each quote rises in fresh. Manual controls
+ * only — no auto-advance to chase.
+ */
 export function Testimonials() {
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  const scrollByCards = (dir: 1 | -1) => {
-    const el = trackRef.current;
-    if (!el) return;
-    const card = el.querySelector<HTMLElement>("[data-card]");
-    const amount = card ? card.offsetWidth + 16 : el.clientWidth * 0.8;
-    el.scrollBy({ left: dir * amount, behavior: "smooth" });
-  };
+  const [index, setIndex] = useState(0);
+  const count = testimonials.length;
+  const t = testimonials[index];
+  const step = (dir: 1 | -1) => setIndex((i) => (i + dir + count) % count);
+  const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <Section id="testimonials">
-      <ParallaxGlow className="left-[22%]" />
+    <Section id="testimonials" surface="ink" sheet>
       <Container>
+        <SectionHeader
+          eyebrow="Voices"
+          meta={`${pad(index + 1)} / ${pad(count)}`}
+          title={["What working", <em key="e">with me is like.</em>]}
+        />
+
         <Reveal>
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <SectionHeader
-              eyebrow="Voices"
-              title="What working with me is like."
-              className="mb-0"
-            />
-            <div className="flex items-center gap-2">
-              <CarouselButton label="Previous" onClick={() => scrollByCards(-1)}>
-                <ArrowLeft className="h-4 w-4" />
-              </CarouselButton>
-              <CarouselButton label="Next" onClick={() => scrollByCards(1)}>
-                <ArrowRight className="h-4 w-4" />
-              </CarouselButton>
+          <figure className="grid gap-10 lg:grid-cols-12">
+            <span
+              aria-hidden
+              className="serif select-none text-[clamp(6rem,14vw,13rem)] leading-[0.7] text-signal lg:col-span-2"
+            >
+              &ldquo;
+            </span>
+            <div className="lg:col-span-10">
+              <blockquote
+                key={index}
+                aria-live="polite"
+                className="serif max-w-5xl animate-[fade-up_0.8s_var(--ease-out)_both] text-[clamp(1.9rem,4vw,4rem)] leading-[1.08] tracking-tight text-balance"
+              >
+                {t.quote}
+              </blockquote>
+              <div className="mt-10 flex flex-wrap items-end justify-between gap-6 border-t border-line pt-6">
+                <figcaption
+                  key={`c${index}`}
+                  className="animate-[fade-up_0.8s_var(--ease-out)_0.1s_both]"
+                >
+                  <div className="caps text-lg">{t.name}</div>
+                  <div className="data mt-1.5 text-muted">{t.role}</div>
+                </figcaption>
+                <div className="flex items-center gap-2">
+                  <StepButton label="Previous testimonial" onClick={() => step(-1)}>
+                    <ArrowLeft className="h-4 w-4" />
+                  </StepButton>
+                  <StepButton label="Next testimonial" onClick={() => step(1)}>
+                    <ArrowRight className="h-4 w-4" />
+                  </StepButton>
+                </div>
+              </div>
             </div>
-          </div>
+          </figure>
         </Reveal>
 
-        {/* Carousel lives inside the centered column; cards overflow it and
-            scroll (snap for native touch/drag, arrows on desktop). Edges fade. */}
-        <div
-          ref={trackRef}
-          className="mt-12 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-4 [mask-image:linear-gradient(to_right,transparent,black_2%,black_98%,transparent)] [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {testimonials.map((t, i) => (
-            <figure
-              key={i}
-              data-card
-              className="w-[84%] shrink-0 snap-start sm:w-[21rem]"
-            >
-              <ShowcaseCard className="flex h-full flex-col p-7">
-                <Quote className="h-7 w-7 text-accent/60" />
-                <blockquote className="mt-4 flex-1 leading-relaxed text-foreground/90">
-                  &ldquo;{t.quote}&rdquo;
-                </blockquote>
-                <figcaption className="mt-6 border-t border-white/10 pt-4">
-                  <div className="font-medium">{t.name}</div>
-                  <div className="text-sm text-muted">{t.role}</div>
-                </figcaption>
-              </ShowcaseCard>
-            </figure>
+        <Reveal className="label mt-20 flex flex-wrap items-center gap-x-4 gap-y-3 text-muted sm:mt-28">
+          {trustPoints.map((point, i) => (
+            <span key={point} className="flex items-center gap-4">
+              {i > 0 && (
+                <span aria-hidden className="text-signal">
+                  ✺
+                </span>
+              )}
+              {point}
+            </span>
           ))}
-        </div>
-
-        <Reveal>
-          <ul className="mt-8 grid grid-cols-2 gap-x-8 gap-y-3 sm:w-fit">
-            {trustPoints.map((point) => (
-              <li
-                key={point}
-                className="flex items-center gap-2 text-sm text-muted"
-              >
-                <Check className="h-4 w-4 shrink-0 text-accent" />
-                {point}
-              </li>
-            ))}
-          </ul>
         </Reveal>
       </Container>
     </Section>
   );
 }
 
-function CarouselButton({
+function StepButton({
   children,
   label,
   onClick,
@@ -103,7 +99,7 @@ function CarouselButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="glass inline-flex h-10 w-10 items-center justify-center rounded-full text-foreground/80 transition-[transform,color] duration-150 ease-out-strong hover:text-foreground active:scale-[0.94]"
+      className="btn btn-line h-12 w-12 justify-center p-0!"
     >
       {children}
     </button>

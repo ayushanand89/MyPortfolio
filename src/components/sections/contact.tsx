@@ -1,28 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import {
-  ArrowUpRight,
-  Check,
-  Copy,
-  Github,
-  Linkedin,
-  Loader2,
-  Mail,
-} from "lucide-react";
+import { ArrowUpRight, Check, Copy, Loader2 } from "lucide-react";
 import { profile } from "@/content/profile";
 import {
   AvailabilityBadge,
   Container,
   Reveal,
+  Roll,
   Section,
   SectionHeader,
 } from "@/components/primitives";
-import { Magnetic, ParallaxWatermark, Spotlight } from "@/components/motion-fx";
 import { cn } from "@/lib/utils";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
+/**
+ * 06 — Contact, the signal-red finale. Underline fields, the real Resend-backed
+ * form (503 without RESEND_API_KEY → mailto fallback), and direct lines.
+ */
 export function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -57,73 +53,62 @@ export function Contact() {
   };
 
   return (
-    <Section id="contact" variant="spacious">
-      <ParallaxWatermark text="Say hello" align="left" />
-      <Spotlight size={620} />
+    <Section id="contact" surface="signal" sheet className="pb-28 sm:pb-40">
       <Container>
-        <Reveal>
-          <SectionHeader
-            index="06"
-            eyebrow="Contact"
-            title="Have a project in mind? Let’s build it."
-            className="mb-5 sm:mb-5"
-          />
-          <p className="mb-12 max-w-xl text-muted sm:mb-16">
-            Tell me what you&apos;re building and I&apos;ll get back to you
-            within a day. Freelance projects and full-time roles both welcome.
-          </p>
-        </Reveal>
+        <SectionHeader
+          index="06"
+          eyebrow="Contact"
+          meta="Replies within a day"
+          titleClassName="text-[clamp(2.4rem,7vw,7rem)]"
+          title={["Have a project", "in mind?", <em key="e">Let’s build it.</em>]}
+        />
 
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
-          <Reveal>
-            <form
-              onSubmit={onSubmit}
-              className="mx-auto w-full max-w-md space-y-5 lg:mx-0 lg:max-w-none"
-            >
-              <div>
-                <label htmlFor="name" className="eyebrow">
-                  Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="field mt-2 w-full rounded-lg border border-border px-4 py-3 text-foreground outline-none placeholder:text-faint"
-                  placeholder="Your name"
-                />
+        <div className="grid gap-16 lg:grid-cols-12 lg:gap-12">
+          <Reveal className="lg:col-span-7">
+            <p className="max-w-lg text-lg leading-relaxed text-muted text-pretty">
+              Tell me what you&apos;re building and I&apos;ll get back to you
+              within a day. Freelance projects and full-time roles both welcome.
+            </p>
+            <form onSubmit={onSubmit} className="mt-10 space-y-8">
+              <div className="grid gap-8 sm:grid-cols-2">
+                <Field id="name" label="Name">
+                  <input
+                    id="name"
+                    type="text"
+                    required
+                    autoComplete="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className={fieldClass}
+                    placeholder="Your name"
+                  />
+                </Field>
+                <Field id="email" label="Email">
+                  <input
+                    id="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={fieldClass}
+                    placeholder="you@company.com"
+                  />
+                </Field>
               </div>
-              <div>
-                <label htmlFor="email" className="eyebrow">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="field mt-2 w-full rounded-lg border border-border px-4 py-3 text-foreground outline-none placeholder:text-faint"
-                  placeholder="you@company.com"
-                />
-              </div>
-              <div>
-                <label htmlFor="message" className="eyebrow">
-                  Project
-                </label>
+              <Field id="message" label="Project">
                 <textarea
                   id="message"
                   required
-                  rows={5}
+                  rows={4}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className="field mt-2 w-full resize-none rounded-lg border border-border px-4 py-3 text-foreground outline-none placeholder:text-faint"
+                  className={cn(fieldClass, "resize-none")}
                   placeholder="What are you building, timeline, budget range…"
                 />
-              </div>
+              </Field>
               {/* Honeypot — visually hidden, skipped by keyboard focus. */}
-              <div aria-hidden className="absolute -left-[9999px] h-0 overflow-hidden">
+              <div aria-hidden className="absolute left-[-9999px] h-0 overflow-hidden">
                 <label htmlFor="company">Company</label>
                 <input
                   id="company"
@@ -135,52 +120,43 @@ export function Contact() {
                 />
               </div>
 
-              <div className="space-y-3">
-                <Magnetic strength={0.4}>
-                  <button
-                    type="submit"
-                    disabled={status === "sending" || status === "sent"}
-                    className={cn(
-                      "inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium transition-[transform,opacity,background-color] duration-150 ease-out-strong",
-                      status === "sent"
-                        ? "cursor-default bg-accent text-accent-foreground"
-                        : "bg-foreground text-background hover:opacity-90 active:scale-[0.98]",
-                      status === "sending" && "cursor-wait opacity-80",
-                    )}
-                  >
-                    {status === "sending" && (
-                      <>
-                        Sending
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      </>
-                    )}
-                    {status === "sent" && (
-                      <>
-                        Message sent
-                        <Check className="h-4 w-4" />
-                      </>
-                    )}
-                    {(status === "idle" || status === "error") && (
-                      <>
-                        Send message
-                        <ArrowUpRight className="h-4 w-4" />
-                      </>
-                    )}
-                  </button>
-                </Magnetic>
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+                <button
+                  type="submit"
+                  disabled={status === "sending" || status === "sent"}
+                  className={cn(
+                    "btn btn-solid group/roll",
+                    status === "sending" && "cursor-wait opacity-80",
+                    status === "sent" && "cursor-default",
+                  )}
+                >
+                  {status === "sending" && (
+                    <>
+                      Sending
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    </>
+                  )}
+                  {status === "sent" && (
+                    <>
+                      Message sent
+                      <Check className="h-3.5 w-3.5" />
+                    </>
+                  )}
+                  {(status === "idle" || status === "error") && (
+                    <>
+                      <Roll>Send message</Roll>
+                      <ArrowUpRight className="h-3.5 w-3.5" />
+                    </>
+                  )}
+                </button>
                 <p aria-live="polite" className="min-h-5 text-sm">
                   {status === "sent" && (
-                    <span className="text-muted">
-                      Thanks — I&apos;ll reply within a day.
-                    </span>
+                    <span>Thanks — I&apos;ll reply within a day.</span>
                   )}
                   {status === "error" && (
-                    <span className="text-muted">
+                    <span>
                       Couldn&apos;t send right now —{" "}
-                      <a
-                        href={mailtoHref()}
-                        className="link-underline text-foreground"
-                      >
+                      <a href={mailtoHref()} className="underline underline-offset-4">
                         email me directly
                       </a>
                       .
@@ -191,47 +167,39 @@ export function Contact() {
             </form>
           </Reveal>
 
-          <Reveal>
-            <div className="mx-auto flex w-full max-w-md flex-col lg:mx-0 lg:max-w-none">
-              <p className="text-sm text-muted">
-                Prefer something direct? Reach me here.
-              </p>
-              <div className="mt-6 divide-y divide-border border-y border-border">
-                <ContactRow
-                  href={`mailto:${profile.email}`}
-                  label="Email"
-                  value={profile.email}
-                  icon={<Mail className="h-4 w-4 text-accent" />}
-                  copyText={profile.email}
-                />
-                <ContactRow
-                  href={profile.socials.linkedin}
-                  label="LinkedIn"
-                  value="in/ayush-anand"
-                  icon={<Linkedin className="h-4 w-4 text-accent" />}
-                  external
-                />
-                <ContactRow
-                  href={profile.socials.github}
-                  label="GitHub"
-                  value="@ayushanand89"
-                  icon={<Github className="h-4 w-4 text-accent" />}
-                  external
-                />
-                <ContactRow
-                  href={profile.portfolio}
-                  label="Portfolio"
-                  value="ayush.clanflare.dev"
-                  icon={<ArrowUpRight className="h-4 w-4 text-accent" />}
-                  external
-                />
-              </div>
-              {profile.available && (
-                <AvailabilityBadge className="mt-8">
-                  Available for freelance projects
-                </AvailabilityBadge>
-              )}
+          <Reveal className="lg:col-span-4 lg:col-start-9">
+            <p className="label">Or reach me directly</p>
+            <div className="mt-5 border-t border-line-strong">
+              <ContactRow
+                href={`mailto:${profile.email}`}
+                label="Email"
+                value={profile.email}
+                copyText={profile.email}
+              />
+              <ContactRow
+                href={profile.socials.linkedin}
+                label="LinkedIn"
+                value="in/ayush-anand"
+                external
+              />
+              <ContactRow
+                href={profile.socials.github}
+                label="GitHub"
+                value="@ayushanand89"
+                external
+              />
+              <ContactRow
+                href={profile.resumeUrl}
+                label="Résumé"
+                value="View PDF"
+                external
+              />
             </div>
+            {profile.available && (
+              <AvailabilityBadge className="mt-8 border-paper/40 [&>span:first-child]:bg-paper">
+                Available for freelance projects
+              </AvailabilityBadge>
+            )}
           </Reveal>
         </div>
       </Container>
@@ -239,27 +207,45 @@ export function Contact() {
   );
 }
 
+const fieldClass =
+  "mt-2 block w-full border-0 border-b border-line-strong bg-transparent px-0 py-3 text-lg text-fg outline-none transition-[border-color] duration-300 placeholder:text-faint hover:border-fg/70 focus:border-fg";
+
+function Field({
+  id,
+  label,
+  children,
+}: {
+  id: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <label htmlFor={id} className="label">
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}
+
 function ContactRow({
   href,
   label,
   value,
-  icon,
   external,
   copyText,
 }: {
   href: string;
   label: string;
   value: string;
-  icon: React.ReactNode;
   external?: boolean;
   /** When set, renders a copy-to-clipboard button beside the row. */
   copyText?: string;
 }) {
   const [copied, setCopied] = useState(false);
 
-  const copy = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const copy = async () => {
     if (!copyText) return;
     try {
       await navigator.clipboard.writeText(copyText);
@@ -271,36 +257,30 @@ function ContactRow({
   };
 
   return (
-    <a
-      href={href}
-      {...(external
-        ? { target: "_blank", rel: "noopener noreferrer" }
-        : {})}
-      className="group flex items-center justify-between py-4 transition-colors hover:text-foreground"
-    >
-      <span className="flex items-center gap-3">
-        {icon}
-        <span className="eyebrow">{label}</span>
-      </span>
-      <span className="flex items-center gap-2 text-foreground/90">
-        {value}
-        {copyText ? (
-          <button
-            type="button"
-            aria-label={copied ? "Copied" : `Copy ${label.toLowerCase()}`}
-            onClick={copy}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-faint transition-[color,border-color,transform] duration-200 ease-out-strong hover:border-border-strong hover:text-foreground active:scale-95"
-          >
-            {copied ? (
-              <Check className="h-3.5 w-3.5 text-accent" />
-            ) : (
-              <Copy className="h-3.5 w-3.5" />
-            )}
-          </button>
-        ) : (
-          <ArrowUpRight className="h-4 w-4 text-faint transition-transform duration-200 ease-out-strong hover-device:group-hover:-translate-y-0.5 hover-device:group-hover:translate-x-0.5" />
-        )}
-      </span>
-    </a>
+    <div className="row-wipe group flex items-center gap-3 border-b border-line-strong">
+      <a
+        href={href}
+        {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+        className="flex min-w-0 flex-1 items-baseline justify-between gap-4 py-4 transition-colors duration-500 hover-device:group-hover:text-bg"
+      >
+        <span className="label">{label}</span>
+        <span className="flex min-w-0 items-center gap-2 truncate">
+          <span className="truncate">{value}</span>
+          {!copyText && (
+            <ArrowUpRight className="h-4 w-4 shrink-0 transition-transform duration-300 ease-out-strong hover-device:group-hover:-translate-y-0.5 hover-device:group-hover:translate-x-0.5" />
+          )}
+        </span>
+      </a>
+      {copyText && (
+        <button
+          type="button"
+          aria-label={copied ? "Copied" : `Copy ${label.toLowerCase()}`}
+          onClick={copy}
+          className="mr-1 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line-strong transition-[color,border-color,transform] duration-300 active:scale-95 hover-device:group-hover:border-bg/40 hover-device:group-hover:text-bg"
+        >
+          {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+        </button>
+      )}
+    </div>
   );
 }

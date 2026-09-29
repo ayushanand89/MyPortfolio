@@ -1,94 +1,143 @@
-import Link from "next/link";
-import { ArrowRight, Github, Linkedin, Mail } from "lucide-react";
-import { profile } from "@/content/profile";
-import { Container, Reveal } from "./primitives";
-import { Magnetic, ParallaxWatermark } from "./motion-fx";
-import { LocalTime } from "./local-time";
+"use client";
 
+import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
+import { ArrowUp, ArrowUpRight } from "lucide-react";
+import { profile } from "@/content/profile";
+import { ButtonLink, Roll } from "./primitives";
+import { LocalTime } from "./local-time";
+import { TransitionLink } from "./transition-link";
+
+const sitemap = [
+  { label: "About", href: "/#about" },
+  { label: "Work", href: "/#work" },
+  { label: "Services", href: "/#services" },
+  { label: "Process", href: "/#process" },
+  { label: "Contact", href: "/#contact" },
+];
+
+/**
+ * The finale. Sticky to the viewport bottom BENEATH the page (layout gives the
+ * page wrapper z-1 and an opaque fill), so the last chapter lifts away to
+ * reveal it. It's always "in view" underneath, so its wordmark is triggered by
+ * the `#page-end` sentinel at the bottom of the page wrapper instead of the
+ * shared reveal observer.
+ */
 export function Footer() {
+  const ref = useRef<HTMLElement>(null);
+  const pathname = usePathname();
   const year = new Date().getFullYear();
 
+  useEffect(() => {
+    const footer = ref.current;
+    const end = document.getElementById("page-end");
+    if (!footer || !end) return;
+    delete footer.dataset.open;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          footer.dataset.open = "";
+          io.disconnect();
+        }
+      },
+      { rootMargin: "0px 0px -25% 0px" },
+    );
+    io.observe(end);
+    return () => io.disconnect();
+  }, [pathname]);
+
   return (
-    <footer className="relative isolate overflow-hidden border-t border-border">
-      {/* Finale — the closing CTA moment, with the name as the watermark. */}
-      <div className="relative py-20 sm:py-28">
-        <ParallaxWatermark text={profile.name} align="left" />
-        <Container>
-          <Reveal>
-            <span className="eyebrow">Next step</span>
-            <Magnetic strength={0.15}>
-              <Link
-                href="/#contact"
-                className="group mt-6 flex w-fit items-center gap-4 sm:gap-8"
-              >
-                <span className="display display-hero text-[clamp(3rem,9vw,7rem)] transition-colors duration-300 group-hover:text-accent">
-                  Let&rsquo;s build it
-                </span>
-                <ArrowRight className="h-9 w-9 shrink-0 transition-transform duration-300 ease-out-strong sm:h-14 sm:w-14 hover-device:group-hover:translate-x-3" />
-              </Link>
-            </Magnetic>
-          </Reveal>
-        </Container>
-      </div>
-
-      {/* Utility tier */}
-      <div className="border-t border-border py-12">
-        <Container>
-          <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <Link
-                href="/"
-                className="font-display text-lg font-semibold tracking-tight"
-              >
-                {profile.name}
-                <span className="text-accent">.</span>
-              </Link>
-              <p className="mt-2 text-sm text-muted">
-                Full-Stack Web Developer · Available for freelance projects
-              </p>
-              <p className="mt-1 text-sm text-faint">
-                {profile.location} · <LocalTime />
-              </p>
-            </div>
-
-            <div className="flex items-center gap-5">
-              <a
-                href={profile.socials.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="text-muted transition-colors hover:text-foreground"
-              >
-                <Github className="h-5 w-5" />
-              </a>
-              <a
-                href={profile.socials.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="text-muted transition-colors hover:text-foreground"
-              >
-                <Linkedin className="h-5 w-5" />
-              </a>
-              <a
-                href={`mailto:${profile.email}`}
-                aria-label="Email"
-                className="text-muted transition-colors hover:text-foreground"
-              >
-                <Mail className="h-5 w-5" />
-              </a>
-            </div>
-          </div>
-
-          <div className="mt-10 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 text-sm text-faint sm:flex-row sm:items-center">
-            <p>
-              © {year} {profile.name}. Built with Next.js &amp; Tailwind.
+    <footer
+      ref={ref}
+      data-surface="ink"
+      className="sticky bottom-0 z-0 flex min-h-[min(100svh,46rem)] flex-col justify-end"
+    >
+      <div className="gutter mx-auto w-full max-w-[1600px] pb-6 pt-24">
+        <div className="grid gap-12 border-t border-line-strong pt-8 sm:grid-cols-2 lg:grid-cols-12">
+          <div className="lg:col-span-5">
+            <p className="serif text-[clamp(1.8rem,3vw,2.8rem)] leading-[1.05]">
+              Got something worth building?{" "}
+              <span className="italic text-signal">Let&rsquo;s talk.</span>
             </p>
-            <Link href="#top" className="link-underline hover:text-foreground">
-              Back to top ↑
-            </Link>
+            <ButtonLink href="/#contact" variant="accent" className="mt-7">
+              Start a project
+            </ButtonLink>
           </div>
-        </Container>
+
+          <nav aria-label="Footer" className="lg:col-span-2 lg:col-start-7">
+            <p className="data text-muted">Index</p>
+            <ul className="mt-4 space-y-2">
+              {sitemap.map((l) => (
+                <li key={l.href}>
+                  <TransitionLink href={l.href} className="label group/roll">
+                    <Roll>{l.label}</Roll>
+                  </TransitionLink>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="lg:col-span-2">
+            <p className="data text-muted">Elsewhere</p>
+            <ul className="mt-4 space-y-2">
+              {[
+                { label: "GitHub", href: profile.socials.github },
+                { label: "LinkedIn", href: profile.socials.linkedin },
+                { label: "Résumé", href: profile.resumeUrl },
+              ].map((l) => (
+                <li key={l.label}>
+                  <a
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="label group/roll inline-flex items-center gap-1.5"
+                  >
+                    <Roll>{l.label}</Roll>
+                    <ArrowUpRight className="h-3 w-3" />
+                  </a>
+                </li>
+              ))}
+              <li>
+                <a href={`mailto:${profile.email}`} className="label group/roll">
+                  <Roll>Email</Roll>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div className="lg:col-span-2">
+            <p className="data text-muted">Local time</p>
+            <p className="caps mt-4 text-2xl">
+              <LocalTime />
+            </p>
+            <p className="data mt-1 text-muted">{profile.location}</p>
+          </div>
+        </div>
+
+        <p
+          aria-label={profile.name}
+          className="footer-mark display mt-16 whitespace-nowrap text-[9.4vw] leading-[0.8] min-[1600px]:text-[9.4rem] sm:mt-20"
+        >
+          <span className="line" aria-hidden>
+            <span>
+              {profile.name}
+              <span className="text-signal">.</span>
+            </span>
+          </span>
+        </p>
+
+        <div className="data mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-5 text-muted">
+          <p>
+            © {year} {profile.name} — Designed &amp; built in Delhi with Next.js
+          </p>
+          <TransitionLink
+            href={pathname}
+            className="group/roll inline-flex items-center gap-2 text-fg"
+          >
+            <Roll>Back to top</Roll>
+            <ArrowUp className="h-3 w-3" />
+          </TransitionLink>
+        </div>
       </div>
     </footer>
   );

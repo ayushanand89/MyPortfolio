@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * framer-motion helpers kept for the DORMANT components only (SecondaryCard,
+ * ScrollVelocity, Magnetic). Live pages use the dependency-free scroll engine
+ * in `src/lib/motion.ts`, which keeps framer out of the shipped bundle.
+ */
 import {
   motion,
   useMotionValue,
@@ -8,16 +13,14 @@ import {
   useScroll,
   useVelocity,
   useTransform,
-  useReducedMotion,
-  type MotionStyle,
 } from "framer-motion";
 import { useEffect, useRef, type ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { useReducedMotion } from "@/lib/use-reduced-motion";
 
-/** Pulls its child toward the cursor on hover. */
+/** Pulls its child toward the cursor on hover (primary CTAs only). */
 export function Magnetic({
   children,
-  strength = 0.35,
+  strength = 0.3,
   className,
 }: {
   children: ReactNode;
@@ -28,10 +31,8 @@ export function Magnetic({
   const ref = useRef<HTMLSpanElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 220, damping: 16, mass: 0.3 });
-  const sy = useSpring(y, { stiffness: 220, damping: 16, mass: 0.3 });
-  // Full transform string keeps this GPU-composited (Framer's x/y shorthands
-  // run on the main thread and drop frames under load).
+  const sx = useSpring(x, { stiffness: 200, damping: 18, mass: 0.35 });
+  const sy = useSpring(y, { stiffness: 200, damping: 18, mass: 0.35 });
   const transform = useMotionTemplate`translate3d(${sx}px, ${sy}px, 0)`;
 
   if (reduce) {
@@ -64,59 +65,10 @@ export function Magnetic({
   );
 }
 
-/** Subtle pointer-driven 3D tilt. */
-export function Tilt({
-  children,
-  className,
-  max = 7,
-}: {
-  children: ReactNode;
-  className?: string;
-  max?: number;
-}) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const rx = useMotionValue(0);
-  const ry = useMotionValue(0);
-  const srx = useSpring(rx, { stiffness: 150, damping: 15 });
-  const sry = useSpring(ry, { stiffness: 150, damping: 15 });
-  const transform = useMotionTemplate`perspective(1000px) rotateX(${srx}deg) rotateY(${sry}deg)`;
-
-  if (reduce) {
-    return <div className={className}>{children}</div>;
-  }
-
-  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width - 0.5;
-    const py = (e.clientY - r.top) / r.height - 0.5;
-    rx.set(-py * max);
-    ry.set(px * max);
-  };
-
-  const reset = () => {
-    rx.set(0);
-    ry.set(0);
-  };
-
-  return (
-    <motion.div
-      ref={ref}
-      onMouseMove={handleMove}
-      onMouseLeave={reset}
-      style={{ transform, transformStyle: "preserve-3d" }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
 /**
  * Drifts its child vertically as it scrolls through the viewport, with an
- * optional cinematic zoom that eases back to 1 as the element centers.
+ * optional zoom that eases back to 1 as the element centers. (Used by the
+ * dormant SecondaryCard.)
  */
 export function Parallax({
   children,
@@ -135,8 +87,6 @@ export function Parallax({
     target: ref,
     offset: ["start end", "end start"],
   });
-  // On phones the drift is scaled down (read live from a ref each frame) so a
-  // stacked, full-width image never rides over its neighbours' spacing.
   const factor = useRef(1);
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 640px)");
@@ -169,88 +119,8 @@ export function Parallax({
 }
 
 /**
- * "Approach from ahead" — the child enters from below oversized and faded,
- * as if it's still in the distance ahead of the viewer, then settles to full
- * size and opacity as it reaches its resting spot in the upper third of the
- * viewport. Scale/opacity only (compositor-composited). The end point sits
- * safely BELOW the sticky pin position, so progress always completes before
- * a pinned card's rect stops moving. Passthrough under reduced motion.
- */
-export function ScrollApproach({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    // 0 as the card's top crosses the viewport bottom; 1 once it reaches 35%
-    // from the top — before the sticky stack pins it (~14%), so the settle
-    // always finishes.
-    offset: ["start end", "start 35%"],
-  });
-  const scale = useTransform(scrollYProgress, [0, 1], [1.08, 1]);
-  const opacity = useTransform(scrollYProgress, [0, 1], [0.35, 1]);
-
-  if (reduce) {
-    return <div className={className}>{children}</div>;
-  }
-
-  return (
-    <motion.div ref={ref} className={className} style={{ scale, opacity }}>
-      {children}
-    </motion.div>
-  );
-}
-
-/**
- * Sticky-stack panel that firms up its card's frosted opacity as it scrolls
- * into the pinned "reading" position and recedes to translucent while it's
- * entering from below. Drives the `--panel-alpha` CSS variable that
- * `.glass-strong` reads, so a card is see-through (3D shows) as it enters, then
- * turns readable exactly when it overlaps the cards stacked above it — no bleed
- * while you're reading it. Static (opaque fallback 88%) under reduced motion.
- */
-export function StackPanel({
-  children,
-  className,
-  top,
-}: {
-  children: ReactNode;
-  className?: string;
-  top?: string;
-}) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    // 0 as the card's top sits at the viewport bottom (entering, translucent);
-    // 1 by the time it reaches its pin near the top (reading, opaque).
-    offset: ["start end", "start 14%"],
-  });
-  // Drives the card's opaque-overlay opacity (see ShowcaseCard `panel`).
-  // Overlay opacity is compositor-only — no backdrop-blur repaint on scroll.
-  const solid = useTransform(scrollYProgress, [0, 1], [0, 0.9]);
-
-  const style = (
-    reduce ? { top } : { top, "--panel-solid": solid }
-  ) as MotionStyle;
-
-  return (
-    <motion.div ref={ref} className={className} style={style}>
-      {children}
-    </motion.div>
-  );
-}
-
-/**
- * Momentum shear: skews its child in proportion to scroll velocity, so images
- * "lean" into the direction of travel and spring back to flat when the scroll
- * settles. The velocity is spring-smoothed and clamped, then applied as a full
- * `skewY` transform string (GPU-composited). Passthrough under reduced motion.
+ * Momentum shear: skews its child in proportion to scroll velocity. Kept
+ * intentionally (currently unused).
  */
 export function ScrollVelocity({
   children,
@@ -269,8 +139,6 @@ export function ScrollVelocity({
     damping: 50,
     mass: 0.5,
   });
-  // Map a wide velocity band onto a small skew and clamp, so fast flings never
-  // shear past a tasteful few degrees.
   const skew = useTransform(smooth, [-2400, 0, 2400], [max, 0, -max], {
     clamp: true,
   });
@@ -285,256 +153,5 @@ export function ScrollVelocity({
     >
       {children}
     </motion.div>
-  );
-}
-
-/**
- * Layered-depth parallax: an oversized, very faint ghost word pinned behind a
- * section that drifts opposite the scroll, so it slides past the foreground at a
- * different speed — the depth cue that defines "parallax scrolling". Purely
- * decorative (aria-hidden, non-interactive) and removed entirely under reduced
- * motion. Full transform string keeps it GPU-composited.
- *
- * Drop in as the first child of a `relative isolate` section.
- */
-export function ParallaxWatermark({
-  text,
-  align = "left",
-  speed = 130,
-  className,
-}: {
-  text: string;
-  align?: "left" | "right" | "center";
-  speed?: number;
-  className?: string;
-}) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [speed, -speed]);
-  // Compose x-centering (for `center`) and the parallax drift into one string so
-  // it doesn't fight a Tailwind transform utility.
-  const tx = align === "center" ? "-50%" : "0px";
-  const transform = useMotionTemplate`translate3d(${tx}, calc(-50% + ${y}px), 0)`;
-
-  if (reduce) return null;
-
-  return (
-    <div
-      ref={ref}
-      aria-hidden
-      className="pointer-events-none absolute inset-0 -z-10 select-none overflow-hidden"
-    >
-      <motion.span
-        style={{ transform }}
-        className={cn(
-          "display absolute top-1/2 whitespace-nowrap font-extrabold uppercase leading-none tracking-tighter text-white/[0.035] text-[22vw] sm:text-[16vw]",
-          align === "left" && "left-[-0.06em]",
-          align === "right" && "right-[-0.06em]",
-          align === "center" && "left-1/2",
-          className,
-        )}
-      >
-        {text}
-      </motion.span>
-    </div>
-  );
-}
-
-/**
- * Ambient accent glow that drifts with scroll — a soft depth layer behind a
- * section's content. Scroll-driven (not perpetual), faint, GPU-composited, and
- * null under reduced motion. Drop as the first child of a `relative isolate`
- * section; reposition with `className` (defaults to centred).
- */
-export function ParallaxGlow({
-  size = 620,
-  speed = 130,
-  className,
-}: {
-  size?: number;
-  speed?: number;
-  className?: string;
-}) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [speed, -speed]);
-  const transform = useMotionTemplate`translate3d(-50%, calc(-50% + ${y}px), 0)`;
-
-  if (reduce) return null;
-
-  return (
-    <div
-      ref={ref}
-      aria-hidden
-      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
-    >
-      <motion.span
-        style={{
-          width: size,
-          height: size,
-          transform,
-          background:
-            "radial-gradient(circle, color-mix(in srgb, var(--accent) 13%, transparent), transparent 66%)",
-        }}
-        className={cn(
-          "absolute left-1/2 top-1/2 rounded-full blur-3xl",
-          className,
-        )}
-      />
-    </div>
-  );
-}
-
-/**
- * Cursor-follow CTA pill. Listens on its parent element (like Spotlight): drop
- * it inside any `relative` hover target and a solid pill chases the pointer.
- * Purely decorative affordance (aria-hidden, non-interactive) — the host must
- * keep a real link for keyboard/AT. Hover-capable pointers only (attaches no
- * listeners on touch), null under reduced motion, and transform/opacity only —
- * deliberately no backdrop-blur, which would repaint on every frame while
- * translating.
- */
-export function CursorCta({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(-9999);
-  const y = useMotionValue(-9999);
-  const o = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 350, damping: 28, mass: 0.5 });
-  const sy = useSpring(y, { stiffness: 350, damping: 28, mass: 0.5 });
-  const so = useSpring(o, { stiffness: 260, damping: 24 });
-  const scale = useTransform(so, (v) => 0.8 + v * 0.2);
-  const transform = useMotionTemplate`translate3d(${sx}px, ${sy}px, 0) translate(-50%, -50%) scale(${scale})`;
-
-  useEffect(() => {
-    const host = ref.current?.parentElement;
-    if (!host) return;
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-
-    const move = (e: PointerEvent) => {
-      const r = host.getBoundingClientRect();
-      const px = e.clientX - r.left;
-      const py = e.clientY - r.top;
-      // First contact: snap to the pointer instead of springing across the
-      // card from the resting position.
-      if (o.get() === 0) {
-        x.jump(px);
-        y.jump(py);
-        sx.jump(px);
-        sy.jump(py);
-      }
-      x.set(px);
-      y.set(py);
-      o.set(1);
-    };
-    const leave = () => o.set(0);
-
-    host.addEventListener("pointermove", move, { passive: true });
-    host.addEventListener("pointerleave", leave);
-    return () => {
-      host.removeEventListener("pointermove", move);
-      host.removeEventListener("pointerleave", leave);
-    };
-  }, [x, y, o, sx, sy]);
-
-  if (reduce) return null;
-
-  return (
-    <div
-      ref={ref}
-      aria-hidden
-      className={cn("pointer-events-none absolute inset-0 z-20", className)}
-    >
-      <motion.span
-        style={{ transform, opacity: so }}
-        className="absolute left-0 top-0 inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-foreground px-4 py-2 text-xs font-semibold text-background shadow-lg"
-      >
-        {children}
-      </motion.span>
-    </div>
-  );
-}
-
-/**
- * Cursor-follow accent glow. Listens on its parent element, so drop it as the
- * first child of any `relative isolate` container and it lights up where the
- * pointer is. Hover-capable pointers only (attaches no listeners on touch) and
- * null under reduced motion. Spring-smoothed, GPU-composited.
- */
-export function Spotlight({
-  size = 520,
-  className,
-}: {
-  size?: number;
-  className?: string;
-}) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(-9999);
-  const y = useMotionValue(-9999);
-  const o = useMotionValue(0);
-  const sx = useSpring(x, { stiffness: 140, damping: 26, mass: 0.6 });
-  const sy = useSpring(y, { stiffness: 140, damping: 26, mass: 0.6 });
-  const so = useSpring(o, { stiffness: 180, damping: 30 });
-  const transform = useMotionTemplate`translate3d(${sx}px, ${sy}px, 0)`;
-
-  useEffect(() => {
-    const host = ref.current?.parentElement;
-    if (!host) return;
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-
-    const move = (e: PointerEvent) => {
-      const r = host.getBoundingClientRect();
-      x.set(e.clientX - r.left - size / 2);
-      y.set(e.clientY - r.top - size / 2);
-      o.set(1);
-    };
-    const leave = () => o.set(0);
-
-    host.addEventListener("pointermove", move, { passive: true });
-    host.addEventListener("pointerleave", leave);
-    return () => {
-      host.removeEventListener("pointermove", move);
-      host.removeEventListener("pointerleave", leave);
-    };
-  }, [size, x, y, o]);
-
-  if (reduce) return null;
-
-  return (
-    <div
-      ref={ref}
-      aria-hidden
-      className={cn(
-        "pointer-events-none absolute inset-0 -z-10 overflow-hidden",
-        className,
-      )}
-    >
-      <motion.span
-        style={{
-          width: size,
-          height: size,
-          transform,
-          opacity: so,
-          background:
-            "radial-gradient(circle, color-mix(in srgb, var(--accent) 20%, transparent), transparent 62%)",
-        }}
-        className="absolute left-0 top-0 rounded-full blur-3xl"
-      />
-    </div>
   );
 }

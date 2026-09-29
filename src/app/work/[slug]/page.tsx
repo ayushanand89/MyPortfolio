@@ -28,6 +28,7 @@ export async function generateMetadata({
   return {
     title: project.title,
     description: project.summary,
+    alternates: { canonical: `/work/${slug}` },
     openGraph: {
       title: project.title,
       description: project.summary,
@@ -48,17 +49,22 @@ export default async function CaseStudyPage({
   }
 
   // Sequential next flagship, wrapping around.
+  const total = flagshipProjects.length;
   const currentIndex = flagshipProjects.findIndex((p) => p.slug === slug);
-  const next =
-    currentIndex >= 0
-      ? flagshipProjects[(currentIndex + 1) % flagshipProjects.length]
-      : flagshipProjects[0];
+  const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % total : 0;
+  const next = flagshipProjects[nextIndex];
 
   return (
-    <main>
-      <CaseStudyHero project={project} />
-      {project.blocks && <CaseStudyBody blocks={project.blocks} />}
-      {next && next.slug !== slug && <NextProject project={next} />}
+    <main id="main">
+      <div data-surface="paper">
+        <CaseStudyHero project={project} index={Math.max(0, currentIndex)} total={total} />
+        {project.blocks && (
+          <CaseStudyBody blocks={project.blocks} project={project} />
+        )}
+      </div>
+      {next && next.slug !== slug && (
+        <NextProject project={next} index={nextIndex} total={total} />
+      )}
     </main>
   );
 }

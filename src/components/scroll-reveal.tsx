@@ -4,69 +4,76 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 /**
- * Cross-browser fallback for the CSS scroll-driven reveals.
+ * Drives every `[data-reveal]` entrance with ONE IntersectionObserver.
  *
- * Chromium animates `.reveal` / `.media-reveal` / `.mask-reveal` natively via
- * `animation-timeline: view()`. Browsers without that feature (Safari, older
- * Firefox) would otherwise skip the whole `@supports` block and never animate —
- * so an inline script in `layout.tsx` adds `html.reveal-js` *before first paint*
- * (only when `animation-timeline: view()` is unsupported, `IntersectionObserver`
- * exists, and reduced motion is off). This component then reveals each element
- * as it scrolls into view by toggling `.is-inview`.
+ * The pre-paint script in `layout.tsx` sets `html[data-reveal-js]` (only when
+ * motion is allowed), which hides reveal targets; this component flips it to
+ * "ready" (otherwise the script's failsafe un-hides everything) and sets
+ * `data-in` on each target as it enters, once. CSS transitions do the rest, so
+ * the same time-based motion plays in every engine.
  *
- * `.media-reveal` gets an additional ALWAYS-ON observer, even in browsers that
- * do support view() timelines: Firefox honours `animation-timeline: view()` but
- * does NOT reliably animate `clip-path` on it, so the cover image can get stuck
- * fully clipped (invisible). Forcing `.is-inview` once the frame is well in view
- * guarantees it shows; in Chromium the wipe has already finished by then, so
- * it's a no-op.
- *
- * Keyed off `usePathname` so client navigations (e.g. the `/work/[slug]` case
- * studies) get their fresh nodes observed too.
+ * Targets entering in the same batch are ordered top→bottom, left→right and
+ * cascaded via `--auto`. Anything already scrolled past on load (mid-page
+ * reload) is marked `instant` so it doesn't animate off-screen. Re-scans on
+ * route change; a MutationObserver (rAF-batched) catches late mounts.
  */
 export function ScrollReveal() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!("IntersectionObserver" in window)) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const root = document.documentElement;
+    if (!root.dataset.revealJs) return;
+    root.dataset.revealJs = "ready";
 
-    const revealJs = document.documentElement.classList.contains("reveal-js");
-    const observers: IntersectionObserver[] = [];
-
-    const observe = (
-      selector: string,
-      options: IntersectionObserverInit,
-    ) => {
-      const targets = document.querySelectorAll<HTMLElement>(selector);
-      if (targets.length === 0) return;
-      const io = new IntersectionObserver((entries) => {
+    const io = new IntersectionObserver(
+      (entries) => {
+        const entering: IntersectionObserverEntry[] = [];
         for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          entry.target.classList.add("is-inview");
-          io.unobserve(entry.target);
+          const el = entry.target as HTMLElement;
+          if (entry.isIntersecting) entering.push(entry);
+          else if (entry.boundingClientRect.bottom < 0) {
+            el.dataset.in = "instant";
+            io.unobserve(el);
+          }
         }
-      }, options);
-      for (const el of targets) io.observe(el);
-      observers.push(io);
+        entering
+          .sort(
+            (a, b) =>
+              a.boundingClientRect.top - b.boundingClientRect.top ||
+              a.boundingClientRect.left - b.boundingClientRect.left,
+          )
+          .forEach((entry, n) => {
+            const el = entry.target as HTMLElement;
+            if (n > 0) el.style.setProperty("--auto", String(Math.min(n, 6)));
+            el.dataset.in = "";
+            io.unobserve(el);
+          });
+      },
+      { rootMargin: "0px 0px -9% 0px", threshold: 0 },
+    );
+
+    const scan = () => {
+      document
+        .querySelectorAll<HTMLElement>("[data-reveal]:not([data-in])")
+        .forEach((el) => io.observe(el));
     };
+    scan();
 
-    // Media frames: always observed as the clip-path safety net. Fired at ~45%
-    // visibility so it never cuts Chromium's native wipe short.
-    observe(".media-reveal", { threshold: 0.45 });
-
-    // The rest only need JS when native scroll-timelines are unsupported. Fired
-    // early to match the native `entry 0%` feel. (`.media-reveal` is included
-    // here too so its wipe keeps the early trigger in those engines; the
-    // always-on observer above is then just a redundant safety.)
-    if (revealJs) {
-      observe(".reveal, .media-reveal, .mask-reveal > *, .rule-draw", {
-        rootMargin: "0px 0px -8% 0px",
-        threshold: 0.08,
+    let queued = 0;
+    const mo = new MutationObserver(() => {
+      if (queued) return;
+      queued = requestAnimationFrame(() => {
+        queued = 0;
+        scan();
       });
-    }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
 
-    return () => observers.forEach((io) => io.disconnect());
+    return () => {
+      cancelAnimationFrame(queued);
+      io.disconnect();
+      mo.disconnect();
+    };
   }, [pathname]);
 
   return null;

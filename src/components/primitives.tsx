@@ -1,27 +1,29 @@
-import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Scramble } from "@/components/scramble";
+import { TransitionLink } from "@/components/transition-link";
 
 export { MediaFrame } from "./media-frame";
 
+export type Surface = "ink" | "paper" | "signal";
+
+/** Horizontal frame. `size="text"` narrows to a reading measure. `wide` is
+ *  kept for older call sites (same as the default full frame). */
 export function Container({
   className,
-  wide = false,
+  size = "full",
   children,
 }: {
   className?: string;
-  /** One width break — reserved for the Work chapter so it physically
-   *  outgrows the text column. */
+  size?: "full" | "text";
   wide?: boolean;
   children: ReactNode;
 }) {
   return (
     <div
       className={cn(
-        "mx-auto w-full px-6 sm:px-8",
-        wide ? "max-w-6xl" : "max-w-5xl",
+        "gutter mx-auto w-full",
+        size === "text" ? "max-w-5xl" : "max-w-[1600px]",
         className,
       )}
     >
@@ -31,35 +33,42 @@ export function Container({
 }
 
 /**
- * Section wrapper with varied vertical rhythm — `spacious` chapters breathe
- * (no top border), `dense` ones compress. Alternating density is what keeps
- * a long single page from reading as identical template bands.
+ * A chapter. Paints its own surface (ink / paper / signal) so every token
+ * inside re-skins. `sheet` rounds the top edge and tucks it over the previous
+ * chapter, so each new surface reads as a sheet sliding over the last.
  */
 export function Section({
   id,
-  variant = "default",
+  surface = "ink",
+  sheet = false,
   className,
   children,
 }: {
   id?: string;
-  variant?: "default" | "spacious" | "dense";
+  surface?: Surface;
+  sheet?: boolean;
   className?: string;
   children: ReactNode;
+  /** Legacy rhythm prop — ignored. */
+  variant?: "default" | "spacious" | "dense";
 }) {
-  const rhythm = {
-    default: "border-t border-border py-20 sm:py-28",
-    spacious: "py-24 sm:py-36",
-    dense: "border-t border-border py-16 sm:py-24",
-  }[variant];
-
   return (
-    <section id={id} className={cn("relative isolate", rhythm, className)}>
+    <section
+      id={id}
+      data-surface={surface}
+      className={cn(
+        "relative isolate py-24 sm:py-32 lg:py-40",
+        sheet &&
+          "-mt-(--sheet-radius) rounded-t-(--sheet-radius) pt-[calc(6rem+var(--sheet-radius))] sm:pt-[calc(8rem+var(--sheet-radius))]",
+        className,
+      )}
+    >
       {children}
     </section>
   );
 }
 
-/** Pulsing-dot availability pill — shared by the hero meta bar and contact. */
+/** Pulsing-dot availability pill. */
 export function AvailabilityBadge({
   className,
   children,
@@ -70,119 +79,179 @@ export function AvailabilityBadge({
   return (
     <span
       className={cn(
-        "inline-flex w-fit items-center gap-2 rounded-full border border-accent/40 px-4 py-2 text-sm text-foreground",
+        "label inline-flex w-fit items-center gap-2.5 rounded-full border border-line-strong px-4 py-2.5",
         className,
       )}
     >
-      <span className="relative flex h-2 w-2">
-        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-60" />
-        <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
-      </span>
+      <Dot />
       {children}
     </span>
   );
 }
 
+export function Dot({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "ping relative inline-flex h-2 w-2 shrink-0 rounded-full bg-signal",
+        className,
+      )}
+    />
+  );
+}
+
 /**
- * Pure-CSS entrance reveal. Content is visible by default (works with no JS /
- * unsupported browsers); animation is layered on via `globals.css`.
- * `immediate` plays once on load (above-the-fold); otherwise it is scroll-linked.
+ * Entrance reveal. Visible by default (SSR / no-JS / reduced motion); the
+ * observer in `scroll-reveal.tsx` animates it in once it enters the viewport.
+ * `stagger` cascades siblings, `delay` offsets in seconds.
  */
 export function Reveal({
   children,
   delay = 0,
   className,
-  immediate = false,
   stagger,
   variant = "up",
+  as: Tag = "div",
 }: {
   children: ReactNode;
   delay?: number;
   className?: string;
+  /** Legacy prop — every reveal now triggers on entering the viewport. */
   immediate?: boolean;
-  /** Cascade index — same-viewport siblings reveal in sequence (used by the
-   *  cross-browser JS fallback; native reveals stagger by entry on their own). */
   stagger?: number;
-  /** Entrance direction. `up` (default) rises; `left`/`right` slide in from the
-   *  side (≥640px only — they collapse to `up` on phones); `scale` pops. Ignored
-   *  when `immediate`. */
-  variant?: "up" | "left" | "right" | "scale";
+  variant?: "up" | "left" | "right" | "scale" | "fade";
+  as?: "div" | "li" | "span" | "p" | "article" | "figure";
 }) {
   const vars: Record<string, string | number> = {};
-  if (immediate && delay) vars["--reveal-delay"] = `${delay * 1000}ms`;
-  if (stagger) vars["--reveal-order"] = stagger;
-  const style =
-    Object.keys(vars).length > 0 ? (vars as CSSProperties) : undefined;
-
+  if (stagger) vars["--i"] = stagger;
+  if (delay) vars["--d"] = `${Math.round(delay * 1000)}ms`;
   return (
-    <div
-      className={cn(
-        immediate ? "reveal-now" : "reveal",
-        !immediate && variant !== "up" && `reveal--${variant}`,
-        className,
-      )}
-      style={style}
+    <Tag
+      data-reveal={variant === "up" ? "" : variant}
+      className={className}
+      style={Object.keys(vars).length ? (vars as CSSProperties) : undefined}
     >
       {children}
-    </div>
+    </Tag>
   );
 }
 
+/**
+ * Masked line stack — each entry rises out of its own clip edge in sequence.
+ * `load` plays on page load (hero); otherwise it triggers on scroll-in.
+ */
+export function Lines({
+  lines,
+  as: Tag = "span",
+  className,
+  lineClassName,
+  load = false,
+  delay = 0,
+}: {
+  lines: ReactNode[];
+  as?: "span" | "h1" | "h2" | "h3" | "p" | "div";
+  className?: string;
+  lineClassName?: string;
+  load?: boolean;
+  delay?: number;
+}) {
+  return (
+    <Tag
+      data-reveal={load ? undefined : "lines"}
+      className={cn("block", className)}
+      style={delay ? ({ "--d": `${Math.round(delay * 1000)}ms` } as CSSProperties) : undefined}
+    >
+      {lines.map((line, i) => (
+        <span
+          key={i}
+          className={cn("line", load && "load-rise", lineClassName)}
+          style={{ "--l": i } as CSSProperties}
+        >
+          <span>{line}</span>
+        </span>
+      ))}
+    </Tag>
+  );
+}
+
+/**
+ * Chapter header: a hairline index row — `(02) SELECTED WORK ······ meta` —
+ * over a poster headline. Pass `title` as an array to control line breaks
+ * (each entry is a masked line); `<em>` inside switches to the serif accent.
+ */
 export function SectionHeader({
   index,
   eyebrow,
   title,
+  meta,
   className,
+  titleClassName,
   rule = true,
 }: {
   index?: string;
   eyebrow?: string;
-  title: ReactNode;
+  title: ReactNode | ReactNode[];
+  meta?: ReactNode;
   className?: string;
-  /** Scroll-draw accent underline beneath the title. */
+  titleClassName?: string;
   rule?: boolean;
 }) {
+  const lines = Array.isArray(title) ? title : [title];
   return (
-    <div className={cn("relative mb-12 sm:mb-16", className)}>
-      {index && (
-        <span aria-hidden className="chapter-num reveal">
-          {index}
-        </span>
+    <header className={cn("relative mb-14 sm:mb-20", className)}>
+      {(eyebrow || meta) && (
+        <div className="relative">
+          {rule && (
+            <span
+              aria-hidden
+              data-reveal="rule"
+              className="absolute inset-x-0 top-0 block h-px bg-line-strong"
+            />
+          )}
+          <div className="label flex items-center justify-between gap-6 pt-4">
+            <span>
+              {index && <span className="text-accent">({index})&nbsp;&nbsp;</span>}
+              {eyebrow}
+            </span>
+            {meta && <span className="hidden text-right text-muted sm:inline">{meta}</span>}
+          </div>
+        </div>
       )}
-      {eyebrow && (
-        <span className="eyebrow">
-          {index && <span className="eyebrow-accent">{index} — </span>}
-          <Scramble text={eyebrow} />
-        </span>
-      )}
-      <h2
+      <Lines
+        as="h2"
+        lines={lines}
         className={cn(
-          "display text-4xl text-balance sm:text-5xl md:text-[3.25rem]",
-          eyebrow && "mt-4",
+          "display mt-8 text-[clamp(2.5rem,7.2vw,7.25rem)] sm:mt-10",
+          titleClassName,
         )}
-      >
-        <span className="mask-reveal">
-          <span>{title}</span>
-        </span>
-      </h2>
-      {rule && (
-        <span
-          aria-hidden
-          className="rule-draw mt-6 block h-0.5 w-12 rounded-full bg-accent/70"
-        />
-      )}
-    </div>
+      />
+    </header>
   );
 }
 
 export function Tag({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-border px-3 py-1 font-mono text-[0.7rem] tracking-wide text-muted">
+    <span className="data inline-flex items-center rounded-full border border-line px-3 py-1 text-muted">
       {children}
     </span>
   );
 }
 
+/** Text that rolls to a duplicate of itself on hover (needs `group/roll`). */
+export function Roll({ children }: { children: string }) {
+  return (
+    <span className="roll" data-text={children}>
+      <span>{children}</span>
+    </span>
+  );
+}
+
+/**
+ * Pill button. Internal hrefs go through TransitionLink (same-page anchors
+ * smooth-scroll, other routes get the view transition); `external` opens a new
+ * tab. The fill wipes up on hover and the label rolls.
+ */
 export function ButtonLink({
   href,
   variant = "primary",
@@ -190,38 +259,38 @@ export function ButtonLink({
   children,
   className,
   onClick,
+  icon = true,
 }: {
   href: string;
-  variant?: "primary" | "ghost";
+  variant?: "primary" | "ghost" | "accent";
   external?: boolean;
   children: ReactNode;
   className?: string;
   onClick?: React.MouseEventHandler;
+  icon?: boolean;
 }) {
-  const isPrimary = variant === "primary";
-  const styles = isPrimary
-    ? "bg-foreground text-background hover:opacity-95"
-    : "glass text-foreground hover:border-white/20";
   const classes = cn(
-    "group/btn inline-flex items-center gap-3 rounded-full py-1.5 pl-5 pr-1.5 text-sm font-medium transition-[transform,opacity,border-color] duration-150 ease-out-strong active:scale-[0.98]",
-    styles,
+    "btn group/roll",
+    variant === "primary" && "btn-solid",
+    variant === "accent" && "btn-accent",
+    variant === "ghost" && "btn-line",
     className,
   );
-
-  // Trailing icon nested in its own circle that kicks diagonally on hover —
-  // "button-in-button" kinetic tension.
   const Icon = external ? ArrowUpRight : ArrowRight;
   const inner = (
     <>
-      <span>{children}</span>
-      <span
-        className={cn(
-          "flex h-8 w-8 items-center justify-center rounded-full transition-transform duration-200 ease-out-strong hover-device:group-hover/btn:translate-x-0.5 hover-device:group-hover/btn:-translate-y-0.5 hover-device:group-hover/btn:scale-105",
-          isPrimary ? "bg-background/10" : "bg-white/10",
-        )}
-      >
-        <Icon className="h-4 w-4" />
-      </span>
+      {typeof children === "string" ? <Roll>{children}</Roll> : children}
+      {icon && (
+        <Icon
+          aria-hidden
+          className={cn(
+            "h-3.5 w-3.5 transition-transform duration-500 ease-out-strong",
+            external
+              ? "hover-device:group-hover/roll:-translate-y-0.5 hover-device:group-hover/roll:translate-x-0.5"
+              : "hover-device:group-hover/roll:translate-x-1",
+          )}
+        />
+      )}
     </>
   );
 
@@ -240,8 +309,8 @@ export function ButtonLink({
   }
 
   return (
-    <Link href={href} onClick={onClick} className={classes}>
+    <TransitionLink href={href} onClick={onClick} className={classes}>
       {inner}
-    </Link>
+    </TransitionLink>
   );
 }

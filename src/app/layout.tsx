@@ -1,39 +1,32 @@
-import type { Metadata } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
-import localFont from "next/font/local";
+import type { Metadata, Viewport } from "next";
+import { Archivo, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import "lenis/dist/lenis.css";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
 import { SmoothScroll } from "@/components/smooth-scroll";
-import { Backdrop } from "@/components/backdrop";
-import { Aurora } from "@/components/aurora";
-import { Particles } from "@/components/particles";
 import { Intro } from "@/components/intro";
-import { ScrollProgress } from "@/components/scroll-progress";
 import { ScrollReveal } from "@/components/scroll-reveal";
+import { RouteTransitions } from "@/components/transition-link";
+import { CursorLabel } from "@/components/cursor-label";
 import { Grain } from "@/components/grain";
 import { Nav } from "@/components/nav";
 import { Footer } from "@/components/footer";
 import { profile } from "@/content/profile";
 
-const sans = Inter({
+// Archivo carries the whole voice: body at its normal width, and the
+// poster headlines pushed to the widest cut of its `wdth` axis.
+const sans = Archivo({
   subsets: ["latin"],
+  axes: ["wdth"],
   variable: "--font-sans",
   display: "swap",
 });
 
-// Cabinet Grotesk (Indian Type Foundry, via Fontshare) — self-hosted for the
-// display/headline face. Gives the editorial headlines real character where
-// Inter Tight read generic.
-const display = localFont({
-  src: [
-    { path: "../fonts/cabinet-400.woff2", weight: "400", style: "normal" },
-    { path: "../fonts/cabinet-500.woff2", weight: "500", style: "normal" },
-    { path: "../fonts/cabinet-700.woff2", weight: "700", style: "normal" },
-    { path: "../fonts/cabinet-800.woff2", weight: "800", style: "normal" },
-    { path: "../fonts/cabinet-900.woff2", weight: "900", style: "normal" },
-  ],
-  variable: "--font-display",
+// Instrument Serif — the italic interjections inside the caps headlines.
+const serif = Instrument_Serif({
+  subsets: ["latin"],
+  weight: "400",
+  style: ["normal", "italic"],
+  variable: "--font-serif",
   display: "swap",
 });
 
@@ -83,6 +76,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#0c0b0a",
+};
+
 // Person structured data — the highest-leverage SEO markup for a personal
 // brand site (name/role/profiles surface in rich results).
 const personJsonLd = {
@@ -101,6 +98,17 @@ const personJsonLd = {
   sameAs: [profile.socials.github, profile.socials.linkedin],
 };
 
+// Runs before first paint. When motion is allowed:
+//  • `data-reveal-js` hides [data-reveal] blocks until ScrollReveal marks them
+//    in view — with a failsafe that un-hides everything if the observer never
+//    boots (it flips the value to "ready"), so a JS failure can't blank the
+//    page.
+//  • `data-intro="play"` shows the curtain on the first homepage load of a
+//    browser session only; reloads and later visits land straight on the hero.
+// State lives in data attributes (not classes) so React never rewrites it.
+// No-JS and reduced-motion users get neither: everything is simply visible.
+const prePaint = `(function(){try{var d=document.documentElement;if(matchMedia("(prefers-reduced-motion: reduce)").matches||!("IntersectionObserver" in window))return;d.dataset.revealJs="1";setTimeout(function(){if(d.dataset.revealJs!=="ready")delete d.dataset.revealJs},4500);var seen=true;try{seen=sessionStorage.getItem("aa:intro")==="1";sessionStorage.setItem("aa:intro","1")}catch(e){}if(!seen&&location.pathname==="/"){d.dataset.intro="play";setTimeout(function(){delete d.dataset.intro},4200)}}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -108,45 +116,34 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${sans.variable} ${display.variable} ${mono.variable}`}
+      className={`${sans.variable} ${serif.variable} ${mono.variable}`}
     >
-      <body className="min-h-screen antialiased">
-        {/* Before first paint: opt browsers WITHOUT native scroll-driven CSS
-            animations (Safari, Firefox) into the JS reveal fallback. Runs only
-            when the feature is unsupported, IntersectionObserver exists, and the
-            user hasn't asked for reduced motion — so no-JS, reduced-motion, and
-            Chromium users keep the visible-by-default content untouched, with no
-            flash. `ScrollReveal` reads this class and drives the reveals. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              '(function(){try{var d=document.documentElement;var r=window.matchMedia("(prefers-reduced-motion: reduce)").matches;var s=window.CSS&&CSS.supports&&CSS.supports("animation-timeline: view()");if(!r&&!s&&"IntersectionObserver" in window){d.classList.add("reveal-js")}if(!r){d.classList.add("intro-sync");setTimeout(function(){d.classList.remove("intro-sync")},7000)}}catch(e){}})();',
-          }}
-        />
+      <body className="min-h-screen">
+        <script dangerouslySetInnerHTML={{ __html: prePaint }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
-        <Intro />
-        <ThemeProvider
-          attribute="class"
-          forcedTheme="dark"
-          disableTransitionOnChange
+        <a
+          href="#main"
+          className="label fixed left-4 top-4 z-[110] -translate-y-24 rounded-full bg-paper px-4 py-2 text-ink transition-transform focus:translate-y-0"
         >
-          <Aurora />
-          <Particles />
-          <Backdrop />
-          <Grain />
-          <ScrollProgress />
+          Skip to content
+        </a>
+        <Intro />
+        <SmoothScroll>
+          <RouteTransitions />
           <ScrollReveal />
-          <SmoothScroll>
-            <div className="relative z-10">
-              <Nav />
-              {children}
-              <Footer />
-            </div>
-          </SmoothScroll>
-        </ThemeProvider>
+          <CursorLabel />
+          <Grain />
+          <Nav />
+          {/* Pages scroll up and away over the sticky footer beneath. */}
+          <div className="relative z-[1] bg-ink">
+            {children}
+            <div id="page-end" aria-hidden className="h-px" />
+          </div>
+          <Footer />
+        </SmoothScroll>
       </body>
     </html>
   );

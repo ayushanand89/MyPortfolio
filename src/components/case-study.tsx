@@ -1,50 +1,80 @@
-import Link from "next/link";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Github } from "lucide-react";
+import type { CSSProperties, ReactNode } from "react";
+import Image from "next/image";
+import { ArrowUpRight, Github } from "lucide-react";
 import type { CaseStudyBlock, Project, Stat } from "@/content/projects";
-import { Container, MediaFrame, Reveal } from "@/components/primitives";
+import { Container, Lines, MediaFrame, Reveal } from "@/components/primitives";
 import { CountUp } from "@/components/count-up";
-import { CursorCta, Parallax } from "@/components/motion-fx";
+import { BrowserFrame, PhoneFrame } from "@/components/device-frames";
+import { LiveEmbed } from "@/components/live-embed";
+import { LoopVideo } from "@/components/loop-video";
 import { cn } from "@/lib/utils";
 
-export function CaseStudyHero({ project }: { project: Project }) {
-  const cover = project.cover;
-  return (
-    <header className="pt-32 sm:pt-40">
-      <Container>
-        <Link
-          href="/#work"
-          className="link-underline inline-flex items-center gap-2 text-sm text-muted hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4" /> All work
-        </Link>
+export { NextProject } from "./next-project";
 
-        <p className="eyebrow mt-10">{cover?.eyebrow}</p>
-        <h1 className="display display-hero mt-5 max-w-4xl text-5xl text-balance sm:text-6xl md:text-7xl">
-          {cover?.title ?? project.title}
-        </h1>
+/**
+ * Editorial hero, set like film credits: index rail → poster title → serif
+ * subtitle → centred credits → the SCREEN. For live projects the screen is
+ * the real site (a recording with "Launch the live site" → an interactive
+ * iframe); for the client build, its cover in browser chrome. Either way it's
+ * the landing spot of the Work → case-study morph, with the stats riding over
+ * its bottom edge.
+ */
+export function CaseStudyHero({
+  project,
+  index,
+  total,
+}: {
+  project: Project;
+  index: number;
+  total: number;
+}) {
+  const cover = project.cover;
+  const pad = (n: number) => String(n).padStart(2, "0");
+
+  return (
+    <header className="pt-28 sm:pt-36">
+      <Container>
+        <div className="label relative flex items-center justify-between gap-6 pt-4">
+          <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-line-strong" />
+          <span>
+            <span className="text-accent">
+              ({pad(index + 1)}/{pad(total)})&nbsp;&nbsp;
+            </span>
+            Case study
+          </span>
+          <span className="text-right text-muted">{project.domain}</span>
+        </div>
+
+        <Lines
+          as="h1"
+          lines={[cover?.title ?? project.title]}
+          className="display mx-auto mt-14 max-w-[16ch] text-center text-[clamp(1.9rem,9vw,8rem)] text-balance sm:mt-20"
+        />
         {cover?.subtitle && (
-          <p className="mt-6 max-w-2xl text-lg text-muted text-balance sm:text-xl">
-            {cover.subtitle}
-          </p>
+          <Reveal>
+            <p className="serif mx-auto mt-8 max-w-3xl text-center text-[clamp(1.35rem,2.3vw,2.1rem)] italic leading-[1.15] text-muted text-balance">
+              {cover.subtitle}
+            </p>
+          </Reveal>
         )}
 
-        {/* Spec rail — the project's vitals on one hairline. */}
-        <div className="mt-10 grid grid-cols-2 gap-6 border-t border-border pt-6 sm:grid-cols-4">
-          <Meta label="Role" value={project.role ?? "—"} />
-          <Meta label="Year" value={project.year} />
-          {project.association && (
-            <Meta label="Context" value={project.association} />
-          )}
-          {(project.links.demo || project.links.github) && (
+        {/* Credits — red micro-caps over serif values. */}
+        <Reveal>
+          <dl className="mx-auto mt-14 flex max-w-4xl flex-wrap justify-center gap-x-14 gap-y-8 text-center">
+            <Credit label="Role" value={project.role ?? "—"} />
+            <Credit label="Year" value={project.year} />
+            {project.association && (
+              <Credit label="Context" value={project.association} />
+            )}
             <div>
-              <span className="eyebrow">Links</span>
-              <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+              <dt className="label text-accent">Links</dt>
+              <dd className="serif mt-2 flex flex-col items-center gap-1 text-xl">
                 {project.links.demo && (
                   <a
                     href={project.links.demo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="link-underline inline-flex items-center gap-1.5 text-foreground"
+                    className="link-underline inline-flex items-center gap-1"
                   >
                     Live site <ArrowUpRight className="h-4 w-4" />
                   </a>
@@ -54,102 +84,118 @@ export function CaseStudyHero({ project }: { project: Project }) {
                     href={project.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="link-underline inline-flex items-center gap-1.5 text-muted hover:text-foreground"
+                    className="link-underline inline-flex items-center gap-1.5"
                   >
                     <Github className="h-4 w-4" /> Source
                   </a>
                 )}
-              </div>
+                {!project.links.demo && !project.links.github && (
+                  <span className="text-muted">Private · NDA</span>
+                )}
+              </dd>
             </div>
-          )}
-        </div>
-
-        <ul className="mt-8 flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
-            <li
-              key={tag}
-              className="rounded-full border border-border px-3 py-1 font-mono text-[0.7rem] tracking-wide text-muted"
-            >
-              {tag}
-            </li>
-          ))}
-        </ul>
-
-        {/* Cover breaks out of the text column (same technique as body
-            images); the stats row overlaps its bottom edge for depth. The
-            cover is this page's LCP — load it eagerly. */}
-        <div className="mt-14 sm:-mx-8 xl:-mx-24">
-          <Parallax amount={16}>
-            <MediaFrame
-              src={project.image}
-              alt={`${project.title} cover`}
-              label={`${project.title} — cover image`}
-              ratio="aspect-[16/10] sm:aspect-[21/9]"
-              scrim
-              eager
-            />
-          </Parallax>
-        </div>
-
-        {project.stats && (
-          <StatsRow
-            items={project.stats}
-            glass
-            className="relative z-10 -mt-10 sm:-mt-14 sm:mx-4 xl:mx-10"
-          />
-        )}
+          </dl>
+          <p className="data mx-auto mt-10 max-w-3xl text-center leading-relaxed text-muted">
+            {project.tags.join(" / ")}
+          </p>
+        </Reveal>
       </Container>
+
+      <div className="gutter mx-auto mt-14 max-w-[1600px] sm:mt-20">
+        {project.live ? (
+          <LiveEmbed project={project} />
+        ) : (
+          <BrowserFrame host="private client build" note="Anonymized" vtCover>
+            {project.media?.desktop ? (
+              <LoopVideo
+                src={project.media.desktop.video}
+                poster={project.media.desktop.poster}
+                alt={`${project.title} — recording of the app`}
+                sizes="(min-width: 1600px) 1520px, 94vw"
+                priority
+              />
+            ) : (
+              <Image
+                src={project.image ?? ""}
+                alt={`${project.title} cover`}
+                fill
+                preload
+                sizes="(min-width: 1600px) 1520px, 94vw"
+                className="object-cover object-top"
+              />
+            )}
+          </BrowserFrame>
+        )}
+      </div>
+
+      {project.stats && (
+        <Container size="text" className="relative z-10 mt-10 sm:mt-14">
+          <StatsRow items={project.stats} />
+        </Container>
+      )}
     </header>
   );
 }
 
-function Meta({ label, value }: { label: string; value: string }) {
+function Credit({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <span className="eyebrow">{label}</span>
-      <p className="mt-1 text-sm text-foreground">{value}</p>
+      <dt className="label text-accent">{label}</dt>
+      <dd className="serif mt-2 text-xl leading-snug text-balance">{value}</dd>
     </div>
   );
 }
 
+/** Ink stats strip with count-up numerals. */
 export function StatsRow({
   items,
   className,
-  glass = false,
 }: {
   items: Stat[];
   className?: string;
-  /** Frosted cells — for when the row sits over imagery (hero overlap). */
-  glass?: boolean;
 }) {
   return (
     <dl
+      data-surface="ink"
       className={cn(
-        "mt-12 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4",
+        "grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-line shadow-[0_30px_80px_-30px_rgba(0,0,0,0.5)] sm:grid-cols-4",
         className,
       )}
     >
       {items.map((s) => (
-        <div key={s.label} className={cn("p-5", glass ? "glass-strong" : "bg-background")}>
-          <dt className="display text-3xl text-accent sm:text-4xl">
+        <div key={s.label} className="bg-bg p-5 sm:p-7">
+          <dt className="display whitespace-nowrap text-[clamp(1.6rem,2.7vw,2.5rem)] text-accent">
             <CountUp value={s.value} />
           </dt>
-          <dd className="mt-1 text-sm text-muted">{s.label}</dd>
+          <dd className="data mt-2 text-muted">{s.label}</dd>
         </div>
       ))}
     </dl>
   );
 }
 
-export function CaseStudyBody({ blocks }: { blocks: CaseStudyBlock[] }) {
+export function CaseStudyBody({
+  blocks,
+  project,
+}: {
+  blocks: CaseStudyBlock[];
+  project: Project;
+}) {
+  let fig = 0;
+  const host = project.live?.host ?? "private client build";
+  const live = !!project.live;
   return (
-    <div className="py-20 sm:py-28">
+    <div className="pb-[calc(7rem+var(--sheet-radius))] pt-24 sm:pb-[calc(10rem+var(--sheet-radius))] sm:pt-36">
       <Container>
-        <div className="flex flex-col gap-20 sm:gap-28">
+        <div className="flex flex-col gap-24 sm:gap-36">
           {blocks.map((block, i) => (
-            <Reveal key={i}>
-              <Block block={block} />
-            </Reveal>
+            <Block
+              key={i}
+              block={block}
+              fig={block.type === "image" ? ++fig : 0}
+              host={host}
+              live={live}
+            />
           ))}
         </div>
       </Container>
@@ -157,77 +203,191 @@ export function CaseStudyBody({ blocks }: { blocks: CaseStudyBlock[] }) {
   );
 }
 
-function Block({ block }: { block: CaseStudyBlock }) {
+function Eyebrow({ children }: { children: ReactNode }) {
+  return <p className="label text-accent">{children}</p>;
+}
+
+function Block({
+  block,
+  fig,
+  host,
+  live,
+}: {
+  block: CaseStudyBlock;
+  fig: number;
+  host: string;
+  live: boolean;
+}) {
   switch (block.type) {
     case "section":
       return (
-        <div className="max-w-3xl">
-          {block.eyebrow && <p className="eyebrow">{block.eyebrow}</p>}
-          <h2 className="display mt-4 text-3xl text-balance sm:text-4xl md:text-5xl">
+        <Reveal className="max-w-4xl">
+          {block.eyebrow && <Eyebrow>{block.eyebrow}</Eyebrow>}
+          <h2 className="serif mt-5 text-[clamp(2.2rem,4.8vw,4.6rem)] leading-[1.02] tracking-tight text-balance">
             {block.title}
           </h2>
           {block.body && (
-            <p className="mt-6 text-lg leading-relaxed text-muted text-balance">
+            <p className="mt-7 max-w-2xl text-lg leading-relaxed text-muted text-pretty">
               {block.body}
             </p>
           )}
-        </div>
+        </Reveal>
       );
 
     case "text":
       return (
-        <p className="max-w-3xl text-lg leading-relaxed text-muted">
-          {block.body}
-        </p>
+        <Reveal>
+          <p className="max-w-3xl text-lg leading-relaxed text-muted">{block.body}</p>
+        </Reveal>
       );
 
     case "image":
       return (
-        // Breakout width — the image outgrows the text column for a
-        // full-bleed editorial moment (the xl margin stays inside the
-        // viewport gutter, so nothing overflows).
-        <figure className="sm:-mx-8 xl:-mx-24">
-          <Parallax amount={20}>
-            <MediaFrame
-              src={block.src}
-              alt={block.alt}
-              label={block.alt}
-              ratio="aspect-[16/9]"
-            />
-          </Parallax>
+        <figure className={cn(block.narrow && "mx-auto w-full max-w-4xl")}>
+          <div data-reveal="window" className="rounded-[14px]">
+            <BrowserFrame host={host} live={live} note="Private">
+              <MediaFrame
+                src={block.src}
+                alt={block.alt}
+                label={block.alt}
+                ratio="absolute inset-0"
+                className="rounded-none bg-transparent [&_img]:object-top"
+                sizes="(min-width: 1600px) 1520px, 94vw"
+                reveal={false}
+              />
+            </BrowserFrame>
+          </div>
           {block.caption && (
-            <figcaption className="mt-3 text-sm text-faint sm:mx-8 xl:mx-24">
-              {block.caption}
+            <figcaption className="mt-5 grid gap-2 text-muted sm:grid-cols-12">
+              <span className="data pt-1 text-accent sm:col-span-2">
+                Fig. {String(fig).padStart(2, "0")}
+              </span>
+              <span className="max-w-2xl text-[1.02rem] leading-relaxed text-pretty sm:col-span-10">
+                {block.caption}
+              </span>
             </figcaption>
           )}
         </figure>
       );
 
+    case "diagram":
+      return (
+        // min-w-0: a flex item would otherwise grow to the diagram's min
+        // width and get clipped at the screen edge instead of scrolling.
+        <figure className="min-w-0">
+          <div
+            data-surface="ink"
+            data-reveal=""
+            className="overflow-hidden rounded-[14px] border border-white/10 shadow-[0_40px_100px_-40px_rgba(0,0,0,0.5)]"
+          >
+            {/* Wide diagrams keep a legible size on phones and scroll
+                sideways instead of shrinking their labels to nothing. */}
+            <div className="overflow-x-auto [scrollbar-width:thin]">
+              {/* SVG: already vector — no optimizer needed, sharp at any size. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={block.src}
+                alt={block.alt}
+                loading="lazy"
+                className="block h-auto w-full min-w-[760px]"
+              />
+            </div>
+          </div>
+          <figcaption className="mt-5 grid gap-2 text-muted sm:grid-cols-12">
+            <span className="data pt-1 text-accent sm:col-span-2">
+              Diagram
+              <span className="ml-2 text-muted sm:hidden">· scroll →</span>
+            </span>
+            {block.caption && (
+              <span className="max-w-2xl text-[1.02rem] leading-relaxed text-pretty sm:col-span-10">
+                {block.caption}
+              </span>
+            )}
+          </figcaption>
+        </figure>
+      );
+
+    case "mobile":
+      return (
+        <div>
+          {(block.eyebrow || block.title) && (
+            <Reveal className="mb-12 max-w-3xl">
+              {block.eyebrow && <Eyebrow>{block.eyebrow}</Eyebrow>}
+              {block.title && (
+                <h2 className="serif mt-5 text-[clamp(2rem,4vw,3.75rem)] leading-[1.04] tracking-tight text-balance">
+                  {block.title}
+                </h2>
+              )}
+            </Reveal>
+          )}
+          <div className="-mx-(--gutter) flex snap-x snap-mandatory gap-6 overflow-x-auto px-(--gutter) pb-4 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-3 sm:gap-8 sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
+            {block.items.map((item, i) => (
+              <figure
+                key={item.src}
+                data-reveal=""
+                style={{ "--i": i } as CSSProperties}
+                className="w-[68%] shrink-0 snap-center sm:w-auto"
+              >
+                <PhoneFrame className="mx-auto max-w-[19rem]">
+                  {item.video ? (
+                    <LoopVideo
+                      src={item.video}
+                      poster={item.src}
+                      alt={item.alt}
+                      sizes="(min-width: 640px) 19rem, 68vw"
+                    />
+                  ) : (
+                    <Image
+                      src={item.src}
+                      alt={item.alt}
+                      fill
+                      sizes="(min-width: 640px) 19rem, 68vw"
+                      className="object-cover object-top"
+                    />
+                  )}
+                </PhoneFrame>
+                {item.caption && (
+                  <figcaption className="data mt-4 text-center text-muted">
+                    {item.caption}
+                  </figcaption>
+                )}
+              </figure>
+            ))}
+          </div>
+        </div>
+      );
+
     case "stats":
-      return <StatsRow items={block.items} />;
+      return (
+        <Reveal>
+          <StatsRow items={block.items} />
+        </Reveal>
+      );
 
     case "features":
       return (
         <div>
           {(block.eyebrow || block.title) && (
-            <div className="mb-10 max-w-3xl">
-              {block.eyebrow && <p className="eyebrow">{block.eyebrow}</p>}
+            <Reveal className="mb-12 max-w-3xl">
+              {block.eyebrow && <Eyebrow>{block.eyebrow}</Eyebrow>}
               {block.title && (
-                <h2 className="display mt-4 text-3xl text-balance sm:text-4xl">
+                <h2 className="serif mt-5 text-[clamp(2rem,4vw,3.75rem)] leading-[1.04] tracking-tight text-balance">
                   {block.title}
                 </h2>
               )}
-            </div>
+            </Reveal>
           )}
-          <div className="grid gap-4 sm:grid-cols-2">
-            {block.items.map((item) => (
-              <div
+          <div className="grid border-t border-line-strong sm:grid-cols-2">
+            {block.items.map((item, i) => (
+              <Reveal
                 key={item.title}
-                className="glass-soft rounded-xl p-6 transition-[transform,border-color] duration-300 ease-out-strong sm:p-7 hover-device:hover:-translate-y-0.5 hover-device:hover:border-white/20"
+                stagger={i % 2}
+                className="border-b border-line py-8 sm:odd:pr-10 sm:even:border-l sm:even:pl-10"
               >
-                <h3 className="font-semibold text-foreground">{item.title}</h3>
-                <p className="mt-2 leading-relaxed text-muted">{item.body}</p>
-              </div>
+                <span className="data text-accent">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="caps mt-4 text-[1.3rem] leading-tight">{item.title}</h3>
+                <p className="mt-3 leading-relaxed text-muted text-pretty">{item.body}</p>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -235,72 +395,35 @@ function Block({ block }: { block: CaseStudyBlock }) {
 
     case "stack":
       return (
-        <div className="grid gap-3">
+        <div>
+          <Reveal className="label flex items-center justify-between border-b border-line-strong pb-4">
+            <span>Stack</span>
+            <span className="text-muted">Why each piece</span>
+          </Reveal>
           {block.items.map((item) => (
-            <div
+            <Reveal
               key={item.name}
-              className="glass-soft grid gap-2 rounded-xl p-6 transition-[border-color] duration-300 ease-out-strong md:grid-cols-12 md:gap-6 hover-device:hover:border-accent/30"
+              className="grid gap-2 border-b border-line py-6 md:grid-cols-12 md:gap-6"
             >
-              <h3 className="font-semibold text-foreground md:col-span-4">
-                <span className="mr-3 inline-block h-2.5 w-2.5 rounded-full bg-accent align-middle" />
-                {item.name}
-              </h3>
-              <p className="leading-relaxed text-muted md:col-span-8">
-                {item.why}
-              </p>
-            </div>
+              <h3 className="caps text-[1.15rem] md:col-span-5">{item.name}</h3>
+              <p className="leading-relaxed text-muted md:col-span-7">{item.why}</p>
+            </Reveal>
           ))}
         </div>
       );
 
     case "quote":
       return (
-        <blockquote className="max-w-4xl border-l-2 border-accent pl-6">
-          <p className="display text-2xl text-balance sm:text-3xl">
-            “{block.text}”
-          </p>
-        </blockquote>
+        <Reveal>
+          <blockquote className="serif max-w-5xl text-[clamp(2rem,4.4vw,4.4rem)] italic leading-[1.05] text-balance">
+            <span className="text-accent">&ldquo;</span>
+            {block.text}
+            <span className="text-accent">&rdquo;</span>
+          </blockquote>
+        </Reveal>
       );
 
     default:
       return null;
   }
-}
-
-export function NextProject({ project }: { project: Project }) {
-  return (
-    <section className="border-t border-border py-16 sm:py-24">
-      <Container>
-        <Link href={`/work/${project.slug}`} className="group block">
-          <span className="eyebrow">Next case study</span>
-          {/* Cinematic handoff — the next project's cover with its title
-              riding the scrim, so momentum carries between case studies. */}
-          <div className="relative mt-6">
-            <MediaFrame
-              src={project.image}
-              alt={`${project.title} preview`}
-              label={project.title}
-              ratio="aspect-[16/10] sm:aspect-[21/9]"
-              scrim
-              zoomOnHover
-            />
-            {/* Local gradient stronger than the frame scrim — bright covers
-                (e.g. photography-led storefronts) would otherwise wash the
-                title out. */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-4 bg-linear-to-t from-background/90 via-background/45 to-transparent p-6 pt-24 sm:p-10 sm:pt-28">
-              <h2 className="display text-3xl transition-colors group-hover:text-accent sm:text-5xl md:text-6xl">
-                {project.title}
-              </h2>
-              <ArrowRight className="h-7 w-7 shrink-0 transition-transform duration-300 ease-out-strong group-hover:translate-x-2 sm:h-9 sm:w-9" />
-            </div>
-            <CursorCta>
-              Open case study
-              <ArrowRight className="h-3.5 w-3.5" />
-            </CursorCta>
-          </div>
-          <p className="mt-4 max-w-xl text-muted">{project.tagline}</p>
-        </Link>
-      </Container>
-    </section>
-  );
 }

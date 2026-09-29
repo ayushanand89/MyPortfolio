@@ -1,31 +1,28 @@
 /**
- * Page-load dive intro. Pure CSS (see `.intro-*` in globals.css): a glossy
- * tile with a circular hole scales in with the wordmark, holds a beat, then
- * scales up massively so the viewer "dives" through the hole — the hole is
- * filled with the page background colour, so the overlay fade that follows is
- * an invisible seam straight into the homepage, where the hero headline rises
- * in sync (see the `intro-sync` class set by the inline script in layout.tsx).
+ * First-visit curtain. Pure CSS (see `.intro-*` in globals.css), so it plays
+ * before hydration: a 00→100 counter and rule run while the name rises out of
+ * its clip edge, then the sheet lifts away with its bottom edge rounding —
+ * straight into the hero, whose entrance is held by `--hero-delay` to land as
+ * the curtain clears.
  *
- * Transform/opacity only (compositor-composited), works with no JS, removes
- * itself after playing, and is hidden entirely under reduced motion. Lives in
- * the root layout, so it plays once per full page load — not on client
- * navigations, which don't remount the layout.
+ * Shown only when the pre-paint script in layout.tsx sets `html.intro-play`
+ * (first homepage load of a browser session, motion allowed); otherwise it's
+ * `display: none` and costs nothing.
  */
 export function Intro() {
   return (
-    <div className="intro-curtain" aria-hidden="true">
-      <div className="intro-stage">
-        <div className="intro-tile">
-          <span className="intro-hole" />
-        </div>
-        <div className="intro-text">
-          <span className="intro-eyebrow">Full-Stack Developer</span>
-          <span className="intro-word">
-            <span>
-              Ayush Anand<span className="text-accent">.</span>
-            </span>
+    <div className="intro" aria-hidden="true">
+      <div className="intro-sheet">
+        <span className="intro-name display">
+          <span>
+            Ayush Anand<span className="text-signal">.</span>
           </span>
-        </div>
+        </span>
+        <span className="intro-bar" />
+        <span className="intro-count" />
+        <span className="intro-role label text-[#9d978b]">
+          Full-stack developer — Delhi
+        </span>
       </div>
     </div>
   );

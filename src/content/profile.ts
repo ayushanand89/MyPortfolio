@@ -5,6 +5,8 @@ export const profile = {
   role: "Full-Stack Developer",
   // Editorial hero statement
   headline: "I build premium websites & full-stack products.",
+  // Short hero lede — the long intro lives in metadata and the About chapter.
+  lede: "Freelance full-stack developer. Websites, web apps and dashboards for startups, creators and businesses — from idea to launch.",
   intro:
     "Freelance full-stack developer. I design and build premium websites, web apps and dashboards — from idea to launch — for startups, creators and businesses. Also a Software Developer at ClanFlare, where I build a Community-as-a-Service platform.",
   location: "Delhi, India",

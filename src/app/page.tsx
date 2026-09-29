@@ -1,5 +1,4 @@
 import { Hero } from "@/components/sections/hero";
-import { Marquee } from "@/components/marquee";
 import { About } from "@/components/sections/about";
 import { SelectedWork } from "@/components/sections/selected-work";
 import { Services } from "@/components/sections/services";
@@ -9,17 +8,22 @@ import { Testimonials } from "@/components/sections/testimonials";
 import { Contact } from "@/components/sections/contact";
 
 /**
- * Narrative spine: identity → evidence → capability → method → proof →
- * trust → conversion. Work sits above Services because shipped products are
- * a stronger opener than claims.
+ * Narrative spine: work → identity → capability → method → proof → trust →
+ * conversion. The projects lead — the strongest evidence comes first. Each
+ * chapter is a sheet (ink / paper / signal) that slides over the one before.
+ *
+ * The hero pins inside `#top`, so the Work sheet (with the red tape on its
+ * seam) slides up over it. `#top` is the non-sticky wrapper so anchors and
+ * scroll offsets measure correctly.
  */
 export default function Home() {
   return (
-    <main>
-      <Hero />
-      <Marquee />
+    <main id="main">
+      <div id="top" className="relative">
+        <Hero />
+        <SelectedWork />
+      </div>
       <About />
-      <SelectedWork />
       <Services />
       <Process />
       <Credibility />

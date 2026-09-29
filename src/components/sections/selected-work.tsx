@@ -1,55 +1,48 @@
 import { flagshipProjects } from "@/content/projects";
-import {
-  Container,
-  Reveal,
-  Section,
-  SectionHeader,
-} from "@/components/primitives";
-import { FlagshipCard } from "@/components/project-card";
-import { ShowcaseCard } from "@/components/showcase-card";
-import {
-  ParallaxWatermark,
-  ScrollApproach,
-  StackPanel,
-} from "@/components/motion-fx";
+import { Container, SectionHeader } from "@/components/primitives";
+import { ProjectFeature } from "@/components/project-card";
+import { Marquee } from "@/components/marquee";
 
+const years = flagshipProjects.map((p) => Number(p.year));
+const span = `${Math.min(...years)}—${Math.max(...years)}`;
+const liveCount = flagshipProjects.filter((p) => p.live).length;
+
+/**
+ * 01 — Work, the "screening room". A paper sheet that slides up over the
+ * pinned hero with the red tape across its seam. Each project gets a full
+ * chapter: its real site playing in browser chrome, the mobile version beside
+ * it, and a readable spec with the two actions that matter.
+ */
 export function SelectedWork() {
   return (
-    <Section id="work" variant="spacious">
-      <ParallaxWatermark text="Work" align="right" />
-      <Container wide>
-        <Reveal>
-          <SectionHeader
-            index="02"
-            eyebrow="Selected work"
-            title="Products, built end to end."
-          />
-        </Reveal>
+    <section
+      id="work"
+      data-surface="paper"
+      className="relative z-10 rounded-t-(--sheet-radius) pb-[calc(5rem+var(--sheet-radius))] pt-28 shadow-[0_-40px_80px_-30px_rgba(0,0,0,0.6)] sm:pb-[calc(7rem+var(--sheet-radius))] sm:pt-40"
+    >
+      {/* The tape is wider than the viewport and tilted; clip it on x only so
+          it can still straddle the seam without widening the page. */}
+      <div className="absolute inset-x-0 top-0 z-20 -translate-y-1/2 overflow-x-clip">
+        <Marquee />
+      </div>
 
-        {/* Sticky stack: each card pins a little lower than the last, so they
-            pile with a peeking edge as you scroll — on mobile and desktop alike.
-            Cards are `solid` so the stacked ones don't bleed through. The 1rem
-            increment (not more) keeps the media-first cards' bottoms above the
-            fold on laptop viewports; padding is compact-first and only opens up
-            on screens with real vertical room (`tall`). */}
-        <div className="mt-4">
-          {flagshipProjects.map((project, i) => (
-            <StackPanel
-              key={project.slug}
-              className="sticky"
-              top={`calc(5rem + ${i * 1}rem)`}
-            >
-              <div className="pb-6 sm:pb-8">
-                <ScrollApproach>
-                  <ShowcaseCard solid className="p-6 sm:tall:p-9" glow={520}>
-                    <FlagshipCard project={project} index={i} />
-                  </ShowcaseCard>
-                </ScrollApproach>
-              </div>
-            </StackPanel>
-          ))}
-        </div>
+      <Container>
+        <SectionHeader
+          index="01"
+          eyebrow="Selected work"
+          meta={`${String(flagshipProjects.length).padStart(2, "0")} case studies · ${liveCount} live · ${span}`}
+          title={["Products, built", <em key="e">end to end.</em>]}
+          className="mb-6 sm:mb-10"
+        />
+        {flagshipProjects.map((project, i) => (
+          <ProjectFeature
+            key={project.slug}
+            project={project}
+            index={i}
+            total={flagshipProjects.length}
+          />
+        ))}
       </Container>
-    </Section>
+    </section>
   );
 }

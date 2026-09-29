@@ -1,23 +1,27 @@
-import Link from "next/link";
-import { Container } from "@/components/primitives";
+import { ButtonLink, Container, Lines } from "@/components/primitives";
 
 export default function NotFound() {
   return (
-    <main className="flex min-h-screen items-center">
+    <main
+      id="main"
+      data-surface="ink"
+      className="flex min-h-svh items-end pb-16 pt-32 sm:pb-24"
+    >
       <Container>
-        <p className="eyebrow">Error 404</p>
-        <h1 className="display mt-5 text-5xl sm:text-7xl">
-          Page not found.
-        </h1>
-        <p className="mt-6 max-w-md text-lg text-muted">
-          The page you were looking for doesn&apos;t exist or has moved.
+        <p className="label text-muted">
+          <span className="text-accent">(404)</span>&nbsp;&nbsp;Page not found
         </p>
-        <Link
-          href="/"
-          className="link-underline mt-8 inline-block text-foreground"
-        >
-          ← Back home
-        </Link>
+        <Lines
+          as="h1"
+          className="display mt-8 text-[clamp(4rem,19vw,19rem)]"
+          lines={["404", <em key="e">Lost the plot.</em>]}
+        />
+        <div className="mt-10 flex flex-wrap items-end justify-between gap-6 border-t border-line pt-6">
+          <p className="max-w-md text-muted">
+            The page you were looking for doesn&apos;t exist or has moved.
+          </p>
+          <ButtonLink href="/">Back home</ButtonLink>
+        </div>
       </Container>
     </main>
   );

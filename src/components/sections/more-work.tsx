@@ -1,6 +1,6 @@
 import { secondaryProjects } from "@/content/projects";
 import { Container, Reveal, SectionHeader } from "@/components/primitives";
-import { SecondaryCard } from "@/components/project-card";
+import { SecondaryCard } from "@/components/secondary-card";
 
 export function MoreWork() {
   return (

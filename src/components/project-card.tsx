@@ -1,250 +1,204 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { ArrowRight, ArrowUpRight, Github } from "lucide-react";
-import type { Project, Stat } from "@/content/projects";
+import Image from "next/image";
+import { useRef, type CSSProperties } from "react";
+import { ArrowUpRight, Github } from "lucide-react";
+import type { Project } from "@/content/projects";
 import { projectImages } from "@/content/projects";
-import { MediaFrame, Reveal } from "@/components/primitives";
-import { CursorCta, Parallax } from "@/components/motion-fx";
-import { cn } from "@/lib/utils";
+import { BrowserFrame, PhoneFrame } from "@/components/device-frames";
+import { LoopVideo } from "@/components/loop-video";
+import { ButtonLink, Lines } from "@/components/primitives";
+import { TransitionLink, useNavigate } from "@/components/transition-link";
+import { useScrollProgress } from "@/lib/motion";
 
 /**
- * Media-first case-study panel: meta bar → cinematic full-width screenshot →
- * editorial spec sheet (story left, proof rail right). Lives inside the
- * sticky-stack ShowcaseCards in `selected-work.tsx`.
+ * "Screening room" feature for one project: the real site playing in browser
+ * chrome (a recording of the live site), its mobile version in a phone that
+ * drifts against it on scroll, and a readable spec — story, proof, stack,
+ * and the two actions that matter (case study / visit live). Clicking the
+ * screen morphs it into the case study's live embed (view transition).
  */
-export function FlagshipCard({
+export function ProjectFeature({
   project,
   index,
+  total,
 }: {
   project: Project;
   index: number;
+  total: number;
 }) {
-  const router = useRouter();
-  const [hovering, setHovering] = useState(false);
-  const num = String(index + 1).padStart(2, "0");
+  const navigate = useNavigate();
+  const frameRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const phoneRef = useRef<HTMLDivElement>(null);
+  const pad = (n: number) => String(n).padStart(2, "0");
   const caseHref = `/work/${project.slug}`;
   const rail = project.cardStats ?? project.stats?.slice(0, 3) ?? [];
+  const desktop = project.media?.desktop;
+  const mobile = project.media?.mobile;
+  const host = project.live?.host ?? "private client build";
 
-  // Nested links handle their own clicks; stop the bubble so the whole-card
-  // click doesn't hijack (or double-fire) them.
-  const stop = (e: React.MouseEvent) => e.stopPropagation();
+  // The phone drifts against the browser as the stage passes — one transform.
+  useScrollProgress(stageRef, [[0, 1], [1, 0]], (p) => {
+    const el = phoneRef.current;
+    if (el) el.style.transform = `translate3d(0, ${((0.5 - p) * 90).toFixed(1)}px, 0)`;
+  });
 
   return (
-    // Whole-card click is a pointer convenience only — keyboard and assistive
-    // tech use the real links inside (title, "Read case study").
-    <div
-      className="group h-full cursor-pointer"
-      onClick={() => router.push(caseHref)}
-      onPointerEnter={() => setHovering(true)}
-      onPointerLeave={() => setHovering(false)}
-    >
-      {/* Meta bar — index, domain, year · role. The only scroll-linked reveal
-          in the card: it sits at the top, so it finishes before the pin. */}
-      <Reveal>
-        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-          <div className="flex items-baseline gap-4">
-            <span
-              aria-hidden
-              className="font-display text-4xl font-extrabold leading-none text-transparent sm:text-5xl"
-              style={{
-                WebkitTextStroke:
-                  "1px color-mix(in srgb, var(--foreground) 28%, transparent)",
-              }}
-            >
-              {num}
-            </span>
-            {project.domain && (
-              <span className="eyebrow">{project.domain}</span>
-            )}
-          </div>
-          <span className="eyebrow">
-            {project.year}
-            {project.role ? ` · ${project.role}` : ""}
+    <article className="relative border-t border-line-strong py-16 first:border-t-0 first:pt-4 sm:py-24">
+      <div className="label flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+        <span className="flex items-center gap-3">
+          <span className="data text-accent">
+            {pad(index + 1)}/{pad(total)}
           </span>
-        </div>
-      </Reveal>
-
-      {/* Media — dominates the card. Cinematic crop widens with the viewport;
-          the svh clamp keeps the whole card above the fold on short laptops
-          (aspect-ratio is a preferred size, so max-height simply crops via the
-          absolutely-positioned object-cover imgs — no distortion, no CLS). */}
-      <div className="relative isolate mt-5">
-        <MediaFrame
-          src={project.image}
-          images={projectImages(project)}
-          active={hovering}
-          alt={`${project.title} preview`}
-          label={`${project.title} — cover`}
-          ratio="aspect-[4/3] sm:aspect-[16/9] xl:aspect-[21/9]"
-          className="w-full max-h-[40svh]"
-          scrim
-          zoomOnHover
-        />
-        <CursorCta>
-          Open case study
-          <ArrowRight className="h-3.5 w-3.5" />
-        </CursorCta>
+          {project.domain}
+        </span>
+        <span className="flex items-center gap-4 text-muted">
+          {project.year}
+          {project.live ? (
+            <span className="flex items-center gap-2 rounded-full bg-fg px-2.5 py-1 text-bg">
+              <span className="ping relative h-1.5 w-1.5 rounded-full bg-[#28c840]" />
+              Live
+            </span>
+          ) : (
+            <span className="rounded-full border border-line-strong px-2.5 py-1">
+              Client · NDA
+            </span>
+          )}
+        </span>
       </div>
 
-      {/* Spec sheet. Deliberately NO scroll-linked reveals below the media:
-          view() timelines freeze when the sticky card pins, which would strand
-          these rows half-revealed on short viewports. */}
-      <div className="mt-6 grid gap-8 md:grid-cols-12">
-        <div className="md:col-span-7">
-          <h3 className="display text-2xl sm:text-3xl md:tall:text-4xl">
-            <Link
-              href={caseHref}
-              onClick={stop}
-              className="transition-colors group-hover:text-accent"
-            >
-              {project.title}
-            </Link>
-          </h3>
+      <TransitionLink href={caseHref} morphRef={frameRef} className="group/title mt-6 block w-fit">
+        <Lines
+          as="h3"
+          lines={[project.title]}
+          className="display text-[clamp(1.9rem,9vw,7rem)] transition-colors duration-500 group-hover/title:text-accent"
+        />
+      </TransitionLink>
+      <p className="serif mt-3 max-w-3xl text-[clamp(1.35rem,2.3vw,2.1rem)] italic leading-[1.15] text-muted text-pretty">
+        {project.tagline}
+      </p>
 
-          <p className="mt-3 line-clamp-2 max-w-xl text-muted text-balance sm:line-clamp-none">
-            {project.story ?? project.tagline}
-          </p>
-
-          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm">
-            <Link
-              href={caseHref}
-              onClick={stop}
-              className="inline-flex items-center gap-2 font-medium text-foreground"
-            >
-              Read case study
-              <ArrowRight className="h-4 w-4 transition-transform duration-200 ease-out-strong hover-device:group-hover:translate-x-1" />
-            </Link>
-            {project.links.demo && (
-              <a
-                href={project.links.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={stop}
-                className="link-underline inline-flex items-center gap-1.5 text-muted hover:text-foreground"
-              >
-                Live site
-                <ArrowUpRight className="h-4 w-4" />
-              </a>
+      {/* The screening: browser (desktop recording) + phone (mobile). */}
+      <div ref={stageRef} className="relative mt-10 sm:mt-14">
+        <div
+          data-reveal="window"
+          data-cursor="View case"
+          className="cursor-pointer rounded-[14px] lg:w-[84%]"
+          onClick={() => navigate(caseHref, frameRef.current)}
+        >
+          <BrowserFrame
+            ref={frameRef}
+            host={host}
+            live={!!project.live}
+            note="Private"
+          >
+            {desktop ? (
+              <LoopVideo
+                src={desktop.video}
+                poster={desktop.poster}
+                alt={`${project.title} — recording of the live site`}
+                sizes="(min-width: 1600px) 1300px, (min-width: 1024px) 80vw, 94vw"
+              />
+            ) : (
+              <StillsReel images={projectImages(project)} alt={project.title} />
             )}
-            {project.links.github && (
-              <a
-                href={project.links.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={stop}
-                className="link-underline inline-flex items-center gap-1.5 text-muted hover:text-foreground"
+          </BrowserFrame>
+        </div>
+
+        {mobile && (
+          <div
+            ref={phoneRef}
+            aria-hidden
+            className="absolute bottom-[-6%] right-0 hidden w-[20%] max-w-[17rem] will-change-transform md:block lg:right-[2%]"
+          >
+            <div data-reveal="" style={{ "--d": "250ms" } as CSSProperties}>
+              <PhoneFrame>
+                <LoopVideo
+                  src={mobile.video}
+                  poster={mobile.poster}
+                  alt=""
+                  sizes="(min-width: 1024px) 17rem, 20vw"
+                />
+              </PhoneFrame>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Spec — story, proof, stack, actions. */}
+      <div className="mt-12 grid gap-10 sm:mt-16 lg:grid-cols-12 lg:gap-12">
+        <p className="text-[1.1rem] leading-relaxed text-pretty lg:col-span-5">
+          {project.story ?? project.summary}
+        </p>
+        <dl className="lg:col-span-4">
+          {rail.map((s) => (
+            <div
+              key={s.label}
+              className="flex items-baseline justify-between gap-4 border-t border-line-strong py-3 last:border-b"
+            >
+              <dt className="data text-muted">{s.label}</dt>
+              <dd className="display whitespace-nowrap text-[clamp(1.5rem,2.2vw,2.1rem)] text-accent">
+                {s.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+        <div className="flex flex-col gap-5 lg:col-span-3">
+          <div className="flex flex-wrap gap-3">
+            <ButtonLink href={caseHref} className="grow justify-between sm:grow-0 lg:grow">
+              Read case study
+            </ButtonLink>
+            {project.live && (
+              <ButtonLink
+                href={project.live.url}
+                external
+                variant="ghost"
+                className="grow justify-between sm:grow-0 lg:grow"
               >
-                <Github className="h-4 w-4" />
-                Code
-              </a>
+                Visit live site
+              </ButtonLink>
             )}
           </div>
-        </div>
-
-        {/* Proof rail — real stats and the stack, separated by a hairline. */}
-        <div className="md:col-span-5 md:border-l md:border-border md:pl-8">
-          <dl>
-            {rail.map((stat, i) => (
-              <ProofStat key={stat.label} stat={stat} hideOnMobile={i === 2} />
-            ))}
-          </dl>
-          <ul className="mt-5 flex flex-wrap gap-2">
-            {project.tags.map((tag) => (
-              <TechBadge key={tag} tag={tag} />
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ProofStat({
-  stat,
-  hideOnMobile = false,
-}: {
-  stat: Stat;
-  hideOnMobile?: boolean;
-}) {
-  return (
-    <div
-      className={cn(
-        "flex items-baseline justify-between gap-4 border-b border-border/70 py-2.5 first:pt-0 last:border-b-0 last:pb-0",
-        // Third stat yields on phones — the card height budget is tighter there.
-        hideOnMobile ? "hidden sm:flex" : "flex",
-      )}
-    >
-      <dt className="text-xs text-muted">{stat.label}</dt>
-      <dd className="display text-xl text-accent sm:text-2xl">{stat.value}</dd>
-    </div>
-  );
-}
-
-function TechBadge({ tag }: { tag: string }) {
-  return (
-    <li className="inline-flex items-center gap-1.5 rounded-full border border-border px-2.5 py-1 font-mono text-[0.68rem] tracking-wide text-muted">
-      <span aria-hidden className="h-1 w-1 rounded-full bg-accent" />
-      {tag}
-    </li>
-  );
-}
-
-export function SecondaryCard({ project }: { project: Project }) {
-  return (
-    <div className="group flex flex-col">
-      <Parallax amount={28} zoom={0.08}>
-        <MediaFrame
-          src={project.image}
-          alt={`${project.title} preview`}
-          label={project.title}
-          ratio="aspect-[16/10]"
-          className="transition-transform duration-500 ease-out-strong hover-device:group-hover:scale-[1.03]"
-        />
-      </Parallax>
-
-      <div className="mt-5">
-        <h3 className="text-xl font-semibold">{project.title}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-muted">
-          {project.summary}
-        </p>
-
-        <ul className="mt-4 flex flex-wrap gap-2">
-          {project.tags.map((tag) => (
-            <li
-              key={tag}
-              className="rounded-full border border-border px-2.5 py-0.5 font-mono text-[0.65rem] tracking-wide text-faint"
-            >
-              {tag}
-            </li>
-          ))}
-        </ul>
-
-        <div className="mt-5 flex items-center gap-5 text-sm">
-          {project.links.demo && (
-            <a
-              href={project.links.demo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link-underline inline-flex items-center gap-1.5 text-foreground"
-            >
-              Live <ArrowUpRight className="h-4 w-4" />
-            </a>
-          )}
+          <p className="data leading-relaxed text-muted">{project.tags.join(" / ")}</p>
           {project.links.github && (
             <a
               href={project.links.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="link-underline inline-flex items-center gap-1.5 text-muted hover:text-foreground"
+              className="label link-underline inline-flex w-fit items-center gap-1.5"
             >
-              <Github className="h-4 w-4" /> Code
+              <Github aria-hidden className="h-3.5 w-3.5" /> Source code
+              <ArrowUpRight aria-hidden className="h-3 w-3" />
             </a>
           )}
         </div>
       </div>
+    </article>
+  );
+}
+
+/** For projects without a public site: their screenshots crossfading with a
+ *  slow push-in (pure CSS, the same loop as the hero reel). */
+function StillsReel({ images, alt }: { images: string[]; alt: string }) {
+  return (
+    <div className="absolute inset-0">
+      {images.slice(0, 3).map((src, i) => (
+        <div
+          key={src}
+          className="reel-item absolute inset-0 overflow-hidden"
+          style={{ "--r": i } as CSSProperties}
+        >
+          <Image
+            src={src}
+            alt={i === 0 ? `${alt} — screenshot` : ""}
+            fill
+            sizes="(min-width: 1600px) 1300px, (min-width: 1024px) 80vw, 94vw"
+            className="object-cover object-top"
+          />
+        </div>
+      ))}
     </div>
   );
 }
+

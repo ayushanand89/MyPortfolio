@@ -1,109 +1,84 @@
 "use client";
 
-import { useRef } from "react";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useReducedMotion,
-  type MotionValue,
-} from "framer-motion";
+import { useRef, type CSSProperties } from "react";
 import { profile } from "@/content/profile";
-import { Container, Reveal, Section } from "@/components/primitives";
-import { ParallaxGlow } from "@/components/motion-fx";
-import { Scramble } from "@/components/scramble";
+import { Reveal } from "@/components/primitives";
+import { useScrollProgress } from "@/lib/motion";
 
 /**
- * The identity chapter. The site's signature scroll-scrubbed manifesto —
- * each word rises from dim to lit as the section travels through the
- * viewport — reworded in first person, beside an editorial portrait and a
- * hairline row of verifiable facts. Reduced motion shows everything lit and
- * still.
+ * 02 — the identity chapter, an ink sheet over Work. The manifesto pins to
+ * the viewport and lights word by word as you scroll: one `--p` custom
+ * property on the paragraph, each word derives its opacity in CSS. Below it,
+ * the facts as a hairline spec sheet. Reduced motion shows everything lit.
  */
 export function About() {
-  const ref = useRef<HTMLParagraphElement>(null);
-  const reduce = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 0.85", "end 0.55"],
+  const pinRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLParagraphElement>(null);
+  // Measured on the non-sticky pin track; written to the paragraph only.
+  useScrollProgress(pinRef, [[0, 0.45], [1, 1]], (p) => {
+    textRef.current?.style.setProperty("--p", p.toFixed(4));
   });
 
   const words = profile.about.manifesto.split(" ");
+  const highlights = profile.about.highlights as readonly string[];
 
   return (
-    <Section id="about" variant="spacious">
-      <ParallaxGlow />
-      <Container className="relative">
-        <span aria-hidden className="chapter-num reveal">
-          01
-        </span>
-        <p className="eyebrow mb-8">
-          <span className="eyebrow-accent">01 — </span>
-          <Scramble text="About" />
-        </p>
+    <section
+      id="about"
+      data-surface="ink"
+      className="relative -mt-(--sheet-radius) rounded-t-(--sheet-radius)"
+    >
+      <div ref={pinRef} className="relative h-[200svh]">
+        <div className="sticky top-0 flex h-svh flex-col justify-center">
+          <div className="gutter mx-auto w-full max-w-[1600px]">
+            <div className="label relative flex items-center justify-between pt-4">
+              <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-line-strong" />
+              <span>
+                <span className="text-accent">(02)&nbsp;&nbsp;</span>About
+              </span>
+              <span className="text-muted">Manifesto</span>
+            </div>
+            <p
+              ref={textRef}
+              className="manifesto serif mt-10 max-w-[24ch] text-[clamp(2.2rem,6.4vw,6.75rem)] leading-[0.98] tracking-tight sm:mt-14"
+              style={{ "--words": words.length + 3 } as CSSProperties}
+            >
+              {words.map((word, i) => {
+                const bare = word.replace(/[.,—'’]/g, "").toLowerCase();
+                return (
+                  <span
+                    key={i}
+                    style={{ "--w": i } as CSSProperties}
+                    className={
+                      highlights.includes(bare) ? "italic text-accent" : undefined
+                    }
+                  >
+                    {word}{" "}
+                  </span>
+                );
+              })}
+            </p>
+          </div>
+        </div>
+      </div>
 
-        <p
-          ref={ref}
-          className="display max-w-4xl text-3xl leading-[1.15] text-balance sm:text-4xl md:text-5xl"
-        >
-          {words.map((word, i) => {
-            const start = i / words.length;
-            const end = start + 1 / words.length;
-            return (
-              <Word
-                key={i}
-                progress={scrollYProgress}
-                range={[start, end]}
-                reduce={reduce}
-              >
-                {word}
-              </Word>
-            );
-          })}
-        </p>
-
-        {/* Verifiable facts, hairline-divided — identity backed by proof
-            within the first chapter. */}
-        <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-2 lg:grid-cols-4">
+      {/* Verifiable facts — identity backed by proof. */}
+      <div className="gutter mx-auto max-w-[1600px] pb-[calc(6rem+var(--sheet-radius))] sm:pb-[calc(9rem+var(--sheet-radius))]">
+        <dl className="grid grid-cols-1 border-t border-line-strong sm:grid-cols-2 lg:grid-cols-4">
           {profile.about.facts.map((fact, i) => (
-            <Reveal key={fact.label} stagger={i} className="h-full">
-              <div className="h-full bg-background px-5 py-5">
-                <span className="eyebrow">{fact.label}</span>
-                <p className="mt-2 text-sm text-foreground/90">{fact.value}</p>
-              </div>
+            <Reveal
+              key={fact.label}
+              stagger={i}
+              className="border-b border-line py-6 sm:pr-8 lg:border-b-0 lg:border-r lg:py-8 lg:pl-6 lg:first:pl-0 lg:last:border-r-0"
+            >
+              <dt className="data text-muted">
+                0{i + 1} — {fact.label}
+              </dt>
+              <dd className="caps mt-4 text-[1.35rem] leading-tight">{fact.value}</dd>
             </Reveal>
           ))}
-        </div>
-      </Container>
-    </Section>
-  );
-}
-
-function Word({
-  progress,
-  range,
-  reduce,
-  children,
-}: {
-  progress: MotionValue<number>;
-  range: [number, number];
-  reduce: boolean | null;
-  children: string;
-}) {
-  const opacity = useTransform(progress, range, [0.12, 1]);
-  const bare = children.replace(/[.,—'’]/g, "").toLowerCase();
-  const highlight = (
-    profile.about.highlights as readonly string[]
-  ).includes(bare);
-
-  return (
-    <span className="relative mr-[0.28em] inline-block">
-      <motion.span
-        style={{ opacity: reduce ? 1 : opacity }}
-        className={highlight ? "text-accent" : undefined}
-      >
-        {children}
-      </motion.span>
-    </span>
+        </dl>
+      </div>
+    </section>
   );
 }

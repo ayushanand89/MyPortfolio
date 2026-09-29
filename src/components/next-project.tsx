@@ -9,7 +9,7 @@ import { BrowserFrame } from "@/components/device-frames";
 import { TransitionLink } from "@/components/transition-link";
 
 /**
- * Next case study — an ink sheet over the article. Its cover morphs into the
+ * Next case study - an ink sheet over the article. Its cover morphs into the
  * next page's hero cover, so momentum carries between case studies.
  */
 export function NextProject({

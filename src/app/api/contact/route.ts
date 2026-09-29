@@ -4,10 +4,10 @@ import { profile } from "@/content/profile";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
- * Contact form endpoint — relays the message via Resend's REST API (no SDK).
+ * Contact form endpoint - relays the message via Resend's REST API (no SDK).
  * Returns 503 when RESEND_API_KEY is unset so the client can fall back to
  * mailto. Env: RESEND_API_KEY (required), CONTACT_TO_EMAIL / CONTACT_FROM_EMAIL
- * (optional — default to the profile email and Resend's onboarding sender).
+ * (optional - default to the profile email and Resend's onboarding sender).
  */
 export async function POST(req: Request) {
   let body: unknown;
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     unknown
   >;
 
-  // Honeypot — humans never see the "company" field; pretend success to bots.
+  // Honeypot - humans never see the "company" field; pretend success to bots.
   if (typeof company === "string" && company.trim()) {
     return NextResponse.json({ ok: true });
   }
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       to: [process.env.CONTACT_TO_EMAIL ?? profile.email],
       reply_to: email,
       subject: `Project enquiry from ${name.trim()}`,
-      text: `${message.trim()}\n\n— ${name.trim()} · ${email}`,
+      text: `${message.trim()}\n\nFrom ${name.trim()} · ${email}`,
     }),
   });
 

@@ -9,7 +9,7 @@ let navigated = false;
 
 /**
  * Entrance for client navigations that DIDN'T go through a view transition
- * (back/forward, unsupported browsers) — a light CSS rise. When a view
+ * (back/forward, unsupported browsers) - a light CSS rise. When a view
  * transition is running (`html[data-vt]`), it already animates the swap.
  */
 export default function Template({ children }: { children: React.ReactNode }) {

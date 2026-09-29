@@ -19,8 +19,8 @@ import { smoothScrollToHash } from "@/lib/scroll";
  * `navigate()` snapshots the current page, pushes the new route with
  * `scroll: false`, and holds the transition open until <RouteTransitions/>
  * sees the new pathname commit, lands the scroll, and releases it. The browser
- * then morphs the one element named `cover` in each state — the clicked
- * project image → the case-study cover (`[data-vt-cover]`) — while the new
+ * then morphs the one element named `cover` in each state - the clicked
+ * project image → the case-study cover (`[data-vt-cover]`) - while the new
  * page wipes up over the old one.
  *
  * Only ONE element per state may carry the name: before starting, every
@@ -45,7 +45,7 @@ function takeIntent() {
   return i;
 }
 
-/** Instant, state-safe jump — also clears any in-flight Lenis scroll and
+/** Instant, state-safe jump - also clears any in-flight Lenis scroll and
  *  re-measures the (new) page height before landing. */
 function jumpTo(target: string | number) {
   if (typeof target === "string") {
@@ -140,7 +140,7 @@ export function useNavigate() {
 
 /**
  * Lands each client navigation: the new page at its top (or #hash target), or
- * a back/forward entry at its saved position — then releases a pending view
+ * a back/forward entry at its saved position - then releases a pending view
  * transition once the destination cover has decoded, so the morph never lands
  * in an empty frame.
  */

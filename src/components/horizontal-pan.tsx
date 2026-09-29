@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 
 /**
- * Pins a section and pans its track sideways as the user scrolls vertically —
+ * Pins a section and pans its track sideways as the user scrolls vertically -
  * the scroll-hijacked horizontal gallery. The vertical scroll distance is
  * derived from the track's real overflow past the viewport (measured against
  * the clipping container, resize-aware), so it always lands exactly at the end.

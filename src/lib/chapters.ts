@@ -9,7 +9,7 @@ export const CHAPTERS = [
   { id: "services", n: "03", label: "Services" },
   { id: "process", n: "04", label: "Process" },
   { id: "experience", n: "05", label: "Track record" },
-  { id: "testimonials", n: "—", label: "Voices" },
+  { id: "testimonials", n: "", label: "Voices" },
   { id: "contact", n: "06", label: "Contact" },
 ] as const;
 
@@ -36,7 +36,7 @@ function recompute() {
   }
 }
 
-/** (Re)attach to the current page's sections — call on route changes. */
+/** (Re)attach to the current page's sections - call on route changes. */
 export function observeChapters() {
   io?.disconnect();
   visible.clear();

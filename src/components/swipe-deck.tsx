@@ -10,6 +10,7 @@ import {
 import { m, useMotionValue, useTransform, type PanInfo } from "framer-motion";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/lib/use-media-query";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 type Dir = 1 | -1;
@@ -23,9 +24,11 @@ const lean = [0, -2.6, 2.1, 0];
  * A physical stack of cards. Drag the top card sideways (or use the arrows /
  * ← → keys) and it's flung off with its release velocity, then tucks back in
  * at the bottom of the deck while the next card springs forward. Cards
- * behind are inert. Render state: `live` = on show (the top card, plus the
- * one beneath while the top is being dragged off it) — media should play;
- * `warm` = top or next — media may preload.
+ * behind are inert. On phones the deck is "calm": a flat, tight stack (no
+ * fanned lean, no wiggle hint - a quiet "Swipe" label instead) and a gentler
+ * drag tilt. Render state: `live` = on show (the top card, plus the
+ * one beneath while the top is being dragged off it) - media should play;
+ * `warm` = top or next - media may preload.
  */
 export function SwipeDeck<T>({
   items,
@@ -35,6 +38,7 @@ export function SwipeDeck<T>({
   className,
   controlsClassName,
   counter = true,
+  tabs,
 }: {
   items: readonly T[];
   keyOf: (item: T) => string;
@@ -43,9 +47,13 @@ export function SwipeDeck<T>({
   className?: string;
   controlsClassName?: string;
   counter?: boolean;
+  /** Label per card: renders an index of every card above the deck (so it's
+   *  obvious there are more before you reach the controls), tap to jump. */
+  tabs?: (item: T) => string;
 }) {
   const n = items.length;
   const reduce = useReducedMotion();
+  const calm = !useMediaQuery("(min-width: 768px)");
   const deckRef = useRef<HTMLDivElement>(null);
   const [order, setOrder] = useState(() => items.map((_, i) => i));
   const [flying, setFlying] = useState<{ i: number; dir: Dir } | null>(null);
@@ -54,6 +62,8 @@ export function SwipeDeck<T>({
   const [dragging, setDragging] = useState(false);
   const width = () => deckRef.current?.offsetWidth ?? 400;
   const top = order[0];
+  // The card on show — mid-fling that's already the one coming up.
+  const shown = flying ? order[1] : top;
 
   const fling = (dir: Dir) => {
     if (flying || n < 2) return;
@@ -66,6 +76,16 @@ export function SwipeDeck<T>({
     setOrder((o) => [o[n - 1], ...o.slice(0, n - 1)]);
     if (!reduce) setEntering({ i: last, dir: -1 });
   };
+  // Jump straight to a card: next/previous reuse the fling/back motions;
+  // anything further is brought to the top and slides in from its side.
+  const goTo = (i: number) => {
+    if (flying || i === top) return;
+    const pos = order.indexOf(i);
+    if (pos === 1) return fling(-1);
+    if (pos === n - 1) return back();
+    setOrder((o) => [...o.slice(pos), ...o.slice(0, pos)]);
+    if (!reduce) setEntering({ i, dir: i > top ? 1 : -1 });
+  };
   const landed = (i: number) => {
     if (flying?.i !== i) return;
     setOrder((o) => [...o.slice(1), o[0]]);
@@ -76,7 +96,7 @@ export function SwipeDeck<T>({
   // leans left and springs back, so "this swipes" needs no instructions.
   useEffect(() => {
     const el = deckRef.current;
-    if (!el || reduce || n < 2) return;
+    if (!el || reduce || calm || n < 2) return;
     const io = new IntersectionObserver(
       ([e]) => {
         if (!e.isIntersecting) return;
@@ -87,7 +107,7 @@ export function SwipeDeck<T>({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [reduce, n]);
+  }, [reduce, calm, n]);
 
   const onKey = (e: KeyboardEvent) => {
     if (e.key === "ArrowRight") fling(-1);
@@ -106,6 +126,47 @@ export function SwipeDeck<T>({
       onKeyDown={onKey}
       className={className}
     >
+      {tabs && (
+        <div
+          role="tablist"
+          aria-label={label}
+          className="mb-5 grid gap-3"
+          style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}
+        >
+          {items.map((item, i) => {
+            const on = i === shown;
+            return (
+              <button
+                key={keyOf(item)}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                onClick={() => goTo(i)}
+                className="relative flex flex-col items-start justify-start pb-3 text-left"
+              >
+                <span className="data block text-[0.65rem] text-muted">{pad(i + 1)}</span>
+                <span
+                  className={cn(
+                    "label mt-1 block leading-tight transition-colors duration-500",
+                    on ? "text-fg" : "text-muted",
+                  )}
+                >
+                  {tabs(item)}
+                </span>
+                <span aria-hidden className="absolute inset-x-0 bottom-0 h-px bg-line-strong" />
+                {on && (
+                  <m.span
+                    aria-hidden
+                    layoutId={`${label}-tab`}
+                    transition={settle}
+                    className="absolute inset-x-0 -bottom-px h-[3px] rounded-full bg-accent"
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
       <div ref={deckRef} className="grid grid-cols-[minmax(0,1fr)] pb-8">
         {items.map((item, i) => {
           let depth = order.indexOf(i);
@@ -120,6 +181,7 @@ export function SwipeDeck<T>({
               flying={flying?.i === i ? flying.dir : 0}
               entering={entering?.i === i ? entering.dir : 0}
               nudge={nudge && i === top}
+              calm={calm}
               width={width}
               onSwipe={fling}
               onLanded={() => landed(i)}
@@ -140,22 +202,23 @@ export function SwipeDeck<T>({
 
       <div className={cn("flex items-center justify-between gap-4", controlsClassName)}>
         <div className="flex items-center gap-3">
-          {counter && (
+          {counter && !tabs && (
             <span className="data tabular-nums text-muted" aria-live="polite">
-              <span className="text-fg">{pad(top + 1)}</span> / {pad(n)}
+              <span className="text-fg">{pad(shown + 1)}</span> / {pad(n)}
             </span>
           )}
-          <span className="flex gap-1.5" aria-hidden>
+          <span className={cn("flex gap-1.5", tabs && "hidden")} aria-hidden>
             {items.map((item, i) => (
               <span
                 key={keyOf(item)}
                 className={cn(
                   "h-1.5 rounded-full transition-[width,background-color] duration-500 ease-out-strong",
-                  i === top ? "w-6 bg-accent" : "w-1.5 bg-line-strong",
+                  i === shown ? "w-6 bg-accent" : "w-1.5 bg-line-strong",
                 )}
               />
             ))}
           </span>
+          <span className="label text-muted md:hidden">Swipe</span>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -187,6 +250,7 @@ function DeckCard({
   flying,
   entering,
   nudge,
+  calm,
   width,
   onSwipe,
   onLanded,
@@ -203,6 +267,7 @@ function DeckCard({
   flying: Dir | 0;
   entering: Dir | 0;
   nudge: boolean;
+  calm: boolean;
   width: () => number;
   onSwipe: (dir: Dir) => void;
   onLanded: () => void;
@@ -213,7 +278,8 @@ function DeckCard({
   children: ReactNode;
 }) {
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-420, 0, 420], [-14, 0, 14]);
+  const tilt = calm ? 8 : 14;
+  const rotate = useTransform(x, [-420, 0, 420], [-tilt, 0, tilt]);
   const dragged = useRef(false);
   const d = Math.max(0, depth);
   const hidden = d > 2;
@@ -248,9 +314,9 @@ function DeckCard({
       style={{ zIndex: flying ? count + 1 : count - d, transformOrigin: "50% 100%" }}
       initial={false}
       animate={{
-        y: d * 14,
-        scale: 1 - d * 0.045,
-        rotate: lean[Math.min(d, 3)],
+        y: d * (calm ? 10 : 14),
+        scale: 1 - d * (calm ? 0.035 : 0.045),
+        rotate: calm ? 0 : lean[Math.min(d, 3)],
         opacity: hidden ? 0 : 1,
       }}
       transition={settle}

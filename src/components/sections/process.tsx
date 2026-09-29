@@ -9,7 +9,7 @@ import { useMediaQuery } from "@/lib/use-media-query";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 /**
- * 04 — Process, as four poster words (the inspo's pillars). A rail fills as
+ * 04 - Process, as four poster words (the inspo's pillars). A rail fills as
  * the chapter scrolls through; each step's word goes from outline to solid as
  * the rail reaches it, and the step in progress burns signal red. The rail is
  * one `--p` custom property; steps only re-render when a threshold is crossed.
@@ -113,7 +113,7 @@ export function Process() {
                   </div>
                   <h3
                     className={cn(
-                      "display mt-5 text-[clamp(1.9rem,8.8vw,3rem)] md:text-[clamp(2.6rem,11vw,5.5rem)] lg:text-[6.2vw] min-[1600px]:text-[6.2rem] transition-[color,-webkit-text-stroke-color] duration-700 ease-out-strong [-webkit-text-stroke-width:1px]",
+                      "display mt-5 text-[clamp(1.9rem,8.8vw,3rem)] md:text-[clamp(2.6rem,11vw,5.5rem)] lg:text-[min(6.2vw,6.2rem)] transition-[color,-webkit-text-stroke-color] duration-700 ease-out-strong [-webkit-text-stroke-width:1px]",
                       on
                         ? now
                           ? "text-signal [-webkit-text-stroke-color:transparent]"

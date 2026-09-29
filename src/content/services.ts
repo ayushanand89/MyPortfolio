@@ -19,7 +19,7 @@ export const services: Service[] = [
     title: "Websites & Portfolios",
     keyword: "that convert",
     description:
-      "Premium marketing sites, brand and portfolio sites — fast, responsive and built to convert visitors into customers.",
+      "Premium marketing sites, brand and portfolio sites: fast, responsive and built to convert visitors into customers.",
   },
   {
     icon: "rocket",
@@ -33,7 +33,7 @@ export const services: Service[] = [
     title: "E-commerce",
     keyword: "that sells",
     description:
-      "Storefronts with catalog, cart, secure checkout and payments — plus an admin suite to actually run the store.",
+      "Storefronts with catalog, cart, secure checkout and payments, plus an admin suite to actually run the store.",
   },
   {
     icon: "layout-dashboard",
@@ -47,13 +47,13 @@ export const services: Service[] = [
     title: "Full-Stack Web Apps",
     keyword: "idea to launch",
     description:
-      "Idea to launch — auth, databases, REST APIs, integrations and deployment, engineered to be secure and correct.",
+      "Idea to launch: auth, databases, REST APIs, integrations and deployment, engineered to be secure and correct.",
   },
   {
     icon: "gauge",
     title: "Redesigns & Performance",
     keyword: "faster, sharper",
     description:
-      "Rebuilds of dated or slow sites — modern UI, Core-Web-Vitals tuning, SEO structure and API integration.",
+      "Rebuilds of dated or slow sites: modern UI, Core-Web-Vitals tuning, SEO structure and API integration.",
   },
 ];

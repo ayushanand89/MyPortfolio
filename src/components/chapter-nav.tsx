@@ -13,23 +13,39 @@ import { cn } from "@/lib/utils";
 
 const spring = { type: "spring", stiffness: 420, damping: 36, mass: 0.8 } as const;
 
-/** Shown once past the hero, hidden again as the footer lifts into view. */
-function useChapterNavVisible() {
+/**
+ * Shown once past the hero, hidden again as the footer lifts into view.
+ * `autoHide` also tucks it away while you scroll down (reading) and brings
+ * it back on scroll up - the same rule as the top nav, so both bars come and
+ * go together, like the iOS Safari toolbar.
+ */
+function useChapterNavVisible(autoHide = false) {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     let pastHero = false;
     let atEnd = false;
-    const update = () => setVisible(pastHero && !atEnd);
+    let down = false;
+    let lastY = scroll.y;
+    const update = () => setVisible(pastHero && !atEnd && !down);
     const check = () => {
-      const next = scroll.y > window.innerHeight * 0.7;
-      if (next !== pastHero) {
-        pastHero = next;
-        update();
+      const y = scroll.y;
+      const next = y > window.innerHeight * 0.7;
+      let changed = next !== pastHero;
+      pastHero = next;
+      const dy = y - lastY;
+      if (autoHide && Math.abs(dy) >= 6) {
+        const nextDown = dy > 0 && y > 160;
+        if (nextDown !== down) {
+          down = nextDown;
+          changed = true;
+        }
+        lastY = y;
       }
+      if (changed) update();
     };
     const off = scroll.subscribe(check);
     check();
-    // #page-end marks the bottom of the content sheet — once it's on screen
+    // #page-end marks the bottom of the content sheet - once it's on screen
     // the footer (which has its own links) is being uncovered.
     const end = document.getElementById("page-end");
     const io = end
@@ -43,7 +59,7 @@ function useChapterNavVisible() {
       off();
       io?.disconnect();
     };
-  }, []);
+  }, [autoHide]);
   return visible;
 }
 
@@ -60,20 +76,20 @@ function useJump() {
 }
 
 /**
- * Phone/tablet chapter dock — a thumb-reach pill at the bottom showing where
+ * Phone/tablet chapter dock - a thumb-reach pill at the bottom showing where
  * you are (chapter + page progress ring). Tap it and it morphs (a framer
  * layout animation) into a jump list for every chapter.
  */
 export function ChapterDock() {
   const pathname = usePathname();
-  const visible = useChapterNavVisible();
+  const visible = useChapterNavVisible(true);
   const activeId = useActiveChapter();
   const jump = useJump();
   const [open, setOpen] = useState(false);
   const ringRef = useRef<SVGCircleElement>(null);
   const active = CHAPTERS.find((c) => c.id === activeId) ?? CHAPTERS[0];
 
-  // Page progress ring — written straight to the SVG, no re-renders.
+  // Page progress ring - written straight to the SVG, no re-renders.
   useEffect(() => {
     const C = 2 * Math.PI * 9;
     const paint = () => {
@@ -126,7 +142,7 @@ export function ChapterDock() {
               transition={spring}
               style={{ borderRadius: open ? 26 : 999 }}
               className={cn(
-                "pointer-events-auto overflow-hidden bg-ink text-paper shadow-[0_18px_50px_-12px_rgba(0,0,0,0.6)] ring-1 ring-white/10",
+                "pointer-events-auto overflow-hidden bg-ink text-paper shadow-[0_12px_32px_-14px_rgba(0,0,0,0.55)] ring-1 ring-white/10",
                 open ? "w-full max-w-sm" : "w-auto",
               )}
             >
@@ -213,9 +229,9 @@ export function ChapterDock() {
                   aria-label={`Chapter ${active.n} ${active.label}. Open chapter list`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex h-12 items-center gap-3 pl-2 pr-4"
+                  className="flex h-11 items-center gap-2.5 pl-1.5 pr-3.5"
                 >
-                  <svg viewBox="0 0 24 24" className="h-8 w-8 -rotate-90" aria-hidden>
+                  <svg viewBox="0 0 24 24" className="h-7 w-7 -rotate-90" aria-hidden>
                     <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeOpacity="0.15" strokeWidth="2.2" />
                     <circle
                       ref={ringRef}
@@ -231,7 +247,7 @@ export function ChapterDock() {
                     />
                   </svg>
                   <span className="data text-signal">{active.n}</span>
-                  <span className="relative block h-5 w-[9.25rem] overflow-hidden text-left">
+                  <span className="relative block h-5 w-[8.3rem] overflow-hidden text-left">
                     <AnimatePresence mode="popLayout" initial={false}>
                       <m.span
                         key={active.id}
@@ -239,13 +255,13 @@ export function ChapterDock() {
                         animate={{ y: 0 }}
                         exit={{ y: "-110%" }}
                         transition={spring}
-                        className="caps absolute inset-0 whitespace-nowrap text-[0.95rem] leading-5"
+                        className="caps absolute inset-0 whitespace-nowrap text-[0.85rem] leading-5"
                       >
                         {active.label}
                       </m.span>
                     </AnimatePresence>
                   </span>
-                  <ChevronUp className="h-4 w-4 text-[#9d978b]" aria-hidden />
+                  <ChevronUp className="h-3.5 w-3.5 text-[#9d978b]" aria-hidden />
                 </m.button>
               )}
             </m.div>
@@ -257,7 +273,7 @@ export function ChapterDock() {
 }
 
 /**
- * Desktop chapter rail — a quiet column of ticks on the right edge. The active
+ * Desktop chapter rail - a quiet column of ticks on the right edge. The active
  * tick stretches (shared layout animation); hovering the rail fans out every
  * label. Difference-blended so it reads on ink, paper and signal alike.
  */

@@ -11,7 +11,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   );
 
   // Respect reduced-motion: skip the smooth-scroll layer entirely. Read
-  // synchronously on purpose — root-mode Lenis renders no DOM, so there's no
+  // synchronously on purpose - root-mode Lenis renders no DOM, so there's no
   // hydration mismatch, and flipping after hydration would remount the app.
   if (reduce) return <>{children}</>;
 

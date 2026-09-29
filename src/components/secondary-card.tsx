@@ -5,7 +5,7 @@ import type { Project } from "@/content/projects";
 import { MediaFrame } from "@/components/media-frame";
 import { Parallax } from "@/components/motion-fx";
 
-/** Compact card for secondary projects. (Currently unused — kept on purpose.) */
+/** Compact card for secondary projects. (Currently unused - kept on purpose.) */
 export function SecondaryCard({ project }: { project: Project }) {
   return (
     <div className="group flex flex-col">

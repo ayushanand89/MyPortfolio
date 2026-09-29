@@ -5,7 +5,7 @@ import { useCallback, useSyncExternalStore } from "react";
 /**
  * Hydration-safe media query (same pattern as `useReducedMotion`): the server
  * snapshot is `false`, so markup matches during hydration and re-renders once
- * with the real value. Use for behaviour, not for first-paint layout — CSS
+ * with the real value. Use for behaviour, not for first-paint layout - CSS
  * breakpoints handle that.
  */
 export function useMediaQuery(query: string) {

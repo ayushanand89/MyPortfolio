@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
@@ -9,7 +9,7 @@ import { useReducedMotion } from "@/lib/use-reduced-motion";
  * A recording of a real site, playing like a live screen. The poster is a
  * next/image (responsive AVIF/WebP) so the frame is never empty; the muted
  * loop only starts fetching as it approaches the viewport, plays while it's
- * actually visible, and pauses the moment it isn't — so only on-screen videos
+ * actually visible, and pauses the moment it isn't - so only on-screen videos
  * ever decode. It fades in on `playing` (no black flash). Reduced motion or
  * Data Saver: the poster alone.
  */
@@ -23,6 +23,7 @@ export function LoopVideo({
   deferIdle = true,
   playing: controlled,
   warm = false,
+  posterMedia,
 }: {
   src?: string;
   poster: string;
@@ -39,6 +40,10 @@ export function LoopVideo({
   /** Fetch even while `playing` is false, so it can start instantly later
    *  (e.g. the card under the top of a swipe deck). */
   warm?: boolean;
+  /** Only load the poster where this media query matches (high priority
+   *  there); elsewhere a 1×1 blank stands in. For posters that are hidden at
+   *  some sizes - a display:none eager image would still download. */
+  posterMedia?: string;
 }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLVideoElement>(null);
@@ -119,14 +124,18 @@ export function LoopVideo({
 
   return (
     <div className={cn("absolute inset-0 overflow-hidden", className)}>
-      <Image
-        src={poster}
-        alt={alt}
-        fill
-        sizes={sizes}
-        preload={priority}
-        className="object-cover object-top"
-      />
+      {posterMedia ? (
+        <MediaPoster src={poster} alt={alt} sizes={sizes} media={posterMedia} />
+      ) : (
+        <Image
+          src={poster}
+          alt={alt}
+          fill
+          sizes={sizes}
+          preload={priority}
+          className="object-cover object-top"
+        />
+      )}
       {allowed && (
         <video
           ref={ref}
@@ -144,5 +153,37 @@ export function LoopVideo({
         />
       )}
     </div>
+  );
+}
+
+const BLANK = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
+/** Art-directed poster: the optimised srcset only applies where `media`
+ *  matches; other viewports resolve to the inline blank and fetch nothing. */
+function MediaPoster({
+  src,
+  alt,
+  sizes,
+  media,
+}: {
+  src: string;
+  alt: string;
+  sizes: string;
+  media: string;
+}) {
+  const { props } = getImageProps({
+    src,
+    alt,
+    fill: true,
+    sizes,
+    fetchPriority: "high",
+    loading: "eager",
+  });
+  const { srcSet, sizes: srcSizes, ...img } = props;
+  return (
+    <picture>
+      <source media={media} srcSet={srcSet} sizes={srcSizes} />
+      <img {...img} src={BLANK} className="object-cover object-top" />
+    </picture>
   );
 }

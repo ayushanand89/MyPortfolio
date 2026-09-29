@@ -1,7 +1,7 @@
 /* ---------------------------------------------------------------------------
    Project + case-study content model.
    Flagship projects carry a `blocks` array that the case-study page renders.
-   Screenshots are referenced by path under /public/work/<slug>/ — drop the real
+   Screenshots are referenced by path under /public/work/<slug>/ - drop the real
    exported images there; until then ImageBlock renders a labelled placeholder.
 --------------------------------------------------------------------------- */
 
@@ -28,9 +28,9 @@ export type CaseStudyBlock =
     }
   | { type: "stack"; items: { name: string; why: string }[] }
   | { type: "quote"; text: string }
-  /** A vector diagram (SVG) — stays sharp at any size; scrolls on phones. */
+  /** A vector diagram (SVG) - stays sharp at any size; scrolls on phones. */
   | { type: "diagram"; src: string; alt: string; caption?: string }
-  /** A row of phone frames — mobile recordings and/or screenshots. */
+  /** A row of phone frames - mobile recordings and/or screenshots. */
   | {
       type: "mobile";
       eyebrow?: string;
@@ -49,10 +49,10 @@ export type ProjectLinks = {
 
 export type Project = {
   slug: string;
-  /** The real, public site — drives the LIVE badge, "Visit live site" and the
+  /** The real, public site - drives the LIVE badge, "Visit live site" and the
    *  click-to-launch embed on the case study (both hosts allow framing). */
   live?: { url: string; host: string };
-  /** Recordings of the live site (captured with the scratchpad CDP tool —
+  /** Recordings of the live site (captured with the scratchpad CDP tool -
    *  see public/work/README.md). */
   media?: {
     desktop?: Recording;
@@ -61,15 +61,17 @@ export type Project = {
     reel?: string;
   };
   title: string;
+  /** Compact name for tight spots (the phone project index). */
+  shortTitle?: string;
   tagline: string;
-  /** One proof-forward line for the card — what the project demonstrates,
+  /** One proof-forward line for the card - what the project demonstrates,
    *  pulled from its real stats. */
   outcome?: string;
   /** Truthful product-domain label for the card meta bar,
    *  e.g. "Health-tech · Recovery platform". */
   domain?: string;
   /** Two-line problem→result story for the card spec sheet. Restructured from
-   *  real case-study copy — never invented claims. */
+   *  real case-study copy - never invented claims. */
   story?: string;
   /** Curated stats for the card's proof rail; cards fall back to
    *  `stats.slice(0, 3)` when omitted. */
@@ -97,14 +99,14 @@ export const projects: Project[] = [
     outcome: "30+ routes · 17 tables · RLS on every one · shipped solo",
     domain: "Health-tech · Recovery platform",
     story:
-      "People fighting gambling addiction need private help at 2am — and counselors need context to give it. One security-first data model serves both sides: bookings, payments, recovery tools and an anonymous community, with authorization enforced in the database itself.",
+      "People fighting gambling addiction need private help at 2am, and counselors need context to give it. One security-first data model serves both sides: bookings, payments, recovery tools and an anonymous community, with authorization enforced in the database itself.",
     cardStats: [
       { value: "30+", label: "App routes" },
       { value: "17", label: "Postgres tables" },
       { value: "RLS", label: "On every table" },
     ],
     summary:
-      "A two-sided product — a patient app for recovery and a counselor workspace for care — sharing one security-first data model. Bookings, payments, recovery tools, and an anonymous community, designed and built end to end.",
+      "A two-sided product: a patient app for recovery and a counselor workspace for care, sharing one security-first data model. Bookings, payments, recovery tools, and an anonymous community, designed and built end to end.",
     year: "2026",
     role: "Designed & built end to end",
     category: "flagship",
@@ -126,7 +128,7 @@ export const projects: Project[] = [
     },
     hasCaseStudy: true,
     cover: {
-      eyebrow: "Case study — designed & built end to end",
+      eyebrow: "Case study · designed & built end to end",
       title: "Quit Gambling",
       subtitle:
         "A full-stack recovery platform for gambling addiction. Bookings · payments · recovery tools · an anonymous community.",
@@ -142,19 +144,19 @@ export const projects: Project[] = [
         type: "section",
         eyebrow: "The problem",
         title: "Recovery is hard. Doing it alone is harder.",
-        body: "Gambling addiction is isolating and stigmatised — people need a private way to find help, track progress, and reach someone at 2am. So I built one, end to end.",
+        body: "Gambling addiction is isolating and stigmatised. People need a private way to find help, track progress, and reach someone at 2am. So I built one, end to end.",
       },
       {
         type: "section",
         eyebrow: "The product",
         title: "One platform, two sides.",
-        body: "A patient app for recovery, and a counselor workspace for care — sharing one secure data model.",
+        body: "A patient app for recovery and a counselor workspace for care, sharing one secure data model.",
       },
       {
         type: "image",
         src: "/work/quit-gambling/counselors.jpg",
         alt: "Quit Gambling counselor directory",
-        caption: "Counselors — licensed in India, vetted in person, each with languages, specialty and live ratings.",
+        caption: "Counselors: licensed in India, vetted in person, each with languages, specialty and live ratings.",
       },
       {
         type: "features",
@@ -175,23 +177,23 @@ export const projects: Project[] = [
           },
           {
             title: "Book in two taps",
-            body: "Real-time availability paid from a prepaid session wallet — credits deducted atomically, so a slot can never be oversold.",
+            body: "Real-time availability paid from a prepaid session wallet. Credits are deducted atomically, so a slot can never be oversold.",
           },
           {
             title: "A community that's been there",
-            body: "Post openly or fully anonymous — author identity is stripped at the database, not just hidden in the UI.",
+            body: "Post openly or fully anonymous. Author identity is stripped at the database, not just hidden in the UI.",
           },
           {
             title: "A journal that's just yours",
-            body: "Private and visible only to you — a safe place to write through the hard days. Plus an SOS mode for the hardest moments.",
+            body: "Private and visible only to you: a safe place to write through the hard days. Plus an SOS mode for the hardest moments.",
           },
         ],
       },
       {
         type: "image",
         src: "/work/quit-gambling/toolkit.jpg",
-        alt: "The recovery toolkit — mood graph, streak, journal and SOS",
-        caption: "The space between sessions — a one-tap mood graph, a gambling-free streak, a private journal and an SOS for the urge that won't wait.",
+        alt: "The recovery toolkit: mood graph, streak, journal and SOS",
+        caption: "The space between sessions: a one-tap mood graph, a gambling-free streak, a private journal and an SOS for the urge that won't wait.",
       },
       {
         type: "mobile",
@@ -202,13 +204,13 @@ export const projects: Project[] = [
             src: "/work/quit-gambling/mobile.jpg",
             tint: "#f9f3e7",
             video: "/work/quit-gambling/mobile.mp4",
-            alt: "Quit Gambling on mobile — scrolling the live site",
+            alt: "Quit Gambling on mobile, scrolling the live site",
             caption: "The live site on a phone",
           },
           {
             src: "/work/quit-gambling/m-toolkit.jpg",
             tint: "#f5ecdd",
-            alt: "Mobile toolkit — mood graph",
+            alt: "Mobile toolkit: mood graph",
             caption: "Toolkit",
           },
           {
@@ -224,7 +226,7 @@ export const projects: Project[] = [
         src: "/work/quit-gambling/dashboard.jpg",
         narrow: true,
         alt: "Patient recovery dashboard",
-        caption: "Patient home — streak, daily check-in, mood, and next session at a glance.",
+        caption: "Patient home: streak, daily check-in, mood, and next session at a glance.",
       },
       {
         type: "features",
@@ -237,7 +239,7 @@ export const projects: Project[] = [
           },
           {
             title: "Scoped to their clients",
-            body: "A patient's intake, streaks and moods — and only for clients who booked them. Scoping is enforced by the database itself.",
+            body: "A patient's intake, streaks and moods, and only for clients who booked them. Scoping is enforced by the database itself.",
           },
         ],
       },
@@ -256,7 +258,7 @@ export const projects: Project[] = [
           },
           {
             title: "Privacy → enforced at serialization",
-            body: "Anonymous posts have their author nulled in a database view — the real name never crosses the wire.",
+            body: "Anonymous posts have their author nulled in a database view, so the real name never crosses the wire.",
           },
           {
             title: "Consistency → one source of truth",
@@ -267,8 +269,8 @@ export const projects: Project[] = [
       {
         type: "image",
         src: "/work/quit-gambling/pricing.jpg",
-        alt: "Care plans — one payment, months of support",
-        caption: "Care plans — one payment, no subscription; session credits are deducted atomically so a slot can never be oversold.",
+        alt: "Care plans: one payment, months of support",
+        caption: "Care plans: one payment, no subscription; session credits are deducted atomically so a slot can never be oversold.",
       },
       {
         type: "stack",
@@ -296,18 +298,19 @@ export const projects: Project[] = [
   {
     slug: "enterprise-ai-chatbot",
     title: "Enterprise AI Persona Chatbot",
+    shortTitle: "AI Chatbot",
     tagline: "A production RAG agent that talks like a real creator.",
     outcome: "2,000+ users · 95%+ persona adherence · ~20% lower latency",
     domain: "AI · Production RAG agent",
     story:
-      "His audience should talk to it like it's him — not a FAQ bot with his face on it. A versioned persona over two-tier retrieval answers 2,000+ users at 95%+ adherence, with human-posted alerts that can overrule the model.",
+      "His audience should talk to it like it's him, not a FAQ bot with his face on it. A versioned persona over two-tier retrieval answers 2,000+ users at 95%+ adherence, with human-posted alerts that can overrule the model.",
     cardStats: [
       { value: "2,000+", label: "Users" },
       { value: "95%+", label: "Persona adherence" },
       { value: "~20%", label: "Lower latency" },
     ],
     summary:
-      "A persona AI with a versioned personality, a knowledge base built from a creator's entire video library, and live alerts that can overrule the model. Built for a client — names, branding and screenshots anonymized; the engineering is real.",
+      "A persona AI with a versioned personality, a knowledge base built from a creator's entire video library, and live alerts that can overrule the model. Built for a client: names, branding and screenshots anonymized; the engineering is real.",
     year: "2026",
     role: "Designed & built end to end",
     association: "Associated with ClanFlare",
@@ -331,7 +334,7 @@ export const projects: Project[] = [
     },
     hasCaseStudy: true,
     cover: {
-      eyebrow: "Case study — built for a client · anonymized",
+      eyebrow: "Case study · built for a client · anonymized",
       title: "An AI that talks like a real creator.",
       subtitle:
         "A production RAG agent with a versioned personality, a knowledge base from his whole video library, and live alerts that can overrule the model.",
@@ -347,7 +350,7 @@ export const projects: Project[] = [
         type: "section",
         eyebrow: "The goal",
         title: "Not a FAQ bot with his face on it.",
-        body: "His audience should talk to it like it's him — and not be able to tell the difference.",
+        body: "His audience should talk to it like it's him, and not be able to tell the difference.",
       },
       {
         type: "features",
@@ -356,11 +359,11 @@ export const projects: Project[] = [
         items: [
           {
             title: "A thin interface",
-            body: "A Next.js chat UI — render the answer, embed the source clip, stay out of the way.",
+            body: "A Next.js chat UI: render the answer, embed the source clip, stay out of the way.",
           },
           {
             title: "A separate brain",
-            body: "An n8n agent that retrieves, wears the persona, calls the model, and enforces alerts — the whole agent lives behind one webhook.",
+            body: "An n8n agent that retrieves, wears the persona, calls the model, and enforces alerts. The whole agent lives behind one webhook.",
           },
           {
             title: "Purpose-built memory",
@@ -372,24 +375,24 @@ export const projects: Project[] = [
         type: "image",
         src: "/work/enterprise-ai-chatbot/answer.jpg",
         alt: "Chat interface answering in the creator's voice, with the source clip and live alerts",
-        caption: "Answers in his voice — short, blunt, Hinglish — with the exact clip it's drawing from, and the desk's live alerts alongside.",
+        caption: "Answers in his voice (short, blunt, Hinglish) with the exact clip it's drawing from, and the desk's live alerts alongside.",
       },
       {
         type: "section",
         eyebrow: "Live alerts",
         title: "Where a human sets the truth.",
-        body: "An admin posts a market alert; the agent treats it as reality and overrules its own take. Stale-but-confident is the enemy — a fresh, human-posted alert beats the model's own opinion.",
+        body: "An admin posts a market alert; the agent treats it as reality and overrules its own take. Stale-but-confident is the enemy: a fresh, human-posted alert beats the model's own opinion.",
       },
       {
         type: "image",
         src: "/work/enterprise-ai-chatbot/alert-override.jpg",
         alt: "An answer deferring to a live desk alert on Gold",
-        caption: "A human-posted alert on Gold is live, so the persona defers to it — the alert outranks the model's earlier read.",
+        caption: "A human-posted alert on Gold is live, so the persona defers to it. The alert outranks the model's earlier read.",
       },
       {
         type: "image",
         src: "/work/enterprise-ai-chatbot/admin.jpg",
-        alt: "The alert console — post, schedule and expire desk alerts",
+        alt: "The alert console: post, schedule and expire desk alerts",
         caption: "The alert console: post, schedule and expire. Every write is checked against an admin secret on the server.",
       },
       {
@@ -413,7 +416,7 @@ export const projects: Project[] = [
           },
           {
             title: "Tone modulation",
-            body: "Patient teacher for learners; firm only with shortcut-seekers — tuned to 95% adherence.",
+            body: "Patient teacher for learners; firm only with shortcut-seekers, tuned to 95% adherence.",
           },
         ],
       },
@@ -432,19 +435,19 @@ export const projects: Project[] = [
           },
           {
             title: "Redis sessions",
-            body: "Per-user state, isolated — 2,000+ conversations that never cross wires, with sub-millisecond reads.",
+            body: "Per-user state, isolated: 2,000+ conversations that never cross wires, with sub-millisecond reads.",
           },
         ],
       },
       {
         type: "diagram",
-        src: "/work/enterprise-ai-chatbot/rag-dilution.svg",
+        src: "/work/enterprise-ai-chatbot/rag-dilution-v2.svg",
         alt: "Semantic dilution: keyword search buries the right clip at rank 6; searching with the full question plus HyDE puts it first",
         caption: "Semantic dilution: repeated themes buried the one clip that answered the question. Searching with the full question plus a hypothetical answer (HyDE) put it on top.",
       },
       {
         type: "diagram",
-        src: "/work/enterprise-ai-chatbot/redis-sessions.svg",
+        src: "/work/enterprise-ai-chatbot/redis-sessions-v2.svg",
         alt: "One Redis key per user keeps each conversation's context isolated",
         caption: "One Redis key per user: a stateless app and agent pass the sessionId, so conversations stay isolated and reads stay fast.",
       },
@@ -457,7 +460,7 @@ export const projects: Project[] = [
             src: "/work/enterprise-ai-chatbot/mobile.jpg",
             tint: "#f7ead9",
             video: "/work/enterprise-ai-chatbot/mobile.mp4",
-            alt: "The chat on a phone — a scripted demo conversation",
+            alt: "The chat on a phone: a scripted demo conversation",
             caption: "The conversation",
           },
           {
@@ -500,18 +503,18 @@ export const projects: Project[] = [
   {
     slug: "barethreads",
     title: "BareThreads",
-    tagline: "A full-stack fashion e-commerce platform — built end to end.",
+    tagline: "A full-stack fashion e-commerce platform, built end to end.",
     outcome: "Storefront + admin · PayPal checkout · guest→user carts",
     domain: "E-commerce · Storefront + admin",
     story:
-      "Anyone can list products online; few stores feel like a brand and hold up underneath. A polished storefront and a role-gated admin suite share one secure serverless REST API — guest carts merge on sign-in, PayPal checkout runs end to end.",
+      "Anyone can list products online; few stores feel like a brand and hold up underneath. A polished storefront and a role-gated admin suite share one secure serverless REST API: guest carts merge on sign-in, PayPal checkout runs end to end.",
     cardStats: [
       { value: "2 sides", label: "Storefront + admin" },
       { value: "40+", label: "Products" },
       { value: "9", label: "Redux slices" },
     ],
     summary:
-      "A polished storefront for shoppers and an admin suite for the team, sharing one secure serverless REST API. Filterable catalog, guest→user carts, PayPal checkout, Google sign-in, and an admin dashboard — designed and engineered end to end.",
+      "A polished storefront for shoppers and an admin suite for the team, sharing one secure serverless REST API. Filterable catalog, guest→user carts, PayPal checkout, Google sign-in, and an admin dashboard, designed and engineered end to end.",
     year: "2024",
     role: "Designed & built end to end",
     category: "flagship",
@@ -536,10 +539,10 @@ export const projects: Project[] = [
     },
     hasCaseStudy: true,
     cover: {
-      eyebrow: "Case study — designed & built end to end",
+      eyebrow: "Case study · designed & built end to end",
       title: "BareThreads",
       subtitle:
-        "A full-stack fashion e-commerce platform — a React storefront and admin suite on a secure, serverless Express/MongoDB API.",
+        "A full-stack fashion e-commerce platform: a React storefront and admin suite on a secure, serverless Express/MongoDB API.",
     },
     stats: [
       { value: "2 sides", label: "Storefront + admin" },
@@ -552,20 +555,20 @@ export const projects: Project[] = [
         type: "section",
         eyebrow: "The problem",
         title: "Anyone can list products. Few feel like a brand.",
-        body: "I set out to build a real online store — premium on the surface, secure and correct underneath. So I designed and engineered the whole thing, end to end.",
+        body: "I set out to build a real online store: premium on the surface, secure and correct underneath. So I designed and engineered the whole thing, end to end.",
       },
       {
         type: "section",
         eyebrow: "The product",
         title: "One platform, two sides.",
-        body: "A polished storefront for shoppers and an admin suite for the team — sharing one secure REST API.",
+        body: "A polished storefront for shoppers and an admin suite for the team, sharing one secure REST API.",
       },
       {
         type: "image",
         src: "/work/barethreads/catalog.jpg",
         alt: "BareThreads storefront collection page",
         caption:
-          "Shop the edit — a filterable catalog by category, gender, size, colour, brand and price, with live sort and removable filter chips.",
+          "Shop the edit: a filterable catalog by category, gender, size, colour, brand and price, with live sort and removable filter chips.",
       },
       {
         type: "features",
@@ -586,7 +589,7 @@ export const projects: Project[] = [
           },
           {
             title: "Sign in, your way",
-            body: "Email & password or Continue with Google — both verified server-side, issuing the same secure session.",
+            body: "Email & password or Continue with Google, both verified server-side and issuing the same secure session.",
           },
         ],
       },
@@ -599,7 +602,7 @@ export const projects: Project[] = [
             src: "/work/barethreads/mobile.jpg",
             tint: "#151412",
             video: "/work/barethreads/mobile.mp4",
-            alt: "BareThreads on mobile — scrolling the live storefront",
+            alt: "BareThreads on mobile, scrolling the live storefront",
             caption: "The live storefront on a phone",
           },
           {
@@ -630,7 +633,7 @@ export const projects: Project[] = [
         items: [
           {
             title: "Full CRUD, role-gated",
-            body: "Manage products, orders and users behind admin-only routes — every write field-whitelisted on the server.",
+            body: "Manage products, orders and users behind admin-only routes, with every write field-whitelisted on the server.",
           },
           {
             title: "At a glance",
@@ -644,7 +647,7 @@ export const projects: Project[] = [
         narrow: true,
         alt: "BareThreads admin dashboard",
         caption:
-          "The admin dashboard — products, orders and users, all behind role-gated, admin-only routes.",
+          "The admin dashboard: products, orders and users, all behind role-gated, admin-only routes.",
       },
       {
         type: "features",
@@ -653,11 +656,11 @@ export const projects: Project[] = [
         items: [
           {
             title: "Serverless-safe data layer",
-            body: "A cached Mongoose connection is awaited inside each request, so the API connects reliably on Vercel's serverless runtime — fixing the cold-start failures that kill fire-and-forget connects.",
+            body: "A cached Mongoose connection is awaited inside each request, so the API connects reliably on Vercel's serverless runtime, fixing the cold-start failures that kill fire-and-forget connects.",
           },
           {
             title: "Auth, two ways",
-            body: "JWT in cross-site httpOnly cookies, plus Google sign-in verified server-side from an ID token — both issue the same session.",
+            body: "JWT in cross-site httpOnly cookies, plus Google sign-in verified server-side from an ID token. Both issue the same session.",
           },
           {
             title: "Authorization at the controller",
@@ -665,7 +668,7 @@ export const projects: Project[] = [
           },
           {
             title: "Correct commerce",
-            body: "Guest→user cart merge, server-computed ratings, discount pricing and stock validation — behind a consistent JSON error contract.",
+            body: "Guest→user cart merge, server-computed ratings, discount pricing and stock validation, behind a consistent JSON error contract.",
           },
         ],
       },
@@ -718,7 +721,7 @@ export function getProject(slug: string): Project | undefined {
 }
 
 /**
- * All images associated with a project — the cover first, then every image
+ * All images associated with a project - the cover first, then every image
  * used in its case study. Powers the hover carousel on project cards.
  */
 export function projectImages(p: Project): string[] {

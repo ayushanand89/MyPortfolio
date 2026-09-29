@@ -6,7 +6,7 @@ export type Recognition = {
 
 export const recognition: Recognition[] = [
   {
-    title: "TCS CodeVita 2024 — AIR 713",
+    title: "TCS CodeVita 2024 · AIR 713",
     detail: "Top 0.15% of 500,000+ participants worldwide.",
     meta: "2024",
   },
@@ -14,7 +14,7 @@ export const recognition: Recognition[] = [
     title: "Amazon ML Summer School",
     detail:
       "Selected from 61,000+ applicants (4.9% acceptance). Completed 8 advanced deep-learning modules and graduated in the top 10% of the cohort.",
-    meta: "Jul — Sept 2024",
+    meta: "Jul – Sept 2024",
   },
   {
     title: "500+ DSA problems solved",

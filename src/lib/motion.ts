@@ -4,13 +4,13 @@ import { useEffect, useRef, type RefObject } from "react";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 /**
- * A tiny scroll engine — the whole site's scroll-linked motion runs on ONE
+ * A tiny scroll engine - the whole site's scroll-linked motion runs on ONE
  * passive `scroll` listener. Browsers dispatch scroll events once per frame
  * (right before rAF), so subscribers update in the same frame the page moved:
  * no extra rAF hop, no lag. Works with Lenis (it drives native window scroll).
  *
  * Geometry is cached: elements are measured on mount, on resize and when the
- * document's height changes — never inside the per-frame path.
+ * document's height changes - never inside the per-frame path.
  */
 
 type Sub = () => void;
@@ -51,7 +51,7 @@ export const scroll = {
   get y() {
     return y;
   },
-  /** Scroll velocity in px/s — decays to 0 once scrolling stops. */
+  /** Scroll velocity in px/s - decays to 0 once scrolling stops. */
   get velocity() {
     return performance.now() - lastT > 120 ? 0 : velocity;
   },
@@ -64,7 +64,7 @@ export const scroll = {
   },
 };
 
-/** `[elementFraction, viewportFraction]` — "this point of the element meets
+/** `[elementFraction, viewportFraction]` - "this point of the element meets
  *  this line of the viewport" (0 = top, 1 = bottom), like framer's offsets. */
 export type Edge = [number, number];
 

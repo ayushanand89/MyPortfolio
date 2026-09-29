@@ -28,6 +28,6 @@ capture speed), and encodes with ffmpeg:
 
 Keep each desktop loop ≲ 2MB and mobile ≲ 1MB. End the timeline by scrolling
 back to the top so the loop is seamless. When a file's content changes, give
-it a **new name** (e.g. `answer-v2.jpg`) and update `projects.ts` — the image
+it a **new name** (e.g. `answer-v2.jpg`) and update `projects.ts` - the image
 optimizer and CDN caches are keyed by URL, so an overwritten file can keep
 serving the old picture.

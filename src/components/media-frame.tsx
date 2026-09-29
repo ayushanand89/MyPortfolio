@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
  * immediately, falling back to a labelled placeholder if it's missing or
  * errors.
  *
- * Entrance: a "window" reveal — the frame opens from a smaller window while
+ * Entrance: a "window" reveal - the frame opens from a smaller window while
  * the picture settles from an overscan (compositor-only transforms, driven by
  * the shared reveal observer). The frame's own className never changes after
  * mount, so React can't wipe the observer's `.is-in` class.
@@ -40,20 +40,20 @@ export function MediaFrame({
   label?: string;
   className?: string;
   ratio?: string;
-  /** Controlled hover — when set, the parent (e.g. the whole card) drives the
+  /** Controlled hover - when set, the parent (e.g. the whole card) drives the
    *  carousel. When omitted, the frame reacts to its own hover. */
   active?: boolean;
   /** Bottom gradient scrim for overlaid text/ticks. */
   scrim?: boolean;
   /** Slow zoom while an ancestor `group` is hovered (fine pointers). */
   zoomOnHover?: boolean;
-  /** Preload the cover — for the page's LCP image. */
+  /** Preload the cover - for the page's LCP image. */
   eager?: boolean;
   /** Window-reveal entrance on scroll-in. */
   reveal?: boolean;
   sizes?: string;
   /** This frame is the page's morph target (`view-transition-name: cover`).
-   *  Keep `reveal` off on it — the transition tracks the live element. */
+   *  Keep `reveal` off on it - the transition tracks the live element. */
   vtCover?: boolean;
   ref?: Ref<HTMLDivElement>;
 }) {

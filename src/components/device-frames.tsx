@@ -76,7 +76,7 @@ function luminance(hex: string) {
 
 /**
  * A phone: rounded bezel, dynamic island and a status bar, like a real
- * iPhone — the site starts BELOW the status bar instead of running under the
+ * iPhone - the site starts BELOW the status bar instead of running under the
  * island. `tint` is the status bar colour; pass the captured page's top-edge
  * colour so bar and header read as one surface (the time and icons flip
  * dark/light to suit). Captures are full 390×844 viewports; the status bar

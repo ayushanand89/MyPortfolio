@@ -13,9 +13,9 @@ export const experience: ExperienceItem[] = [
     role: "Software Developer",
     company: "ClanFlare Solutions",
     location: "Remote",
-    period: "Jan 2025 — Present",
+    period: "Jan 2025 – Present",
     summary:
-      "Building the core of an early-stage “Community-as-a-Service” platform — video hosting, subscriptions, and real-time community in Next.js, TypeScript and Bun.",
+      "Building the core of an early-stage “Community-as-a-Service” platform: video hosting, subscriptions, and real-time community in Next.js, TypeScript and Bun.",
     highlights: [
       "Architected core platform features (video hosting, subscriptions, real-time community) in Next.js, TypeScript and Bun.",
       "Designed normalized PostgreSQL/Prisma schemas and indexed hot queries, cutting key-endpoint latency ~40%.",

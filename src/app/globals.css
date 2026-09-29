@@ -5,7 +5,7 @@
 
 /* Viewports with real vertical room (> 840px). Written compact-first
    (`p-6 sm:tall:p-9`) so short laptop screens get the tighter rhythm from the
-   base utility — no override-order dependence. */
+   base utility - no override-order dependence. */
 @custom-variant tall (@media (min-height: 841px));
 
 /* Enough height for a pinned, full-viewport hero. */
@@ -23,10 +23,10 @@
   --ink-2: #161513;
   --paper: #efebe3;
   --paper-2: #e6e1d6;
-  --signal: #ff3b1f; /* bright — on ink, and display sizes on paper */
+  --signal: #ff3b1f; /* bright - on ink, and display sizes on paper */
   --signal-deep: #c0271a; /* surface red; AA with paper text (4.98:1) */
 
-  /* Motion — one vocabulary for the whole site. */
+  /* Motion - one vocabulary for the whole site. */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* entrances, reveals */
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen travel */
   --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
@@ -121,7 +121,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     /* Guard against horizontal scroll from the tilted marquee tape and
-       oversized type. `clip` — not `hidden` — never creates a scroll
+       oversized type. `clip` - not `hidden` - never creates a scroll
        container, so position: sticky and Lenis keep working. */
     overflow-x: clip;
     background-color: var(--ink);
@@ -180,7 +180,7 @@
 
 @layer utilities {
   /* ----- Type ------------------------------------------------------------
-     Display: Archivo pushed to its widest cut, all caps, set tight — the
+     Display: Archivo pushed to its widest cut, all caps, set tight - the
      poster voice. `em` inside any display line switches to Instrument Serif
      italic in the accent colour: the signature interjection. */
   .display {
@@ -200,12 +200,12 @@
     text-transform: none;
     letter-spacing: -0.01em;
     color: var(--accent);
-    /* Serif x-height reads small next to extended caps — nudge it up. */
+    /* Serif x-height reads small next to extended caps - nudge it up. */
     font-size: 1.1em;
     line-height: 0;
   }
 
-  /* Medium caps for card / row titles — wide but not poster-heavy. */
+  /* Medium caps for card / row titles - wide but not poster-heavy. */
   .caps {
     font-family: var(--font-sans), ui-sans-serif, sans-serif;
     font-variation-settings: "wdth" 118;
@@ -221,7 +221,7 @@
     letter-spacing: -0.01em;
   }
 
-  /* Micro caps — the inspo's tiny uppercase labels. */
+  /* Micro caps - the inspo's tiny uppercase labels. */
   .label {
     font-family: var(--font-sans), ui-sans-serif, sans-serif;
     font-variation-settings: "wdth" 112;
@@ -232,7 +232,7 @@
     text-transform: uppercase;
   }
 
-  /* Mono data label — indices, clocks, stat captions. */
+  /* Mono data label - indices, clocks, stat captions. */
   .data {
     font-family: var(--font-mono), ui-monospace, monospace;
     font-size: 0.75rem;
@@ -289,7 +289,7 @@
     background-size: 100% 1px;
   }
 
-  /* Text roll — the label is doubled via data-text; on hover the visible copy
+  /* Text roll - the label is doubled via data-text; on hover the visible copy
      rolls up and the ghost copy rolls in from below. Transform only. */
   .roll {
     position: relative;
@@ -417,7 +417,7 @@
      Content is VISIBLE by default (SSR / no-JS / reduced motion). The
      pre-paint script sets `html[data-reveal-js]` only when motion is allowed,
      and `scroll-reveal.tsx` sets `data-in` on each target as it enters the
-     viewport (an attribute, not a class — React never rewrites it).
+     viewport (an attribute, not a class - React never rewrites it).
      Time-based, not scroll-scrubbed, so nothing sits half-faded on screen.
      `--i` (explicit) and `--auto` (same-batch order) cascade siblings. */
   html[data-reveal-js] [data-reveal] {
@@ -508,7 +508,7 @@
   }
 
   /* Media window: the frame opens from a smaller window while the picture
-     inside settles from an overscan — compositor-only transforms, no
+     inside settles from an overscan - compositor-only transforms, no
      clip-path repaints. */
   html[data-reveal-js] [data-reveal="window"] {
     transition: transform 1.3s var(--ease-out);
@@ -522,6 +522,12 @@
   }
   html[data-reveal-js] [data-reveal="window"]:not([data-in]) [data-window-inner] {
     transform: scale(1.22);
+  }
+
+  /* The footer sits pinned beneath the page; skip painting it until the page
+     end is near (footer.tsx sets data-near). JS-gated like every reveal. */
+  html[data-reveal-js] footer:not([data-near]) {
+    visibility: hidden;
   }
 
   /* Footer wordmark: rises when the page end scrolls into view (the footer
@@ -544,7 +550,7 @@
       font-variation-settings: "wdth" 64, "wght" 300;
     }
   }
-  @media (prefers-reduced-motion: no-preference) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
     html[data-reveal-js] footer[data-open] .lens-ch {
       animation: lens-wave 0.9s var(--ease-in-out) calc(0.9s + var(--c, 0) * 50ms);
     }
@@ -632,10 +638,17 @@
       transform: none;
     }
   }
-  @media (prefers-reduced-motion: no-preference) {
+  @media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
     .kinetic .kchar {
       animation: kchar 1.15s var(--ease-out) both;
       animation-delay: calc(var(--hero-delay, 0ms) + 80ms + var(--l, 0) * 80ms + var(--c, 0) * 19ms);
+    }
+  }
+  /* Phones: the calmer entrance - whole lines rise out of their masks. */
+  @media (prefers-reduced-motion: no-preference) and (max-width: 767.98px) {
+    .kinetic .line > span {
+      animation: rise 1.25s var(--ease-out) both;
+      animation-delay: calc(var(--l, 0) * 110ms + var(--hero-delay, 0ms) + 80ms);
     }
   }
 
@@ -824,7 +837,7 @@
   }
 
   /* ----- Manifesto: words light up as --p (scroll progress) passes them.
-     --words = word count + ramp, --w = word index. (Not `--n` — that's the
+     --words = word count + ramp, --w = word index. (Not `--n` - that's the
      intro counter's registered, non-inheriting property.) Defaults to fully lit (no-JS /
      reduced motion); the About chapter writes --p while pinned. */
   .manifesto {
@@ -857,9 +870,15 @@
     background: inherit;
     animation: ping 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
+  /* Phones: a still dot - nothing pulses in the corner of your eye. */
+  @media (max-width: 767.98px) {
+    .ping::after {
+      display: none;
+    }
+  }
 
   /* ----- Client-navigation entrance (fallback when View Transitions are
-     unavailable — see template.tsx). */
+     unavailable - see template.tsx). */
   .route-enter {
     animation: fade-up 0.7s var(--ease-out) both;
   }
@@ -919,7 +938,7 @@
 }
 
 /* ---------------------------------------------------------------------------
-   View Transitions — client navigations morph the clicked project image into
+   View Transitions - client navigations morph the clicked project image into
    the case-study cover while the new page wipes up over the old one.
 --------------------------------------------------------------------------- */
 ::view-transition-group(*) {

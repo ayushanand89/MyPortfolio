@@ -11,8 +11,8 @@ const DESKTOP = { w: 1440, h: 900 };
 const MOBILE = { w: 390, h: 844 };
 
 /**
- * The real website, running inside the case study. Starts as a facade — the
- * recording playing in browser chrome with a "Launch the live site" button —
+ * The real website, running inside the case study. Starts as a facade - the
+ * recording playing in browser chrome with a "Launch the live site" button -
  * so nothing third-party loads until asked. On launch it mounts the actual
  * site in an iframe: desktop mode renders it at a true 1440px layout scaled
  * to fit the frame; mobile mode renders a 390px phone viewport. Wheel/touch
@@ -33,7 +33,7 @@ export function LiveEmbed({
   const [scale, setScale] = useState(0);
   const screenRef = useRef<HTMLDivElement>(null);
 
-  // Phones get the mobile layout by default — a 1440px site scaled into a
+  // Phones get the mobile layout by default - a 1440px site scaled into a
   // 360px frame is unreadable.
   useEffect(() => {
     if (window.matchMedia("(max-width: 767px)").matches) {
@@ -94,7 +94,7 @@ export function LiveEmbed({
                 <LoopVideo
                   src={rec.video}
                   poster={rec.poster}
-                  alt={`${project.title} — the live site`}
+                  alt={`${project.title}: the live site`}
                   sizes="(min-width: 1600px) 1520px, 94vw"
                   priority
                 />
@@ -114,7 +114,7 @@ export function LiveEmbed({
               </div>
               <p className="label absolute bottom-4 left-4 flex items-center gap-2 text-white/85 sm:bottom-5 sm:left-5">
                 <span className="ping relative h-1.5 w-1.5 rounded-full bg-[#28c840]" />
-                The real site — interactive, right here
+                The real site, interactive, right here
               </p>
             </>
           )}
@@ -149,7 +149,7 @@ export function LiveEmbed({
                   <iframe
                     key={device}
                     src={live.url}
-                    title={`${project.title} — live site`}
+                    title={`${project.title}: live site`}
                     referrerPolicy="strict-origin-when-cross-origin"
                     allow="clipboard-write"
                     onLoad={() => setLoaded(true)}

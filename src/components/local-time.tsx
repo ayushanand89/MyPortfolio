@@ -11,7 +11,7 @@ const formatter = new Intl.DateTimeFormat("en-GB", {
 });
 
 /**
- * Live Delhi clock — the "a real person is here" signal. Renders a fixed-width
+ * Live Delhi clock - the "a real person is here" signal. Renders a fixed-width
  * placeholder on the server so hydration never shifts layout.
  */
 export function LocalTime({ className }: { className?: string }) {

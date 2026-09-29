@@ -18,11 +18,11 @@ import { profile } from "@/content/profile";
 import { cn } from "@/lib/utils";
 
 // Headline numbers pulled forward from the recognition/experience records
-// below — the details stay in their rows, these are the scan-first stats.
+// below - the details stay in their rows, these are the scan-first stats.
 const stats = [
-  { value: "AIR 713", label: "TCS CodeVita 2024 — top 0.15% of 500,000+" },
+  { value: "AIR 713", label: "TCS CodeVita 2024, top 0.15% of 500,000+" },
   { value: "4.9%", label: "Amazon ML Summer School acceptance" },
-  { value: "500+", label: "DSA problems solved — top 25%" },
+  { value: "500+", label: "DSA problems solved, top 25%" },
   { value: "10,000+", label: "Daily API requests served at ClanFlare" },
 ];
 
@@ -34,7 +34,7 @@ const tabs = [
 type Tab = (typeof tabs)[number]["id"];
 
 /**
- * 05 — the "why credible" chapter: giant numerals on odometer reels, the role
+ * 05 - the "why credible" chapter: giant numerals on odometer reels, the role
  * as a spec sheet, recognition as an index with row-hover wipes, and the
  * toolkit set as type rather than a pill cloud. On phones the three records
  * sit behind tabs (one shared-layout indicator) instead of stacking up.
@@ -70,7 +70,7 @@ export function Credibility() {
           ))}
         </div>
 
-        {/* The full record — the résumé, always the live Drive copy. */}
+        {/* The full record - the résumé, always the live Drive copy. */}
         <Reveal className="mt-8 sm:mt-10">
           <div
             data-surface="ink"
@@ -187,7 +187,7 @@ export function Credibility() {
               >
                 <dt className="data pt-1.5 text-muted md:col-span-3">{group.label}</dt>
                 <dd className="text-[clamp(1.05rem,1.6vw,1.35rem)] leading-snug md:col-span-9">
-                  {/* Real spaces around each slash — they're the line-break
+                  {/* Real spaces around each slash - they're the line-break
                       opportunities on narrow screens. */}
                   {group.items.map((item, i) => (
                     <span key={item}>

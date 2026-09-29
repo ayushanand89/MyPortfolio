@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { scroll } from "@/lib/motion";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 
-// `serif` items set in Instrument Serif italic — the same caps/serif rhythm
+// `serif` items set in Instrument Serif italic - the same caps/serif rhythm
 // as the headlines.
 const items: { text: string; serif?: boolean }[] = [
   { text: "Next.js" },
@@ -24,7 +24,7 @@ const items: { text: string; serif?: boolean }[] = [
 
 /**
  * The signal-red tape laid across a seam. It drifts on its own and is driven
- * by scroll velocity — faster while you scroll, reversing when you scroll back
+ * by scroll velocity - faster while you scroll, reversing when you scroll back
  * up. One transform per frame, and the loop only runs while the tape is on
  * screen. Static under reduced motion.
  */

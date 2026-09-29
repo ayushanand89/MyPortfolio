@@ -23,7 +23,7 @@ const sans = Archivo({
   display: "swap",
 });
 
-// Instrument Serif — the italic interjections inside the caps headlines.
+// Instrument Serif - the italic interjections inside the caps headlines.
 const serif = Instrument_Serif({
   subsets: ["latin"],
   weight: "400",
@@ -39,15 +39,15 @@ const mono = JetBrains_Mono({
 });
 
 const description =
-  "Ayush Anand — full-stack & freelance web developer. I design and build premium websites, web apps, dashboards and full-stack products for startups, creators and businesses. Available for freelance projects.";
+  "Ayush Anand, full-stack & freelance web developer. I design and build premium websites, web apps, dashboards and full-stack products for startups, creators and businesses. Available for freelance projects.";
 
-const title = "Ayush Anand — Full-Stack & Freelance Web Developer";
+const title = "Ayush Anand | Full-Stack & Freelance Web Developer";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ayush.clanflare.dev"),
   title: {
     default: title,
-    template: "%s — Ayush Anand",
+    template: "%s | Ayush Anand",
   },
   description,
   keywords: [
@@ -82,7 +82,7 @@ export const viewport: Viewport = {
   themeColor: "#0c0b0a",
 };
 
-// Person structured data — the highest-leverage SEO markup for a personal
+// Person structured data - the highest-leverage SEO markup for a personal
 // brand site (name/role/profiles surface in rich results).
 const personJsonLd = {
   "@context": "https://schema.org",
@@ -102,7 +102,7 @@ const personJsonLd = {
 
 // Runs before first paint. When motion is allowed:
 //  • `data-reveal-js` hides [data-reveal] blocks until ScrollReveal marks them
-//    in view — with a failsafe that un-hides everything if the observer never
+//    in view - with a failsafe that un-hides everything if the observer never
 //    boots (it flips the value to "ready"), so a JS failure can't blank the
 //    page.
 //  • `data-intro="play"` shows the curtain on the first homepage load of a

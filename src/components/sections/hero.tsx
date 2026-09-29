@@ -17,16 +17,21 @@ import { LoopVideo } from "@/components/loop-video";
 import { TransitionLink } from "@/components/transition-link";
 import { scroll } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { useMediaQuery } from "@/lib/use-media-query";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 
 const d = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
 /**
- * Poster hero. The work plays BEHIND the headline — a "now showing" screen of
- * the real sites, fading into the ink on its left so the type laid over it
- * stays legible. Pinned (sticky) so the Work sheet slides up over it while it
+ * Poster hero. The headline and a "now showing" screen of the real sites sit
+ * side by side (stacked on tablets) and never overlap, so the type stays
+ * clean and the work reads as its own framed picture. Pinned (sticky) so the Work sheet slides up over it while it
  * recedes. The entrance is pure CSS (`load-*`), so the headline paints before
  * hydration and syncs with the intro curtain via `--hero-delay`.
+ *
+ * Phones get a quieter, type-only version: no screen behind the title, one
+ * caption line, two actions, and only as tall as its content - the Work
+ * sheet begins on the first screen.
  *
  * Sticky offset is `min(0, 100svh - height)`: a hero taller than the viewport
  * scrolls to its bottom edge before pinning. Recede progress comes from
@@ -71,21 +76,40 @@ export function Hero() {
       ref={ref}
       data-surface="ink"
       aria-label="Introduction"
-      className="sticky top-[min(0px,calc(100svh-var(--hero-h,100svh)))] min-h-svh overflow-hidden"
+      className="sticky top-[min(0px,calc(100svh-var(--hero-h,100svh)))] overflow-hidden md:min-h-svh"
     >
       <div
         ref={innerRef}
-        className="gutter mx-auto flex min-h-svh max-w-[1600px] origin-top flex-col pb-16 pt-18 will-change-transform sm:pb-24 sm:pt-22 lg:pb-28"
+        className="gutter mx-auto flex max-w-[1600px] origin-top flex-col pb-14 pt-18 will-change-transform sm:pb-24 sm:pt-22 md:min-h-svh lg:pb-28"
       >
-        {/* Meta row — the inspo's corner captions. */}
+        {/* Meta row - the inspo's corner captions (phones: one quiet line). */}
         <div
-          className="load-fade label relative z-10 grid grid-cols-2 gap-4 pt-3 md:grid-cols-3"
+          className="load-fade label relative z-10 flex items-center justify-between gap-4 pt-3 md:hidden"
+          style={d(150)}
+        >
+          <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-line-strong" />
+          <span className="flex items-center gap-2.5">
+            {profile.available ? (
+              <>
+                <Dot />
+                Open for work
+              </>
+            ) : (
+              profile.role
+            )}
+          </span>
+          <span className="text-muted">
+            Delhi · <LocalTime />
+          </span>
+        </div>
+        <div
+          className="load-fade label relative z-10 hidden gap-4 pt-3 md:grid md:grid-cols-3"
           style={d(150)}
         >
           <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-line-strong" />
           <span>
             {profile.role}
-            <span className="text-muted"> — Freelance</span>
+            <span className="text-muted"> · Freelance</span>
           </span>
           <span className="hidden items-center justify-center gap-2.5 md:flex">
             {profile.available && <Dot />}
@@ -96,10 +120,13 @@ export function Hero() {
           </span>
         </div>
 
-        <div className="relative flex flex-1 flex-col justify-center pt-6 lg:py-10">
+        {/* Phones: the hero is only as tall as its content, so the Work sheet
+            starts right below it - no dead space, and the next chapter's
+            header peeks in on the first screen. */}
+        <div className="relative flex flex-1 flex-col justify-center pb-9 pt-14 md:pb-0 md:pt-6 lg:grid lg:grid-cols-12 lg:items-center lg:gap-x-8 lg:py-10">
           <Screening paused={covered} />
           <KineticTitle
-            className="display relative z-10 -mt-[18vw] text-[clamp(2.45rem,10.8vw,5rem)] md:-mt-[14vw] md:text-[7.7vw] lg:mt-0 min-[1600px]:text-[7.7rem]"
+            className="display relative z-10 text-[clamp(2.1rem,9.6vw,5rem)] md:mt-10 md:text-[7.7vw] lg:col-span-7 lg:col-start-1 lg:row-start-1 lg:mt-0 lg:text-[min(6vw,6rem)]"
             lines={[
               [{ t: "I build " }, { t: "premium", em: true }],
               [{ t: "websites &" }],
@@ -109,16 +136,30 @@ export function Hero() {
           />
         </div>
 
-        <div className="relative z-10 mt-8 grid gap-6 pt-5 md:grid-cols-12 md:items-end">
+        <div className="relative z-10 grid gap-7 pt-6 md:mt-8 md:grid-cols-12 md:items-end md:gap-6 md:pt-5">
           <span aria-hidden className="load-fade absolute inset-x-0 top-0 h-px bg-line" style={d(700)} />
           <p
-            className="load-fade max-w-md text-[1.05rem] leading-relaxed text-muted text-pretty md:col-span-5 lg:col-span-4"
+            className="load-fade max-w-md text-[1rem] leading-relaxed text-muted text-pretty sm:text-[1.05rem] md:col-span-5 lg:col-span-4"
             style={d(750)}
           >
             {profile.lede}
           </p>
+          {/* Phones: two equal actions in one row. */}
+          <div className="load-fade grid grid-cols-2 gap-3 md:hidden" style={d(850)}>
+            <ButtonLink href="/#work" className="justify-center px-4!">
+              View work
+            </ButtonLink>
+            <ButtonLink
+              href={profile.resumeUrl}
+              external
+              variant="accent"
+              className="justify-center px-4!"
+            >
+              Résumé
+            </ButtonLink>
+          </div>
           <div
-            className="load-fade flex flex-wrap items-center gap-3 md:col-span-7 md:justify-end lg:col-span-6 lg:justify-center"
+            className="load-fade hidden flex-wrap items-center gap-3 md:col-span-7 md:flex md:justify-end lg:col-span-8 xl:col-span-6 xl:justify-center"
             style={d(850)}
           >
             <Magnetic>
@@ -136,7 +177,7 @@ export function Hero() {
             </Magnetic>
           </div>
           <div
-            className="load-fade hidden items-center justify-end lg:col-span-2 lg:flex"
+            className="load-fade hidden items-center justify-end xl:col-span-2 xl:flex"
             style={d(950)}
           >
             <span className="label flex items-center gap-3 text-muted">
@@ -176,7 +217,12 @@ function KineticTitle({ lines, className }: { lines: Seg[][]; className?: string
     <h1 className={cn("kinetic", className)}>
       <span className="sr-only">{plain}</span>
       {lines.map((segs, l) => (
-        <span key={l} aria-hidden className="line">
+        <span
+          key={l}
+          aria-hidden
+          className="line"
+          style={{ "--l": l } as CSSProperties}
+        >
           <span>
             {segs.map((seg, s) => {
               const words = seg.t.split(/(\s+)/).map((w, k) =>
@@ -206,24 +252,26 @@ function KineticTitle({ lines, className }: { lines: Seg[][]; className?: string
 }
 
 /**
- * "Now showing" — the flagship sites cycling behind the headline: recordings
+ * "Now showing" - the flagship sites cycling beside the headline: recordings
  * of the live sites (clips load after idle; only the showing one plays), the
- * client project as a still. Fades into the ink on its left (desktop) or
- * bottom (phones) so the title reads over it.
+ * client project as a still. A clean framed screen, with its label and the
+ * current project in a caption line beneath rather than laid over the site.
  */
 function Screening({ paused }: { paused: boolean }) {
   const items = flagshipProjects.filter((p) => p.image);
   const [active, setActive] = useState(0);
   const reduce = useReducedMotion();
+  // Hidden on phones - don't cycle (or re-render) a screen nobody sees.
+  const shown = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
-    if (reduce || paused) return;
+    if (reduce || paused || !shown) return;
     const id = window.setInterval(
       () => setActive((i) => (i + 1) % items.length),
       5200,
     );
     return () => window.clearInterval(id);
-  }, [items.length, reduce, paused]);
+  }, [items.length, reduce, paused, shown]);
 
   const p = items[active];
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -232,10 +280,10 @@ function Screening({ paused }: { paused: boolean }) {
     <TransitionLink
       href="/#work"
       data-cursor="See the work"
-      aria-label="Now showing — see selected work"
-      className="group relative z-0 block w-full lg:absolute lg:right-0 lg:top-1/2 lg:w-[min(58%,calc((100svh-24rem)*1.6))] lg:-translate-y-1/2"
+      aria-label="Now showing: see selected work"
+      className="group relative z-0 block w-full max-md:hidden lg:col-span-5 lg:col-start-8 lg:row-start-1"
     >
-      <div className="relative aspect-[16/10] overflow-hidden rounded-[12px] bg-raised">
+      <div className="relative aspect-[16/10] overflow-hidden rounded-[12px] bg-raised shadow-[0_40px_90px_-40px_rgba(0,0,0,0.85)] ring-1 ring-white/10">
         <div className="load-settle absolute inset-0" style={d(450)}>
         {items.map((item, i) => {
           const rec = item.media?.reel;
@@ -256,8 +304,8 @@ function Screening({ paused }: { paused: boolean }) {
                   src={rec}
                   poster={poster}
                   alt=""
-                  sizes="(min-width: 1024px) 60vw, 94vw"
-                  priority={i === 0}
+                  sizes="(min-width: 1024px) 42vw, 94vw"
+                  posterMedia={i === 0 ? "(min-width: 768px)" : undefined}
                   playing={on && !paused}
                 />
               ) : (
@@ -265,7 +313,7 @@ function Screening({ paused }: { paused: boolean }) {
                   src={poster}
                   alt=""
                   fill
-                  sizes="(min-width: 1024px) 60vw, 94vw"
+                  sizes="(min-width: 1024px) 42vw, 94vw"
                   className="object-cover object-top"
                 />
               )}
@@ -273,19 +321,17 @@ function Screening({ paused }: { paused: boolean }) {
           );
         })}
         </div>
-        {/* Legibility: fade into the ink where the headline overlaps. */}
-        <span
-          aria-hidden
-          className="absolute inset-0 bg-linear-to-t from-ink via-ink/35 to-ink/10 lg:bg-linear-to-r lg:from-ink lg:via-ink/55 lg:to-ink/5"
-        />
-        <span className="label absolute right-3 top-3 flex items-center gap-2 rounded-full bg-black/45 px-3 py-1.5 text-paper sm:right-4 sm:top-4">
+      </div>
+      <div className="mt-3 flex items-center justify-between gap-4">
+        <span className="label flex shrink-0 items-center gap-2 text-fg">
           <span className="h-1.5 w-1.5 rounded-full bg-signal" />
           Now showing
         </span>
-      </div>
-      <div className="data mt-2.5 flex items-center justify-end gap-3 text-muted max-lg:hidden">
-        <span key={p.slug} className="animate-[fade-up_0.6s_var(--ease-out)_both]">
-          {pad(active + 1)}/{pad(items.length)} — {p.title}
+        <span
+          key={p.slug}
+          className="data min-w-0 truncate text-right text-muted animate-[fade-up_0.6s_var(--ease-out)_both]"
+        >
+          {pad(active + 1)}/{pad(items.length)} · {p.title}
           {p.live ? " · live" : " · client build"}
         </span>
       </div>

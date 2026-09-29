@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 /**
  * One global cursor label. Anything with `data-cursor="View case"` shows a
  * pill that trails the pointer while hovered. A single passive pointermove
- * listener + a rAF lerp that sleeps as soon as the pill settles — no per-card
+ * listener + a rAF lerp that sleeps as soon as the pill settles - no per-card
  * listeners, no React renders while moving (state only changes when the label
  * text does). Fine pointers only; nothing mounts under reduced motion.
  * Purely decorative: every labelled target is also a real link.

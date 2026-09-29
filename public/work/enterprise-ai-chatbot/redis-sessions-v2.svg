@@ -60,5 +60,5 @@
   <path d="M650 360 C 740 360, 760 380, 856 380" fill="none" stroke="#34d399" stroke-width="2.4" stroke-dasharray="8 6" marker-end="url(#zm)"/>
   <text x="752" y="350" text-anchor="middle" font-size="12" fill="#34d399">read/write by sessionId</text>
 
-  <text x="52" y="700" font-size="15" fill="#9aa0ac">Static session handling once let context <tspan fill="#f87171">bleed across users</tspan>. A unique key per user fixed it — fast, isolated, and gone when it should be.</text>
+  <text x="52" y="700" font-size="15" fill="#9aa0ac">Static session handling once let context <tspan fill="#f87171">bleed across users</tspan>. A unique key per user fixed it: fast, isolated, and gone when it should be.</text>
 </svg>

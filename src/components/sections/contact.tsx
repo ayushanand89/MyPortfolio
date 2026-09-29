@@ -18,14 +18,14 @@ import { cn } from "@/lib/utils";
 type Status = "idle" | "sending" | "sent" | "error";
 
 /**
- * 06 — Contact, the signal-red finale. Underline fields, the real Resend-backed
+ * 06 - Contact, the signal-red finale. Underline fields, the real Resend-backed
  * form (503 without RESEND_API_KEY → mailto fallback), and direct lines.
  */
 export function Contact() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [company, setCompany] = useState(""); // honeypot — humans never see it
+  const [company, setCompany] = useState(""); // honeypot - humans never see it
   const [status, setStatus] = useState<Status>("idle");
 
   const mailtoHref = () => {
@@ -33,7 +33,7 @@ export function Contact() {
       `Project enquiry${name ? ` from ${name}` : ""}`,
     );
     const body = encodeURIComponent(
-      `${message}\n\n— ${name}${email ? ` · ${email}` : ""}`,
+      `${message}\n\n${name}${email ? ` · ${email}` : ""}`,
     );
     return `mailto:${profile.email}?subject=${subject}&body=${body}`;
   };
@@ -109,7 +109,7 @@ export function Contact() {
                   placeholder="What are you building, timeline, budget range…"
                 />
               </Field>
-              {/* Honeypot — visually hidden, skipped by keyboard focus. */}
+              {/* Honeypot - visually hidden, skipped by keyboard focus. */}
               <div aria-hidden className="absolute left-[-9999px] h-0 overflow-hidden">
                 <label htmlFor="company">Company</label>
                 <input
@@ -128,11 +128,11 @@ export function Contact() {
                 </Magnetic>
                 <p aria-live="polite" className="min-h-5 text-sm">
                   {status === "sent" && (
-                    <span>Thanks — I&apos;ll reply within a day.</span>
+                    <span>Thanks. I&apos;ll reply within a day.</span>
                   )}
                   {status === "error" && (
                     <span>
-                      Couldn&apos;t send right now —{" "}
+                      Couldn&apos;t send right now. Please{" "}
                       <a href={mailtoHref()} className="underline underline-offset-4">
                         email me directly
                       </a>
@@ -189,7 +189,7 @@ const morph = { type: "spring", stiffness: 380, damping: 32, mass: 0.8 } as cons
 /**
  * The send button morphs with the request: the pill collapses into a spinning
  * ring while sending, then blooms back out into "Message sent" with a drawn
- * check (a framer layout animation — the label counter-scales so it never
+ * check (a framer layout animation - the label counter-scales so it never
  * squashes mid-morph).
  */
 function SubmitButton({ status }: { status: Status }) {
@@ -310,7 +310,7 @@ function ContactRow({
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch {
-      // Clipboard unavailable — the mailto link still works.
+      // Clipboard unavailable - the mailto link still works.
     }
   };
 

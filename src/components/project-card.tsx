@@ -15,7 +15,7 @@ import { SwipeDeck } from "@/components/swipe-deck";
 /**
  * "Screening room" feature for one project: the real site playing in browser
  * chrome (a recording of the live site), its mobile version in a phone that
- * drifts against it on scroll, and a readable spec — story, proof, stack,
+ * drifts against it on scroll, and a readable spec - story, proof, stack,
  * and the two actions that matter (case study / visit live). Clicking the
  * screen morphs it into the case study's live embed (view transition).
  */
@@ -39,7 +39,7 @@ export function ProjectFeature({
   const mobile = project.media?.mobile;
   const host = project.live?.host ?? "private client build";
 
-  // The phone drifts against the browser as the stage passes — one transform.
+  // The phone drifts against the browser as the stage passes - one transform.
   useScrollProgress(stageRef, [[0, 1], [1, 0]], (p) => {
     const el = phoneRef.current;
     if (el) el.style.transform = `translate3d(0, ${((0.5 - p) * 90).toFixed(1)}px, 0)`;
@@ -98,7 +98,7 @@ export function ProjectFeature({
               <LoopVideo
                 src={desktop.video}
                 poster={desktop.poster}
-                alt={`${project.title} — recording of the live site`}
+                alt={`${project.title} · recording of the live site`}
                 sizes="(min-width: 1600px) 1300px, (min-width: 1024px) 80vw, 94vw"
               />
             ) : (
@@ -127,7 +127,7 @@ export function ProjectFeature({
         )}
       </div>
 
-      {/* Spec — story, proof, stack, actions. */}
+      {/* Spec - story, proof, stack, actions. */}
       <div className="mt-12 grid gap-10 sm:mt-16 lg:grid-cols-12 lg:gap-12">
         <p className="text-[1.1rem] leading-relaxed text-pretty lg:col-span-5">
           {project.story ?? project.summary}
@@ -181,7 +181,7 @@ export function ProjectFeature({
 
 /**
  * Phones: the same three chapters as a swipeable deck instead of three
- * screen-high features — each card is the site playing in its browser, the
+ * screen-high features - each card is the site playing in its browser, the
  * pitch, the proof and both actions. The top card's recording plays, and the
  * one beneath is preloaded so it's already running as you drag the top card
  * off it; tapping the screen morphs it into the case study like on desktop.
@@ -192,6 +192,7 @@ export function ProjectDeck({ projects }: { projects: readonly Project[] }) {
       items={projects}
       keyOf={(p) => p.slug}
       label="Selected work"
+      tabs={(p) => p.shortTitle ?? p.title}
       render={(project, { live, warm, index }) => (
         <DeckCard
           project={project}
@@ -242,7 +243,7 @@ function DeckCard({
             <LoopVideo
               src={desktop.video}
               poster={desktop.poster}
-              alt={`${project.title} — recording of the live site`}
+              alt={`${project.title} · recording of the live site`}
               sizes="94vw"
               playing={live}
               warm={warm}
@@ -250,7 +251,7 @@ function DeckCard({
           ) : (
             <Image
               src={projectImages(project)[0]}
-              alt={`${project.title} — screenshot`}
+              alt={`${project.title}: screenshot`}
               fill
               sizes="94vw"
               className="object-cover object-top"
@@ -260,24 +261,21 @@ function DeckCard({
       </div>
 
       <div className="flex flex-1 flex-col px-2.5 pb-2.5 pt-5">
-        <div className="label flex items-center justify-between gap-4 text-muted">
-          <span className="flex min-w-0 items-center gap-2.5">
-            <span className="data text-accent">
-              {pad(index + 1)}/{pad(total)}
-            </span>
-            <span className="truncate">{project.domain?.split(" · ")[0]}</span>
+        <div className="label flex min-w-0 items-center gap-2.5 text-muted">
+          <span className="data text-accent">
+            {pad(index + 1)}/{pad(total)}
           </span>
-          <span className="shrink-0">{project.year}</span>
+          <span className="truncate">{project.domain?.split(" · ")[0]}</span>
         </div>
-        <h3 className="display mt-3 text-[clamp(1.75rem,8.4vw,2.4rem)]">{project.title}</h3>
-        <p className="serif mt-2 text-[1.2rem] italic leading-[1.15] text-muted text-pretty">
+        <h3 className="display mt-3 text-[clamp(1.6rem,7.6vw,2.2rem)]">{project.title}</h3>
+        <p className="serif mt-2 text-[1.15rem] italic leading-[1.2] text-muted text-pretty">
           {project.tagline}
         </p>
         <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-line pt-4">
           {rail.map((s) => (
             <div key={s.label} className="flex min-w-0 flex-col-reverse justify-end">
               <dt className="data mt-1 text-[0.65rem] leading-snug text-muted">{s.label}</dt>
-              <dd className="display whitespace-nowrap text-[1.25rem] text-accent">{s.value}</dd>
+              <dd className="display whitespace-nowrap text-[1.1rem]">{s.value}</dd>
             </div>
           ))}
         </dl>
@@ -309,7 +307,7 @@ function StillsReel({ images, alt }: { images: string[]; alt: string }) {
         >
           <Image
             src={src}
-            alt={i === 0 ? `${alt} — screenshot` : ""}
+            alt={i === 0 ? `${alt}: screenshot` : ""}
             fill
             sizes="(min-width: 1600px) 1300px, (min-width: 1024px) 80vw, 94vw"
             className="object-cover object-top"

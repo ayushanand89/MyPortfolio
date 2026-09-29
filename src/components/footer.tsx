@@ -23,7 +23,10 @@ const sitemap = [
  * page wrapper z-1 and an opaque fill), so the last chapter lifts away to
  * reveal it. It's always "in view" underneath, so its wordmark is triggered by
  * the `#page-end` sentinel at the bottom of the page wrapper instead of the
- * shared reveal observer.
+ * shared reveal observer. Until the page end is within a screen of the
+ * viewport it isn't painted at all (`data-near`, see globals.css): hidden
+ * under the page it only cost paint time, and (being geometrically "on
+ * screen") it could pass for the page's largest contentful paint.
  */
 export function Footer() {
   const ref = useRef<HTMLElement>(null);
@@ -45,7 +48,19 @@ export function Footer() {
       { rootMargin: "0px 0px -25% 0px" },
     );
     io.observe(end);
-    return () => io.disconnect();
+    delete footer.dataset.near;
+    const nearIo = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) footer.dataset.near = "";
+        else delete footer.dataset.near;
+      },
+      { rootMargin: "0px 0px 100% 0px" },
+    );
+    nearIo.observe(end);
+    return () => {
+      io.disconnect();
+      nearIo.disconnect();
+    };
   }, [pathname]);
 
   return (
@@ -119,7 +134,7 @@ export function Footer() {
         </div>
 
         <p
-          className="footer-mark display mt-12 whitespace-nowrap text-[9.4vw] leading-[0.8] min-[1600px]:text-[9.4rem] sm:mt-20"
+          className="footer-mark display mt-12 whitespace-nowrap text-[min(9.4vw,9.4rem)] leading-[0.8] sm:mt-20"
         >
           <span className="sr-only">{profile.name}</span>
           <span className="line" aria-hidden>
@@ -131,7 +146,7 @@ export function Footer() {
 
         <div className="data mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-line pt-5 text-muted">
           <p>
-            © {year} {profile.name} — Designed &amp; built in Delhi with Next.js
+            © {year} {profile.name}. Designed &amp; built in Delhi with Next.js
           </p>
           <TransitionLink
             href={pathname}

@@ -19,20 +19,27 @@ const links = [
   { label: "Contact", href: "/#contact" },
 ];
 
-const tone: Record<Surface, { text: string; pill: string; line: string }> = {
+// The résumé pill's glow ring is for larger screens; on phones it's a plain
+// solid pill (still the one highlighted action in the bar).
+// `bar`: below lg, once scrolled, the bar gets a solid fill of the
+// surface beneath it, so the name and menu never sit on top of page content.
+const tone: Record<Surface, { text: string; pill: string; line: string; bar: string }> = {
   ink: {
     text: "text-paper",
-    pill: "bg-signal text-ink shadow-[0_0_0_4px_rgba(255,59,31,0.18)]",
+    bar: "max-lg:bg-ink",
+    pill: "bg-signal text-ink sm:shadow-[0_0_0_4px_rgba(255,59,31,0.18)]",
     line: "border-paper/30 hover:border-paper",
   },
   paper: {
     text: "text-ink",
-    pill: "bg-signal text-ink shadow-[0_0_0_4px_rgba(255,59,31,0.16)]",
+    bar: "max-lg:bg-paper",
+    pill: "bg-signal text-ink sm:shadow-[0_0_0_4px_rgba(255,59,31,0.16)]",
     line: "border-ink/25 hover:border-ink",
   },
   signal: {
     text: "text-paper",
-    pill: "bg-ink text-paper shadow-[0_0_0_4px_rgba(12,11,10,0.18)]",
+    bar: "max-lg:bg-signal",
+    pill: "bg-ink text-paper sm:shadow-[0_0_0_4px_rgba(12,11,10,0.18)]",
     line: "border-paper/40 hover:border-paper",
   },
 };
@@ -42,10 +49,11 @@ export function Nav() {
   const lenis = useLenis();
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [surface, setSurface] = useState<Surface>("ink");
   const activeId = useActiveChapter();
   const active = CHAPTERS.find((c) => c.id === activeId);
-  const chapter = active ? `(${active.n}) ${active.label}` : "";
+  const chapter = active ? (active.n ? `(${active.n}) ${active.label}` : active.label) : "";
   const isCase = pathname.startsWith("/work/");
 
   // Hide on scroll down, reveal on scroll up.
@@ -58,6 +66,7 @@ export function Nav() {
       requestAnimationFrame(() => {
         queued = false;
         const y = window.scrollY;
+        setScrolled(y > 24);
         const d = y - last;
         if (Math.abs(d) < 6) return;
         setHidden(d > 0 && y > 160);
@@ -95,7 +104,7 @@ export function Nav() {
     };
   }, [pathname]);
 
-  // Shared chapter scrollspy (home only) — the dock and rail read it too.
+  // Shared chapter scrollspy (home only) - the dock and rail read it too.
   useEffect(() => {
     if (pathname !== "/") return;
     return observeChapters();
@@ -129,8 +138,9 @@ export function Nav() {
       id="site-nav"
       style={{ viewTransitionName: "site-nav" } as CSSProperties}
       className={cn(
-        "fixed inset-x-0 top-0 z-50 transition-transform duration-500 ease-out-strong",
+        "fixed inset-x-0 top-0 z-50 transition-[transform,background-color] duration-500 ease-out-strong",
         hidden && !open && "-translate-y-full",
+        scrolled && !open && t.bar,
       )}
     >
       <div
@@ -143,9 +153,9 @@ export function Nav() {
           href="/"
           onClick={() => setOpen(false)}
           className="group/roll flex w-fit items-center gap-2.5"
-          aria-label={`${profile.name} — home`}
+          aria-label={`${profile.name}, home`}
         >
-          {profile.available && <Dot />}
+          {profile.available && <Dot className="max-md:hidden" />}
           <span className="caps whitespace-nowrap text-[0.9rem] tracking-[-0.01em] sm:text-[0.95rem]">
             <Roll>{profile.name}</Roll>
           </span>
@@ -195,7 +205,7 @@ export function Nav() {
           >
             <Roll>Let&rsquo;s talk</Roll>
           </TransitionLink>
-          {/* Résumé — the one highlighted action in the bar, on every size.
+          {/* Résumé - the one highlighted action in the bar, on every size.
               Opens the live Google Drive copy (always the latest). */}
           <a
             href={profile.resumeUrl}
@@ -243,7 +253,7 @@ export function Nav() {
 
     </header>
 
-      {/* Mobile menu — an ink sheet that drops in; links rise from their
+      {/* Mobile menu - an ink sheet that drops in; links rise from their
           clip edges in sequence. Kept mounted (inert when closed) so the
           open/close animation runs both ways. Lives outside the header so the
           header's hide transform can never become its containing block. */}
@@ -298,12 +308,12 @@ export function Nav() {
         </div>
         <div
           className={cn(
-            "gutter flex items-end justify-between gap-4 pb-8 transition-opacity duration-500",
+            "gutter flex flex-wrap items-end justify-between gap-x-4 gap-y-4 pb-[max(env(safe-area-inset-bottom),2rem)] transition-opacity duration-500",
             open ? "opacity-100 delay-500" : "opacity-0",
           )}
         >
-          <div className="space-y-1">
-            <a href={`mailto:${profile.email}`} className="block text-sm">
+          <div className="min-w-0 space-y-1">
+            <a href={`mailto:${profile.email}`} className="block break-all text-sm">
               {profile.email}
             </a>
             <p className="data text-[#9d978b]">

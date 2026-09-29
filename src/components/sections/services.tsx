@@ -15,9 +15,9 @@ import { cn } from "@/lib/utils";
 const spring = { type: "spring", stiffness: 380, damping: 38, mass: 0.9 } as const;
 
 /**
- * 03 — Services as an editorial index. Each row is a hairline entry; on a fine
+ * 03 - Services as an editorial index. Each row is a hairline entry; on a fine
  * pointer, ink wipes up from the row's bottom edge, the title slides over, an
- * italic aside fades in and the arrow turns — all CSS, no listeners.
+ * italic aside fades in and the arrow turns - all CSS, no listeners.
  *
  * Phones get an accordion instead of six tall rows: one entry open at a time,
  * and the ink block that marks it glides between rows (shared layout) while

@@ -11,7 +11,7 @@ import { SwipeDeck } from "@/components/swipe-deck";
 
 /**
  * Voices (deliberately unnumbered). The quotes are a physical deck of paper
- * cards — drag one away (or use the arrows / ← →) and it's flung off and
+ * cards - drag one away (or use the arrows / ← →) and it's flung off and
  * tucked in at the back. Manual only; nothing auto-advances.
  */
 export function Testimonials() {
@@ -91,17 +91,15 @@ export function Testimonials() {
           </Reveal>
         </div>
 
-        <Reveal className="label mt-12 flex flex-wrap items-center gap-x-4 gap-y-3 text-muted lg:hidden">
-          {trustPoints.map((point, i) => (
-            <span key={point} className="flex items-center gap-4">
-              {i > 0 && (
-                <span aria-hidden className="text-signal">
-                  ✺
-                </span>
-              )}
-              {point}
-            </span>
-          ))}
+        {/* Phones & tablets: the same points as a quiet two-column list. */}
+        <Reveal className="mt-12 lg:hidden">
+          <ul className="label grid grid-cols-2 gap-x-6 text-muted sm:grid-cols-3">
+            {trustPoints.map((point) => (
+              <li key={point} className="border-t border-line py-3 leading-snug">
+                {point}
+              </li>
+            ))}
+          </ul>
         </Reveal>
       </Container>
     </Section>

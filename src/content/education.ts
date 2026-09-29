@@ -8,6 +8,6 @@ export type Education = {
 export const education: Education = {
   school: "J.C. Bose University of Science and Technology, YMCA",
   location: "Faridabad",
-  degree: "B.Tech — Computer Engineering (Data Science)",
-  period: "2021 — 2025",
+  degree: "B.Tech in Computer Engineering (Data Science)",
+  period: "2021–2025",
 };

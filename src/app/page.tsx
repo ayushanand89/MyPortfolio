@@ -9,7 +9,7 @@ import { Contact } from "@/components/sections/contact";
 
 /**
  * Narrative spine: work → identity → capability → method → proof → trust →
- * conversion. The projects lead — the strongest evidence comes first. Each
+ * conversion. The projects lead - the strongest evidence comes first. Each
  * chapter is a sheet (ink / paper / signal) that slides over the one before.
  *
  * The hero pins inside `#top`, so the Work sheet (with the red tape on its

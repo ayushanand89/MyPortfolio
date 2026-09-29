@@ -49,7 +49,7 @@ export function Section({
   sheet?: boolean;
   className?: string;
   children: ReactNode;
-  /** Legacy rhythm prop — ignored. */
+  /** Legacy rhythm prop - ignored. */
   variant?: "default" | "spacious" | "dense";
 }) {
   return (
@@ -117,7 +117,7 @@ export function Reveal({
   children: ReactNode;
   delay?: number;
   className?: string;
-  /** Legacy prop — every reveal now triggers on entering the viewport. */
+  /** Legacy prop - every reveal now triggers on entering the viewport. */
   immediate?: boolean;
   stagger?: number;
   variant?: "up" | "left" | "right" | "scale" | "fade";
@@ -138,7 +138,7 @@ export function Reveal({
 }
 
 /**
- * Masked line stack — each entry rises out of its own clip edge in sequence.
+ * Masked line stack - each entry rises out of its own clip edge in sequence.
  * `load` plays on page load (hero); otherwise it triggers on scroll-in.
  */
 export function Lines({
@@ -176,7 +176,7 @@ export function Lines({
 }
 
 /**
- * Chapter header: a hairline index row — `(02) SELECTED WORK ······ meta` —
+ * Chapter header: a hairline index row - `(02) SELECTED WORK ······ meta` -
  * over a poster headline. Pass `title` as an array to control line breaks
  * (each entry is a masked line); `<em>` inside switches to the serif accent.
  */

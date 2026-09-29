@@ -58,10 +58,10 @@ export function CaseStudyHero({
           </Reveal>
         )}
 
-        {/* Credits — red micro-caps over serif values. */}
+        {/* Credits - red micro-caps over serif values. */}
         <Reveal>
           <dl className="mx-auto mt-14 flex max-w-4xl flex-wrap justify-center gap-x-14 gap-y-8 text-center">
-            <Credit label="Role" value={project.role ?? "—"} />
+            <Credit label="Role" value={project.role ?? "Full-stack"} />
             <Credit label="Year" value={project.year} />
             {project.association && (
               <Credit label="Context" value={project.association} />
@@ -110,7 +110,7 @@ export function CaseStudyHero({
               <LoopVideo
                 src={project.media.desktop.video}
                 poster={project.media.desktop.poster}
-                alt={`${project.title} — recording of the app`}
+                alt={`${project.title}: recording of the app`}
                 sizes="(min-width: 1600px) 1520px, 94vw"
                 priority
               />
@@ -283,7 +283,7 @@ function Block({
             {/* Wide diagrams keep a legible size on phones and scroll
                 sideways instead of shrinking their labels to nothing. */}
             <div className="overflow-x-auto [scrollbar-width:thin]">
-              {/* SVG: already vector — no optimizer needed, sharp at any size. */}
+              {/* SVG: already vector - no optimizer needed, sharp at any size. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={block.src}

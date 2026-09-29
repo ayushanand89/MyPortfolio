@@ -18,7 +18,7 @@ export const WEBSITE_ID = `${base}/#website`;
 
 export const SEO_TITLE = `${profile.name} | Full-Stack Engineer & Freelance Web Developer`;
 export const SEO_DESCRIPTION =
-  "Ayush Anand is a full-stack engineer in Delhi building production web apps, AI features and premium websites. Open to freelance projects and full-time roles.";
+  "Ayush Anand is a full-stack engineer at ClanFlare in Delhi, building production web apps, AI features and premium websites. Open to freelance and full-time roles.";
 
 const person = {
   "@type": "Person",

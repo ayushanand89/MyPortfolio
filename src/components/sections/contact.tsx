@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRight, Check, Copy, Loader2 } from "lucide-react";
+import { AnimatePresence, m } from "framer-motion";
+import { ArrowUpRight, Check, Copy } from "lucide-react";
 import { profile } from "@/content/profile";
 import {
   AvailabilityBadge,
@@ -11,6 +12,7 @@ import {
   Section,
   SectionHeader,
 } from "@/components/primitives";
+import { Magnetic } from "@/components/magnetic";
 import { cn } from "@/lib/utils";
 
 type Status = "idle" | "sending" | "sent" | "error";
@@ -53,7 +55,7 @@ export function Contact() {
   };
 
   return (
-    <Section id="contact" surface="signal" sheet className="pb-28 sm:pb-40">
+    <Section id="contact" surface="signal" sheet className="pb-20 sm:pb-40">
       <Container>
         <SectionHeader
           index="06"
@@ -63,14 +65,14 @@ export function Contact() {
           title={["Have a project", "in mind?", <em key="e">Let’s build it.</em>]}
         />
 
-        <div className="grid gap-16 lg:grid-cols-12 lg:gap-12">
+        <div className="grid gap-12 sm:gap-16 lg:grid-cols-12 lg:gap-12">
           <Reveal className="lg:col-span-7">
-            <p className="max-w-lg text-lg leading-relaxed text-muted text-pretty">
+            <p className="max-w-lg text-[1.05rem] leading-relaxed text-muted text-pretty sm:text-lg">
               Tell me what you&apos;re building and I&apos;ll get back to you
               within a day. Freelance projects and full-time roles both welcome.
             </p>
-            <form onSubmit={onSubmit} className="mt-10 space-y-8">
-              <div className="grid gap-8 sm:grid-cols-2">
+            <form onSubmit={onSubmit} className="mt-8 space-y-6 sm:mt-10 sm:space-y-8">
+              <div className="grid gap-6 sm:grid-cols-2 sm:gap-8">
                 <Field id="name" label="Name">
                   <input
                     id="name"
@@ -100,7 +102,7 @@ export function Contact() {
                 <textarea
                   id="message"
                   required
-                  rows={4}
+                  rows={3}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   className={cn(fieldClass, "resize-none")}
@@ -121,34 +123,9 @@ export function Contact() {
               </div>
 
               <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
-                <button
-                  type="submit"
-                  disabled={status === "sending" || status === "sent"}
-                  className={cn(
-                    "btn btn-solid group/roll",
-                    status === "sending" && "cursor-wait opacity-80",
-                    status === "sent" && "cursor-default",
-                  )}
-                >
-                  {status === "sending" && (
-                    <>
-                      Sending
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                    </>
-                  )}
-                  {status === "sent" && (
-                    <>
-                      Message sent
-                      <Check className="h-3.5 w-3.5" />
-                    </>
-                  )}
-                  {(status === "idle" || status === "error") && (
-                    <>
-                      <Roll>Send message</Roll>
-                      <ArrowUpRight className="h-3.5 w-3.5" />
-                    </>
-                  )}
-                </button>
+                <Magnetic>
+                  <SubmitButton status={status} />
+                </Magnetic>
                 <p aria-live="polite" className="min-h-5 text-sm">
                   {status === "sent" && (
                     <span>Thanks — I&apos;ll reply within a day.</span>
@@ -204,6 +181,87 @@ export function Contact() {
         </div>
       </Container>
     </Section>
+  );
+}
+
+const morph = { type: "spring", stiffness: 380, damping: 32, mass: 0.8 } as const;
+
+/**
+ * The send button morphs with the request: the pill collapses into a spinning
+ * ring while sending, then blooms back out into "Message sent" with a drawn
+ * check (a framer layout animation — the label counter-scales so it never
+ * squashes mid-morph).
+ */
+function SubmitButton({ status }: { status: Status }) {
+  const sending = status === "sending";
+  const sent = status === "sent";
+  return (
+    <m.button
+      layout
+      type="submit"
+      disabled={sending || sent}
+      transition={morph}
+      style={{ borderRadius: 999, transition: "color 0.45s, border-color 0.45s" }}
+      className={cn(
+        "btn btn-solid group/roll h-[3.1rem]",
+        sending && "w-[3.1rem] cursor-wait justify-center p-0!",
+        sent && "cursor-default",
+      )}
+    >
+      <AnimatePresence mode="popLayout" initial={false}>
+        {sending ? (
+          <m.span
+            key="sending"
+            layout="position"
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.6 }}
+            className="grid place-items-center"
+          >
+            <span className="sr-only">Sending</span>
+            <span
+              aria-hidden
+              className="block h-5 w-5 animate-spin rounded-full border-2 border-current border-r-transparent"
+            />
+          </m.span>
+        ) : sent ? (
+          <m.span
+            key="sent"
+            layout="position"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-3 whitespace-nowrap"
+          >
+            Message sent
+            <svg viewBox="0 0 16 16" aria-hidden className="h-3.5 w-3.5">
+              <m.path
+                d="M2.5 8.5l3.5 3.5 7.5-8"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ delay: 0.25, duration: 0.45, ease: "easeOut" }}
+              />
+            </svg>
+          </m.span>
+        ) : (
+          <m.span
+            key="idle"
+            layout="position"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="flex items-center gap-3 whitespace-nowrap"
+          >
+            <Roll>Send message</Roll>
+            <ArrowUpRight className="h-3.5 w-3.5" />
+          </m.span>
+        )}
+      </AnimatePresence>
+    </m.button>
   );
 }
 

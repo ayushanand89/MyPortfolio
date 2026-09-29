@@ -22,6 +22,7 @@ export function LoopVideo({
   priority = false,
   deferIdle = true,
   playing: controlled,
+  warm = false,
 }: {
   src?: string;
   poster: string;
@@ -35,6 +36,9 @@ export function LoopVideo({
   deferIdle?: boolean;
   /** Extra gate from the parent (e.g. the hero pauses once covered). */
   playing?: boolean;
+  /** Fetch even while `playing` is false, so it can start instantly later
+   *  (e.g. the card under the top of a swipe deck). */
+  warm?: boolean;
 }) {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLVideoElement>(null);
@@ -95,13 +99,13 @@ export function LoopVideo({
     };
   }, [deferIdle, allowed]);
 
-  // Fetch only once near, idle-cleared, and actually wanted by the parent.
+  // Fetch only once near, idle-cleared, and wanted (or warmed) by the parent.
   useEffect(() => {
-    if (near && idleOk && controlled !== false) {
+    if (near && idleOk && (controlled !== false || warm)) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setArmed(true);
     }
-  }, [near, idleOk, controlled]);
+  }, [near, idleOk, controlled, warm]);
 
   useEffect(() => {
     const el = ref.current;

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { TransitionLink } from "@/components/transition-link";
 import { LocalTime } from "@/components/local-time";
 import { Dot, Roll, type Surface } from "@/components/primitives";
+import { CHAPTERS, observeChapters, useActiveChapter } from "@/lib/chapters";
 
 const links = [
   { label: "Work", href: "/#work" },
@@ -18,18 +19,6 @@ const links = [
   { label: "Contact", href: "/#contact" },
 ];
 
-// Chapter indicator copy, keyed by section id (home only).
-const chapters: Record<string, string> = {
-  work: "(01) Selected work",
-  about: "(02) About",
-  services: "(03) Services",
-  process: "(04) Process",
-  experience: "(05) Track record",
-  testimonials: "Voices",
-  contact: "(06) Contact",
-};
-
-// `pill` = the highlighted Résumé button; `line` = the quieter outline pill.
 const tone: Record<Surface, { text: string; pill: string; line: string }> = {
   ink: {
     text: "text-paper",
@@ -54,7 +43,9 @@ export function Nav() {
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [surface, setSurface] = useState<Surface>("ink");
-  const [chapter, setChapter] = useState("");
+  const activeId = useActiveChapter();
+  const active = CHAPTERS.find((c) => c.id === activeId);
+  const chapter = active ? `(${active.n}) ${active.label}` : "";
   const isCase = pathname.startsWith("/work/");
 
   // Hide on scroll down, reveal on scroll up.
@@ -104,33 +95,10 @@ export function Nav() {
     };
   }, [pathname]);
 
-  // Chapter scrollspy (home only).
+  // Shared chapter scrollspy (home only) — the dock and rail read it too.
   useEffect(() => {
-    if (pathname !== "/") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setChapter("");
-      return;
-    }
-    // Track everything crossing the middle band; the deepest chapter wins
-    // (`#top` wraps both the hero and About).
-    const order = ["top", ...Object.keys(chapters)];
-    const visible = new Set<string>();
-    const io = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) visible.add(e.target.id);
-          else visible.delete(e.target.id);
-        }
-        const id = [...order].reverse().find((k) => visible.has(k));
-        setChapter(id ? (chapters[id] ?? "") : "");
-      },
-      { rootMargin: "-45% 0px -50% 0px" },
-    );
-    order.forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) io.observe(el);
-    });
-    return () => io.disconnect();
+    if (pathname !== "/") return;
+    return observeChapters();
   }, [pathname]);
 
   // Menu open: freeze and inert the page underneath, close on Escape.
@@ -138,6 +106,7 @@ export function Nav() {
     if (!open) return;
     const main = document.getElementById("main");
     main?.setAttribute("inert", "");
+    document.documentElement.dataset.menu = "open";
     lenis?.stop();
     const prev = document.documentElement.style.overflow;
     document.documentElement.style.overflow = "hidden";
@@ -145,6 +114,7 @@ export function Nav() {
     window.addEventListener("keydown", onKey);
     return () => {
       main?.removeAttribute("inert");
+      delete document.documentElement.dataset.menu;
       lenis?.start();
       document.documentElement.style.overflow = prev;
       window.removeEventListener("keydown", onKey);

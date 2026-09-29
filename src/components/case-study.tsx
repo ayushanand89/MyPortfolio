@@ -328,7 +328,7 @@ function Block({
                 style={{ "--i": i } as CSSProperties}
                 className="w-[68%] shrink-0 snap-center sm:w-auto"
               >
-                <PhoneFrame className="mx-auto max-w-[19rem]">
+                <PhoneFrame className="mx-auto max-w-[19rem]" tint={item.tint}>
                   {item.video ? (
                     <LoopVideo
                       src={item.video}

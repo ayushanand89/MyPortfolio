@@ -35,11 +35,12 @@ export type CaseStudyBlock =
       type: "mobile";
       eyebrow?: string;
       title?: string;
-      items: { src: string; video?: string; alt: string; caption?: string }[];
+      /** `tint` = the capture's top-edge colour, used for the phone's status bar. */
+      items: { src: string; video?: string; alt: string; caption?: string; tint?: string }[];
     };
 
 /** A recording of the live site: a looping video + its first-frame poster. */
-export type Recording = { video: string; poster: string };
+export type Recording = { video: string; poster: string; tint?: string };
 
 export type ProjectLinks = {
   demo?: string;
@@ -119,6 +120,7 @@ export const projects: Project[] = [
       mobile: {
         video: "/work/quit-gambling/mobile.mp4",
         poster: "/work/quit-gambling/mobile.jpg",
+        tint: "#f9f3e7",
       },
       reel: "/work/quit-gambling/reel.mp4",
     },
@@ -198,17 +200,20 @@ export const projects: Project[] = [
         items: [
           {
             src: "/work/quit-gambling/mobile.jpg",
+            tint: "#f9f3e7",
             video: "/work/quit-gambling/mobile.mp4",
             alt: "Quit Gambling on mobile — scrolling the live site",
             caption: "The live site on a phone",
           },
           {
             src: "/work/quit-gambling/m-toolkit.jpg",
+            tint: "#f5ecdd",
             alt: "Mobile toolkit — mood graph",
             caption: "Toolkit",
           },
           {
             src: "/work/quit-gambling/m-pricing.jpg",
+            tint: "#f5ecdd",
             alt: "Mobile care plans",
             caption: "Care plans",
           },
@@ -320,6 +325,7 @@ export const projects: Project[] = [
       mobile: {
         video: "/work/enterprise-ai-chatbot/mobile.mp4",
         poster: "/work/enterprise-ai-chatbot/mobile.jpg",
+        tint: "#f7ead9",
       },
       reel: "/work/enterprise-ai-chatbot/reel.mp4",
     },
@@ -449,17 +455,20 @@ export const projects: Project[] = [
         items: [
           {
             src: "/work/enterprise-ai-chatbot/mobile.jpg",
+            tint: "#f7ead9",
             video: "/work/enterprise-ai-chatbot/mobile.mp4",
             alt: "The chat on a phone — a scripted demo conversation",
             caption: "The conversation",
           },
           {
             src: "/work/enterprise-ai-chatbot/m-answer.jpg",
+            tint: "#f7ead9",
             alt: "A reply with its source clip on a phone",
             caption: "Source clip in the reply",
           },
           {
             src: "/work/enterprise-ai-chatbot/m-sheet.jpg",
+            tint: "#a99f95",
             alt: "Live alerts as a bottom sheet on a phone",
             caption: "Live alerts sheet",
           },
@@ -521,6 +530,7 @@ export const projects: Project[] = [
       mobile: {
         video: "/work/barethreads/mobile.mp4",
         poster: "/work/barethreads/mobile.jpg",
+        tint: "#151412",
       },
       reel: "/work/barethreads/reel.mp4",
     },
@@ -587,17 +597,20 @@ export const projects: Project[] = [
         items: [
           {
             src: "/work/barethreads/mobile.jpg",
+            tint: "#151412",
             video: "/work/barethreads/mobile.mp4",
             alt: "BareThreads on mobile — scrolling the live storefront",
             caption: "The live storefront on a phone",
           },
           {
             src: "/work/barethreads/m-arrivals.jpg",
+            tint: "#151412",
             alt: "Mobile new-arrivals carousel",
             caption: "New arrivals",
           },
           {
             src: "/work/barethreads/m-product.jpg",
+            tint: "#151412",
             alt: "Mobile product page",
             caption: "Product page",
           },

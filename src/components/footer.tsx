@@ -5,7 +5,9 @@ import { usePathname } from "next/navigation";
 import { ArrowUp, ArrowUpRight } from "lucide-react";
 import { profile } from "@/content/profile";
 import { ButtonLink, Roll } from "./primitives";
+import { LetterLens } from "./letter-lens";
 import { LocalTime } from "./local-time";
+import { Magnetic } from "./magnetic";
 import { TransitionLink } from "./transition-link";
 
 const sitemap = [
@@ -52,16 +54,18 @@ export function Footer() {
       data-surface="ink"
       className="sticky bottom-0 z-0 flex min-h-[min(100svh,46rem)] flex-col justify-end"
     >
-      <div className="gutter mx-auto w-full max-w-[1600px] pb-6 pt-24">
-        <div className="grid gap-12 border-t border-line-strong pt-8 sm:grid-cols-2 lg:grid-cols-12">
-          <div className="lg:col-span-5">
+      <div className="gutter mx-auto w-full max-w-[1600px] pb-[max(env(safe-area-inset-bottom),1.5rem)] pt-16 sm:pt-24">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-10 border-t border-line-strong pt-8 sm:gap-12 lg:grid-cols-12">
+          <div className="col-span-2 sm:col-span-1 lg:col-span-5">
             <p className="serif text-[clamp(1.8rem,3vw,2.8rem)] leading-[1.05]">
               Got something worth building?{" "}
               <span className="italic text-signal">Let&rsquo;s talk.</span>
             </p>
-            <ButtonLink href="/#contact" variant="accent" className="mt-7">
-              Start a project
-            </ButtonLink>
+            <Magnetic className="mt-7">
+              <ButtonLink href="/#contact" variant="accent">
+                Start a project
+              </ButtonLink>
+            </Magnetic>
           </div>
 
           <nav aria-label="Footer" className="lg:col-span-2 lg:col-start-7">
@@ -69,7 +73,7 @@ export function Footer() {
             <ul className="mt-4 space-y-2">
               {sitemap.map((l) => (
                 <li key={l.href}>
-                  <TransitionLink href={l.href} className="label group/roll">
+                  <TransitionLink href={l.href} className="label group/roll inline-flex items-center">
                     <Roll>{l.label}</Roll>
                   </TransitionLink>
                 </li>
@@ -98,30 +102,29 @@ export function Footer() {
                 </li>
               ))}
               <li>
-                <a href={`mailto:${profile.email}`} className="label group/roll">
+                <a href={`mailto:${profile.email}`} className="label group/roll inline-flex items-center">
                   <Roll>Email</Roll>
                 </a>
               </li>
             </ul>
           </div>
 
-          <div className="lg:col-span-2">
+          <div className="col-span-2 flex items-baseline justify-between gap-4 sm:col-span-1 sm:block lg:col-span-2">
             <p className="data text-muted">Local time</p>
-            <p className="caps mt-4 text-2xl">
+            <p className="caps text-2xl sm:mt-4">
               <LocalTime />
             </p>
-            <p className="data mt-1 text-muted">{profile.location}</p>
+            <p className="data text-muted sm:mt-1">{profile.location}</p>
           </div>
         </div>
 
         <p
-          aria-label={profile.name}
-          className="footer-mark display mt-16 whitespace-nowrap text-[9.4vw] leading-[0.8] min-[1600px]:text-[9.4rem] sm:mt-20"
+          className="footer-mark display mt-12 whitespace-nowrap text-[9.4vw] leading-[0.8] min-[1600px]:text-[9.4rem] sm:mt-20"
         >
+          <span className="sr-only">{profile.name}</span>
           <span className="line" aria-hidden>
             <span>
-              {profile.name}
-              <span className="text-signal">.</span>
+              <LetterLens text={profile.name} accent="." />
             </span>
           </span>
         </p>

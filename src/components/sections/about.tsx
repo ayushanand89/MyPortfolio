@@ -28,7 +28,7 @@ export function About() {
       data-surface="ink"
       className="relative -mt-(--sheet-radius) rounded-t-(--sheet-radius)"
     >
-      <div ref={pinRef} className="relative h-[200svh]">
+      <div ref={pinRef} className="relative h-[150svh] md:h-[200svh]">
         <div className="sticky top-0 flex h-svh flex-col justify-center">
           <div className="gutter mx-auto w-full max-w-[1600px]">
             <div className="label relative flex items-center justify-between pt-4">
@@ -63,18 +63,18 @@ export function About() {
       </div>
 
       {/* Verifiable facts — identity backed by proof. */}
-      <div className="gutter mx-auto max-w-[1600px] pb-[calc(6rem+var(--sheet-radius))] sm:pb-[calc(9rem+var(--sheet-radius))]">
-        <dl className="grid grid-cols-1 border-t border-line-strong sm:grid-cols-2 lg:grid-cols-4">
+      <div className="gutter mx-auto max-w-[1600px] pb-[calc(3.5rem+var(--sheet-radius))] sm:pb-[calc(9rem+var(--sheet-radius))]">
+        <dl className="grid grid-cols-2 border-t border-line-strong lg:grid-cols-4">
           {profile.about.facts.map((fact, i) => (
             <Reveal
               key={fact.label}
               stagger={i}
-              className="border-b border-line py-6 sm:pr-8 lg:border-b-0 lg:border-r lg:py-8 lg:pl-6 lg:first:pl-0 lg:last:border-r-0"
+              className="border-b border-line py-5 pr-4 odd:border-r odd:pr-4 even:pl-4 sm:py-6 sm:pr-8 lg:border-b-0 lg:border-r lg:py-8 lg:pl-6 lg:odd:pr-8 lg:even:pl-6 lg:first:pl-0 lg:last:border-r-0"
             >
               <dt className="data text-muted">
                 0{i + 1} — {fact.label}
               </dt>
-              <dd className="caps mt-4 text-[1.35rem] leading-tight">{fact.value}</dd>
+              <dd className="caps mt-3 text-[1.05rem] leading-tight sm:mt-4 sm:text-[1.35rem]">{fact.value}</dd>
             </Reveal>
           ))}
         </dl>

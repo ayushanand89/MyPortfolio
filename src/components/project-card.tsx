@@ -10,6 +10,7 @@ import { LoopVideo } from "@/components/loop-video";
 import { ButtonLink, Lines } from "@/components/primitives";
 import { TransitionLink, useNavigate } from "@/components/transition-link";
 import { useScrollProgress } from "@/lib/motion";
+import { SwipeDeck } from "@/components/swipe-deck";
 
 /**
  * "Screening room" feature for one project: the real site playing in browser
@@ -113,7 +114,7 @@ export function ProjectFeature({
             className="absolute bottom-[-6%] right-0 hidden w-[20%] max-w-[17rem] will-change-transform md:block lg:right-[2%]"
           >
             <div data-reveal="" style={{ "--d": "250ms" } as CSSProperties}>
-              <PhoneFrame>
+              <PhoneFrame tint={mobile.tint}>
                 <LoopVideo
                   src={mobile.video}
                   poster={mobile.poster}
@@ -171,6 +172,123 @@ export function ProjectFeature({
               <Github aria-hidden className="h-3.5 w-3.5" /> Source code
               <ArrowUpRight aria-hidden className="h-3 w-3" />
             </a>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/**
+ * Phones: the same three chapters as a swipeable deck instead of three
+ * screen-high features — each card is the site playing in its browser, the
+ * pitch, the proof and both actions. The top card's recording plays, and the
+ * one beneath is preloaded so it's already running as you drag the top card
+ * off it; tapping the screen morphs it into the case study like on desktop.
+ */
+export function ProjectDeck({ projects }: { projects: readonly Project[] }) {
+  return (
+    <SwipeDeck
+      items={projects}
+      keyOf={(p) => p.slug}
+      label="Selected work"
+      render={(project, { live, warm, index }) => (
+        <DeckCard
+          project={project}
+          live={live}
+          warm={warm}
+          index={index}
+          total={projects.length}
+        />
+      )}
+    />
+  );
+}
+
+function DeckCard({
+  project,
+  live,
+  warm,
+  index,
+  total,
+}: {
+  project: Project;
+  live: boolean;
+  warm: boolean;
+  index: number;
+  total: number;
+}) {
+  const navigate = useNavigate();
+  const frameRef = useRef<HTMLDivElement>(null);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const caseHref = `/work/${project.slug}`;
+  const rail = project.cardStats ?? project.stats?.slice(0, 3) ?? [];
+  const desktop = project.media?.desktop;
+
+  return (
+    <article
+      data-surface="ink"
+      className="flex h-full flex-col rounded-[22px] bg-bg p-2.5 shadow-[0_30px_60px_-28px_rgba(0,0,0,0.55)]"
+    >
+      <div className="cursor-pointer" onClick={() => navigate(caseHref, frameRef.current)}>
+        <BrowserFrame
+          ref={frameRef}
+          host={project.live?.host ?? "private client build"}
+          live={!!project.live}
+          note="Private"
+          className="rounded-[14px] shadow-none"
+        >
+          {desktop ? (
+            <LoopVideo
+              src={desktop.video}
+              poster={desktop.poster}
+              alt={`${project.title} — recording of the live site`}
+              sizes="94vw"
+              playing={live}
+              warm={warm}
+            />
+          ) : (
+            <Image
+              src={projectImages(project)[0]}
+              alt={`${project.title} — screenshot`}
+              fill
+              sizes="94vw"
+              className="object-cover object-top"
+            />
+          )}
+        </BrowserFrame>
+      </div>
+
+      <div className="flex flex-1 flex-col px-2.5 pb-2.5 pt-5">
+        <div className="label flex items-center justify-between gap-4 text-muted">
+          <span className="flex min-w-0 items-center gap-2.5">
+            <span className="data text-accent">
+              {pad(index + 1)}/{pad(total)}
+            </span>
+            <span className="truncate">{project.domain?.split(" · ")[0]}</span>
+          </span>
+          <span className="shrink-0">{project.year}</span>
+        </div>
+        <h3 className="display mt-3 text-[clamp(1.75rem,8.4vw,2.4rem)]">{project.title}</h3>
+        <p className="serif mt-2 text-[1.2rem] italic leading-[1.15] text-muted text-pretty">
+          {project.tagline}
+        </p>
+        <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-line pt-4">
+          {rail.map((s) => (
+            <div key={s.label} className="flex min-w-0 flex-col-reverse justify-end">
+              <dt className="data mt-1 text-[0.65rem] leading-snug text-muted">{s.label}</dt>
+              <dd className="display whitespace-nowrap text-[1.25rem] text-accent">{s.value}</dd>
+            </div>
+          ))}
+        </dl>
+        <div className="mt-auto flex gap-2 pt-6">
+          <ButtonLink href={caseHref} className="grow justify-between px-5!">
+            Case study
+          </ButtonLink>
+          {project.live && (
+            <ButtonLink href={project.live.url} external variant="ghost" className="px-5!">
+              Live
+            </ButtonLink>
           )}
         </div>
       </div>

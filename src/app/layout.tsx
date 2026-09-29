@@ -9,6 +9,8 @@ import { RouteTransitions } from "@/components/transition-link";
 import { CursorLabel } from "@/components/cursor-label";
 import { Grain } from "@/components/grain";
 import { Nav } from "@/components/nav";
+import { ChapterDock, ChapterRail } from "@/components/chapter-nav";
+import { MotionProvider } from "@/components/motion-provider";
 import { Footer } from "@/components/footer";
 import { profile } from "@/content/profile";
 
@@ -132,17 +134,21 @@ export default function RootLayout({
         </a>
         <Intro />
         <SmoothScroll>
-          <RouteTransitions />
-          <ScrollReveal />
-          <CursorLabel />
-          <Grain />
-          <Nav />
-          {/* Pages scroll up and away over the sticky footer beneath. */}
-          <div className="relative z-[1] bg-ink">
-            {children}
-            <div id="page-end" aria-hidden className="h-px" />
-          </div>
-          <Footer />
+          <MotionProvider>
+            <RouteTransitions />
+            <ScrollReveal />
+            <CursorLabel />
+            <Grain />
+            <Nav />
+            <ChapterRail />
+            <ChapterDock />
+            {/* Pages scroll up and away over the sticky footer beneath. */}
+            <div className="relative z-[1] bg-ink">
+              {children}
+              <div id="page-end" aria-hidden className="h-px" />
+            </div>
+            <Footer />
+          </MotionProvider>
         </SmoothScroll>
       </body>
     </html>

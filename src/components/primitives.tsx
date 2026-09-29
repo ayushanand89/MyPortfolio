@@ -57,9 +57,9 @@ export function Section({
       id={id}
       data-surface={surface}
       className={cn(
-        "relative isolate py-24 sm:py-32 lg:py-40",
+        "relative isolate py-16 sm:py-28 lg:py-40",
         sheet &&
-          "-mt-(--sheet-radius) rounded-t-(--sheet-radius) pt-[calc(6rem+var(--sheet-radius))] sm:pt-[calc(8rem+var(--sheet-radius))]",
+          "-mt-(--sheet-radius) rounded-t-(--sheet-radius) pt-[calc(3.75rem+var(--sheet-radius))] sm:pt-[calc(7rem+var(--sheet-radius))] lg:pt-[calc(8rem+var(--sheet-radius))]",
         className,
       )}
     >
@@ -199,7 +199,7 @@ export function SectionHeader({
 }) {
   const lines = Array.isArray(title) ? title : [title];
   return (
-    <header className={cn("relative mb-14 sm:mb-20", className)}>
+    <header className={cn("relative mb-9 sm:mb-16 lg:mb-20", className)}>
       {(eyebrow || meta) && (
         <div className="relative">
           {rule && (
@@ -222,7 +222,7 @@ export function SectionHeader({
         as="h2"
         lines={lines}
         className={cn(
-          "display mt-8 text-[clamp(2.5rem,7.2vw,7.25rem)] sm:mt-10",
+          "display mt-5 text-[clamp(2.3rem,7.2vw,7.25rem)] sm:mt-10",
           titleClassName,
         )}
       />

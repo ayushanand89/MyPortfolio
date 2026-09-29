@@ -45,11 +45,13 @@ export function NextProject({
           data-cursor="Next case"
           className="group mt-10 block"
         >
-          <div className="flex items-end justify-between gap-6">
+          <div className="flex items-end justify-between gap-4 sm:gap-6">
+            {/* Sized so a single long word ("BARETHREADS") plus the arrow
+                still fits a 360px column. */}
             <Lines
               as="h2"
               lines={[project.title]}
-              className="display text-[clamp(1.9rem,8.4vw,7rem)] text-balance transition-colors duration-500 group-hover:text-signal"
+              className="display min-w-0 text-[clamp(1.6rem,7.2vw,7rem)] text-balance transition-colors duration-500 group-hover:text-signal"
             />
             <ArrowRight className="mb-[0.6vw] h-8 w-8 shrink-0 transition-transform duration-500 ease-out-strong group-hover:translate-x-2 sm:h-14 sm:w-14" />
           </div>

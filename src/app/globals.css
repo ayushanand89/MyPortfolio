@@ -261,6 +261,13 @@
     padding-inline: var(--gutter);
   }
 
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   .stroke-text {
     color: transparent;
     -webkit-text-stroke: 1px currentColor;
@@ -437,6 +444,39 @@
       transform: translate3d(3rem, 0, 0);
     }
   }
+  /* Odometer reels (odometer.tsx): rest on their value; before the reveal
+     they wait a full turn back, then spin forward, staggered per column. */
+  .odo {
+    line-height: 1;
+  }
+  .odo-col {
+    display: inline-block;
+    height: 1em;
+    overflow: clip;
+    mask-image: linear-gradient(transparent, #000 0.07em, #000 0.86em, transparent);
+  }
+  /* Each digit cell is taller than the 1em window (content centred), so
+     neighbours stay out of view mid-spin instead of peeking in. */
+  .odo-reel {
+    display: block;
+    transform: translate3d(0, calc(var(--v) * -1.5em - 0.25em), 0);
+    transition: transform 2.1s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: calc(var(--c) * 90ms + 150ms);
+  }
+  .odo-reel > span {
+    display: block;
+    height: 1.5em;
+    padding-top: 0.25em;
+    line-height: 1;
+  }
+  html[data-reveal-js] [data-reveal="odo"]:not([data-in]) {
+    opacity: 1;
+    transform: none;
+  }
+  html[data-reveal-js] [data-reveal="odo"]:not([data-in]) .odo-reel {
+    transform: translate3d(0, -0.25em, 0);
+  }
+
   /* Already scrolled past on load (mid-page reload): no entrance. */
   html[data-reveal-js] [data-in="instant"],
   html[data-reveal-js] [data-in="instant"] * {
@@ -491,6 +531,23 @@
   }
   html[data-reveal-js] footer:not([data-open]) .footer-mark .line > span {
     transform: translate3d(0, 128%, 0);
+  }
+
+  /* …then a width wave runs through its letters as it lands (no fill mode,
+     so the pointer lens in letter-lens.tsx owns the letters afterwards). */
+  @keyframes lens-wave {
+    0%,
+    100% {
+      font-variation-settings: "wdth" 125, "wght" 850;
+    }
+    45% {
+      font-variation-settings: "wdth" 64, "wght" 300;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html[data-reveal-js] footer[data-open] .lens-ch {
+      animation: lens-wave 0.9s var(--ease-in-out) calc(0.9s + var(--c, 0) * 50ms);
+    }
   }
 
   /* Hairline that draws left → right. */
@@ -558,6 +615,30 @@
       animation-delay: calc(var(--d, 0ms) + var(--hero-delay, 0ms));
     }
   }
+  /* Kinetic headline (hero.tsx): every letter flips up out of its line's
+     mask on a hinge, cascading line by line. Transform-only, so the text
+     still paints (and counts for LCP) on the first frame. The drop is in em,
+     not %: letters inside `.display em` have zero-height boxes (line-height
+     0), so a percentage would move them nowhere. */
+  .kchar {
+    display: inline-block;
+    transform-origin: 50% 100%;
+  }
+  @keyframes kchar {
+    from {
+      transform: perspective(560px) translate3d(0, 1.2em, 0) rotateX(-82deg);
+    }
+    to {
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .kinetic .kchar {
+      animation: kchar 1.15s var(--ease-out) both;
+      animation-delay: calc(var(--hero-delay, 0ms) + 80ms + var(--l, 0) * 80ms + var(--c, 0) * 19ms);
+    }
+  }
+
   /* First visit of the session: hold the hero until the curtain lifts. */
   html[data-intro="play"] {
     --hero-delay: 1500ms;
@@ -800,6 +881,20 @@
   html[data-vt] .cursor-pill {
     opacity: 0;
     transition: none;
+  }
+
+  /* ----- Chapter dock: steps aside while the full-screen menu is open. -- */
+  .chapter-dock {
+    transition:
+      opacity 0.3s var(--ease-out),
+      visibility 0s;
+  }
+  html[data-menu="open"] .chapter-dock {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.3s var(--ease-out),
+      visibility 0s 0.3s;
   }
 }
 

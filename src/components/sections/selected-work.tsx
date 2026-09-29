@@ -1,6 +1,6 @@
 import { flagshipProjects } from "@/content/projects";
 import { Container, SectionHeader } from "@/components/primitives";
-import { ProjectFeature } from "@/components/project-card";
+import { ProjectDeck, ProjectFeature } from "@/components/project-card";
 import { Marquee } from "@/components/marquee";
 
 const years = flagshipProjects.map((p) => Number(p.year));
@@ -18,7 +18,7 @@ export function SelectedWork() {
     <section
       id="work"
       data-surface="paper"
-      className="relative z-10 rounded-t-(--sheet-radius) pb-[calc(5rem+var(--sheet-radius))] pt-28 shadow-[0_-40px_80px_-30px_rgba(0,0,0,0.6)] sm:pb-[calc(7rem+var(--sheet-radius))] sm:pt-40"
+      className="relative z-10 rounded-t-(--sheet-radius) pb-[calc(3.5rem+var(--sheet-radius))] pt-20 shadow-[0_-40px_80px_-30px_rgba(0,0,0,0.6)] sm:pb-[calc(7rem+var(--sheet-radius))] sm:pt-40"
     >
       {/* The tape is wider than the viewport and tilted; clip it on x only so
           it can still straddle the seam without widening the page. */}
@@ -32,16 +32,23 @@ export function SelectedWork() {
           eyebrow="Selected work"
           meta={`${String(flagshipProjects.length).padStart(2, "0")} case studies · ${liveCount} live · ${span}`}
           title={["Products, built", <em key="e">end to end.</em>]}
-          className="mb-6 sm:mb-10"
+          className="mb-8 sm:mb-10"
         />
-        {flagshipProjects.map((project, i) => (
-          <ProjectFeature
-            key={project.slug}
-            project={project}
-            index={i}
-            total={flagshipProjects.length}
-          />
-        ))}
+        {/* Phones get the deck; tablets and up, the full screening. Both are
+            rendered (no hydration guesswork) — hidden media never loads. */}
+        <div className="md:hidden">
+          <ProjectDeck projects={flagshipProjects} />
+        </div>
+        <div className="hidden md:block">
+          {flagshipProjects.map((project, i) => (
+            <ProjectFeature
+              key={project.slug}
+              project={project}
+              index={i}
+              total={flagshipProjects.length}
+            />
+          ))}
+        </div>
       </Container>
     </section>
   );

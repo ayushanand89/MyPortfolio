@@ -1,10 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import {
+  Fragment,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import Image from "next/image";
 import { profile } from "@/content/profile";
 import { flagshipProjects } from "@/content/projects";
-import { ButtonLink, Dot, Lines } from "@/components/primitives";
+import { ButtonLink, Dot } from "@/components/primitives";
+import { Magnetic } from "@/components/magnetic";
 import { LocalTime } from "@/components/local-time";
 import { LoopVideo } from "@/components/loop-video";
 import { TransitionLink } from "@/components/transition-link";
@@ -91,17 +98,13 @@ export function Hero() {
 
         <div className="relative flex flex-1 flex-col justify-center pt-6 lg:py-10">
           <Screening paused={covered} />
-          <Lines
-            load
-            as="h1"
-            className="display relative z-10 -mt-[18vw] text-[clamp(2.65rem,11.2vw,5rem)] md:-mt-[14vw] md:text-[7.7vw] lg:mt-0 min-[1600px]:text-[7.7rem]"
+          <KineticTitle
+            className="display relative z-10 -mt-[18vw] text-[clamp(2.45rem,10.8vw,5rem)] md:-mt-[14vw] md:text-[7.7vw] lg:mt-0 min-[1600px]:text-[7.7rem]"
             lines={[
-              <>
-                I build <em>premium</em>
-              </>,
-              "websites &",
-              "full-stack",
-              <em key="p">products.</em>,
+              [{ t: "I build " }, { t: "premium", em: true }],
+              [{ t: "websites &" }],
+              [{ t: "full-stack" }],
+              [{ t: "products.", em: true }],
             ]}
           />
         </div>
@@ -118,13 +121,19 @@ export function Hero() {
             className="load-fade flex flex-wrap items-center gap-3 md:col-span-7 md:justify-end lg:col-span-6 lg:justify-center"
             style={d(850)}
           >
-            <ButtonLink href="/#work">Selected work</ButtonLink>
-            <ButtonLink href={profile.resumeUrl} external variant="accent">
-              Résumé
-            </ButtonLink>
-            <ButtonLink href="/#contact" variant="ghost">
-              Work with me
-            </ButtonLink>
+            <Magnetic>
+              <ButtonLink href="/#work">Selected work</ButtonLink>
+            </Magnetic>
+            <Magnetic>
+              <ButtonLink href={profile.resumeUrl} external variant="accent">
+                Résumé
+              </ButtonLink>
+            </Magnetic>
+            <Magnetic>
+              <ButtonLink href="/#contact" variant="ghost">
+                Work with me
+              </ButtonLink>
+            </Magnetic>
           </div>
           <div
             className="load-fade hidden items-center justify-end lg:col-span-2 lg:flex"
@@ -148,6 +157,51 @@ export function Hero() {
         />
       )}
     </section>
+  );
+}
+
+type Seg = { t: string; em?: boolean };
+
+/**
+ * The headline, set letter by letter: each character flips up out of its
+ * line's mask on a slight 3D hinge, cascading across the lines. Pure CSS
+ * (`.kinetic .kchar`), so it plays before hydration and waits for the intro
+ * curtain via `--hero-delay`. Words stay unbreakable; screen readers get the
+ * plain sentence.
+ */
+function KineticTitle({ lines, className }: { lines: Seg[][]; className?: string }) {
+  let c = 0;
+  const plain = lines.map((segs) => segs.map((s) => s.t).join("")).join(" ");
+  return (
+    <h1 className={cn("kinetic", className)}>
+      <span className="sr-only">{plain}</span>
+      {lines.map((segs, l) => (
+        <span key={l} aria-hidden className="line">
+          <span>
+            {segs.map((seg, s) => {
+              const words = seg.t.split(/(\s+)/).map((w, k) =>
+                /^\s+$/.test(w) ? (
+                  " "
+                ) : w ? (
+                  <span key={k} className="inline-block whitespace-nowrap">
+                    {[...w].map((ch, j) => (
+                      <span
+                        key={j}
+                        className="kchar"
+                        style={{ "--c": c++, "--l": l } as CSSProperties}
+                      >
+                        {ch}
+                      </span>
+                    ))}
+                  </span>
+                ) : null,
+              );
+              return seg.em ? <em key={s}>{words}</em> : <Fragment key={s}>{words}</Fragment>;
+            })}
+          </span>
+        </span>
+      ))}
+    </h1>
   );
 }
 
@@ -178,7 +232,7 @@ function Screening({ paused }: { paused: boolean }) {
     <TransitionLink
       href="/#work"
       data-cursor="See the work"
-      aria-label="See selected work"
+      aria-label="Now showing — see selected work"
       className="group relative z-0 block w-full lg:absolute lg:right-0 lg:top-1/2 lg:w-[min(58%,calc((100svh-24rem)*1.6))] lg:-translate-y-1/2"
     >
       <div className="relative aspect-[16/10] overflow-hidden rounded-[12px] bg-raised">

@@ -16,6 +16,7 @@ import { ResumeQuickLook } from "@/components/resume-quicklook";
 import { ConsoleSignature } from "@/components/console-signature";
 import { Footer } from "@/components/footer";
 import { profile } from "@/content/profile";
+import { SEO_DESCRIPTION, SEO_TITLE, jsonLd, siteJsonLd } from "@/lib/seo";
 
 // Archivo carries the whole voice: body at its normal width, and the
 // poster headlines pushed to the widest cut of its `wdth` axis.
@@ -41,34 +42,52 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-const description =
-  "Ayush Anand, full-stack & freelance web developer. I design and build premium websites, web apps, dashboards and full-stack products for startups, creators and businesses. Open to freelance projects and full-time roles.";
-
-const title = "Ayush Anand | Full-Stack & Freelance Web Developer";
+const title = SEO_TITLE;
+const description = SEO_DESCRIPTION;
+// Search Console HTML-tag verification (optional; DNS verification of the
+// clanflare.dev domain covers this subdomain without it).
+const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION;
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://ayush.clanflare.dev"),
+  metadataBase: new URL(profile.portfolio),
   title: {
     default: title,
     template: "%s | Ayush Anand",
   },
   description,
+  applicationName: profile.name,
   keywords: [
     "Ayush Anand",
-    "Full-Stack Developer",
+    "Ayush Anand developer",
+    "Ayush Anand portfolio",
+    "Full-Stack Engineer",
+    "Full-Stack Developer Delhi",
     "Freelance Web Developer",
-    "Portfolio Website Developer",
-    "React Developer",
     "Next.js Developer",
-    "Website Designer and Developer",
-    "Full-Stack Web Apps",
+    "React Developer",
     "Hire web developer",
   ],
-  authors: [{ name: profile.name }],
+  authors: [{ name: profile.name, url: profile.portfolio }],
+  creator: profile.name,
+  publisher: profile.name,
   alternates: { canonical: "/" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
-    type: "website",
-    url: "https://ayush.clanflare.dev",
+    type: "profile",
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    username: "ayushanand89",
+    url: profile.portfolio,
     title,
     description,
     siteName: profile.name,
@@ -79,28 +98,11 @@ export const metadata: Metadata = {
     title,
     description,
   },
+  ...(googleVerification ? { verification: { google: googleVerification } } : {}),
 };
 
 export const viewport: Viewport = {
   themeColor: "#0c0b0a",
-};
-
-// Person structured data - the highest-leverage SEO markup for a personal
-// brand site (name/role/profiles surface in rich results).
-const personJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Person",
-  name: profile.name,
-  url: profile.portfolio,
-  email: `mailto:${profile.email}`,
-  jobTitle: profile.role,
-  worksFor: { "@type": "Organization", name: "ClanFlare Solutions" },
-  address: {
-    "@type": "PostalAddress",
-    addressLocality: "Delhi",
-    addressCountry: "IN",
-  },
-  sameAs: [profile.socials.github, profile.socials.linkedin],
 };
 
 // Runs before first paint. When motion is allowed:
@@ -127,7 +129,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: prePaint }} />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLd(siteJsonLd) }}
         />
         <a
           href="#main"

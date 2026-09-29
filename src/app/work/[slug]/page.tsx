@@ -11,6 +11,8 @@ import {
   NextProject,
 } from "@/components/case-study";
 import { CaseStudyCta } from "@/components/case-study-cta";
+import { profile } from "@/content/profile";
+import { caseStudyJsonLd, jsonLd } from "@/lib/seo";
 import { ReadingProgress } from "@/components/reading-progress";
 
 export const dynamicParams = false;
@@ -27,12 +29,23 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) return {};
+  const title = `${project.title}: case study`;
   return {
-    title: project.title,
+    title,
     description: project.summary,
     alternates: { canonical: `/work/${slug}` },
     openGraph: {
-      title: project.title,
+      type: "article",
+      url: `/work/${slug}`,
+      title: `${title} | ${profile.name}`,
+      description: project.summary,
+      siteName: profile.name,
+      authors: [profile.portfolio],
+      locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | ${profile.name}`,
       description: project.summary,
     },
   };
@@ -58,6 +71,10 @@ export default async function CaseStudyPage({
 
   return (
     <main id="main">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd(caseStudyJsonLd(project)) }}
+      />
       <ReadingProgress />
       <div data-surface="paper">
         <CaseStudyHero project={project} index={Math.max(0, currentIndex)} total={total} />

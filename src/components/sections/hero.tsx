@@ -223,7 +223,7 @@ function KineticTitle({ lines, className }: { lines: Seg[][]; className?: string
   const plain = lines.map((segs) => segs.map((s) => s.t).join("")).join(" ");
   return (
     <h1 className={cn("kinetic", className)}>
-      <span className="sr-only">{plain}</span>
+      <span className="sr-only">{`${profile.name}: ${plain}`}</span>
       {lines.map((segs, l) => (
         <span
           key={l}

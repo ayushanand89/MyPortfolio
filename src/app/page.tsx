@@ -7,6 +7,7 @@ import { Credibility } from "@/components/sections/credibility";
 import { Testimonials } from "@/components/sections/testimonials";
 import { Faq } from "@/components/sections/faq";
 import { Contact } from "@/components/sections/contact";
+import { jsonLd, profilePageJsonLd } from "@/lib/seo";
 
 /**
  * Narrative spine: work → engineering → identity → capability → method →
@@ -20,6 +21,10 @@ import { Contact } from "@/components/sections/contact";
 export default function Home() {
   return (
     <main id="main">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLd(profilePageJsonLd) }}
+      />
       <div id="top" className="relative">
         <Hero />
         <SelectedWork />

@@ -29,9 +29,9 @@ export const profile = {
   // the hairline fact-chip row beneath it.
   about: {
     manifesto:
-      "I'm Ayush. I design and build digital products end to end, obsessing over the details most people never notice, because that is exactly what makes software feel effortless.",
+      "I'm Ayush Anand. I design and build digital products end to end, obsessing over the details most people never notice, because that is exactly what makes software feel effortless.",
     /** Words lit in accent as the manifesto scrubs (punctuation-stripped, lowercase). */
-    highlights: ["ayush", "end", "effortless"],
+    highlights: ["ayush", "anand", "end", "effortless"],
     facts: [
       { label: "Based in", value: "Delhi, India · IST" },
       { label: "Currently", value: "Software Developer @ ClanFlare" },
